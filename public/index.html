@@ -527,36 +527,33 @@
       if (badge) badge.textContent = cameraOn ? 'Connected' : 'Camera off';
     }
 
-    async function openInvite() {
-      inviteLink.value = window.location.href;
-      lanInviteLink.value = '';
-      try {
-        const res = await fetch('/config');
-        const config = await res.json();
-        const firstLanUrl = config.networkUrls && config.networkUrls[0];
-        if (firstLanUrl) {
-          lanInviteLink.value = `${firstLanUrl}${window.location.pathname}${window.location.search}`;
-        } else {
-          lanInviteLink.value = 'No LAN IP found. Use localhost only on this computer.';
-        }
-      } catch (e) {
-        lanInviteLink.value = 'LAN link unavailable. Make sure you opened the app through npm start.';
-      }
-      inviteModal.classList.add('show');
-    }
+    function openInvite() {
+  const url = new URL(window.location.href);
 
-    async function copyInvite() {
-      const linkToCopy = lanInviteLink.value && lanInviteLink.value.startsWith('http') ? lanInviteLink.value : inviteLink.value;
-      try {
-        await navigator.clipboard.writeText(linkToCopy);
-        copyInviteBtn.textContent = 'Copied';
-        setTimeout(() => copyInviteBtn.textContent = 'Copy Link', 1200);
-      } catch {
-        const input = lanInviteLink.value && lanInviteLink.value.startsWith('http') ? lanInviteLink : inviteLink;
-        input.select();
-        document.execCommand('copy');
-      }
-    }
+  if (!url.searchParams.get("room")) {
+    url.searchParams.set("room", roomId);
+    window.history.replaceState({}, "", url.toString());
+  }
+
+  inviteLink.value = url.toString();
+
+  inviteModal.classList.add("show");
+}
+
+   async function copyInvite() {
+  const linkToCopy = inviteLink.value;
+
+  try {
+    await navigator.clipboard.writeText(linkToCopy);
+    copyInviteBtn.textContent = "Copied";
+    setTimeout(() => copyInviteBtn.textContent = "Copy Invite Link", 1200);
+  } catch {
+    inviteLink.select();
+    document.execCommand("copy");
+    copyInviteBtn.textContent = "Copied";
+    setTimeout(() => copyInviteBtn.textContent = "Copy Invite Link", 1200);
+  }
+}
 
     function toggleChatOnMobile() {
       const side = document.querySelector('.side');
