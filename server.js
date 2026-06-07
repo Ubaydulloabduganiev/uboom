@@ -17,11 +17,13 @@ const PORT = process.env.PORT || 3000;
 const rooms = new Map();
 
 /*
-  ROUTES
+  URL ROUTES
 
-  https://uboom.uz          -> landing page
-  https://uboom.uz/meet     -> meeting app
-  https://uboom.uz/meet?room=abc123 -> specific meeting room
+  https://uboom.uz                 -> landing page
+  https://uboom.uz/meet            -> meeting app
+  https://uboom.uz/meet?room=abc   -> specific meeting room
+
+  Old /app links will redirect to /meet.
 */
 
 app.get("/", (req, res) => {
@@ -32,9 +34,18 @@ app.get("/meet", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+app.get("/app", (req, res) => {
+  const room = req.query.room;
+
+  if (room) {
+    return res.redirect(301, `/meet?room=${encodeURIComponent(room)}`);
+  }
+
+  return res.redirect(301, "/meet");
+});
+
 /*
-  Static files.
-  Keep this AFTER the routes above.
+  Static files must stay AFTER the custom routes above.
 */
 app.use(express.static(path.join(__dirname, "public")));
 
