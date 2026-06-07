@@ -312,10 +312,19 @@
       }
 
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
-          audio: true
-        });
+     localStream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+    frameRate: { ideal: 30, max: 30 },
+    facingMode: "user"
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  }
+});
         activeStream = localStream;
         addLocalTile(localStream);
       } catch (error) {
@@ -337,8 +346,24 @@
       const remoteStream = new MediaStream();
 
       peers.set(remoteUser.socketId, { pc, remoteStream, userName: remoteUser.userName });
+activeStream.getTracks().forEach(track => {
+  const sender = pc.addTrack(track, activeStream);
 
-      activeStream.getTracks().forEach(track => pc.addTrack(track, activeStream));
+  if (track.kind === "video") {
+    const params = sender.getParameters();
+
+    if (!params.encodings) {
+      params.encodings = [{}];
+    }
+
+    params.encodings[0].maxBitrate = 2500000; // 2.5 Mbps for 720p HD
+    params.encodings[0].maxFramerate = 30;
+
+    sender.setParameters(params).catch(error => {
+      console.warn("Could not set video quality parameters:", error);
+    });
+  }
+});
 
       pc.ontrack = event => {
         event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
