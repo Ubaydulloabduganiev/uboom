@@ -1384,11 +1384,9 @@
       }
     });
 
-    socket.on("user-joined", async remoteUser => {
-      addMessage("System", `${remoteUser.userName} joined. The room has gained another witness.`);
-      await callUser(remoteUser);
-    });
-
+    socket.on("user-joined", remoteUser => {
+  addMessage("System", `${remoteUser.userName} joined. The room has gained another witness.`);
+});
     socket.on("offer", data => {
       handleOffer(data).catch(error => console.error("Offer error:", error));
     });
