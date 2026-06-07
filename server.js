@@ -28,15 +28,8 @@ function getLocalNetworkUrls(port) {
   }
   return urls;
 }
-
-app.get('/config', (req, res) => {
-  res.json({
-    port: PORT,
-    localUrl: `http://localhost:${PORT}`,
-    networkUrls: getLocalNetworkUrls(PORT)
-  });
-});
-
+app.use(express.static(path.join(__dirname, "public")));
+app.get
 app.get('/health', (req, res) => {
   res.json({ ok: true, rooms: rooms.size });
 });
