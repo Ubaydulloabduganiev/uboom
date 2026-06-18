@@ -1,753 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Uboom Meeting</title>
-<style>
-:root{--bg:#06111f;--panel:#0d1a30;--panel2:#122642;--soft:#1a3356;--text:#fff7e8;--muted:#aeb8c7;--gold:#d8b45a;--gold2:#f0d987;--ceramic:#2fb7b0;--blue:#1f5c87;--green:#1f9d72;--red:#d94242;--warning:#f0d987;--border:rgba(240,217,135,.18);--shadow:0 24px 80px rgba(0,0,0,.45)}
-*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,sans-serif} body{min-height:100vh;background:radial-gradient(circle at 10% 0%,rgba(47,183,176,.22),transparent 28%),radial-gradient(circle at 90% 86%,rgba(216,180,90,.16),transparent 30%),linear-gradient(180deg,#06111f,#030811);color:var(--text);overflow:hidden} body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.11;background-image:linear-gradient(135deg,rgba(216,180,90,.18) 12%,transparent 12%,transparent 50%,rgba(216,180,90,.18) 50%,rgba(216,180,90,.18) 62%,transparent 62%),linear-gradient(45deg,rgba(47,183,176,.15) 12%,transparent 12%,transparent 50%,rgba(47,183,176,.15) 50%,rgba(47,183,176,.15) 62%,transparent 62%);background-size:36px 36px;mask-image:radial-gradient(circle at 50% 0%,black,transparent 78%)} button,input,select{font:inherit} button{cursor:pointer} .app{height:100vh;display:grid;grid-template-rows:68px 1fr 90px;grid-template-columns:1fr 360px;grid-template-areas:"header header" "main side" "footer footer";position:relative;z-index:2}
-header{grid-area:header;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--border);background:rgba(3,8,17,.74);backdrop-filter:blur(18px);z-index:5} .brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:-.4px;min-width:0;color:inherit;text-decoration:none} .logo{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(216,180,90,.16),rgba(47,183,176,.12));border:1px solid var(--border);box-shadow:0 12px 32px rgba(47,183,176,.23);flex:0 0 auto} .logo svg{width:30px;height:30px} .meeting-info{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;min-width:0} .pill,.lang-mini{padding:8px 11px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.06);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;color:var(--text)} .lang-mini option{color:#06111f}
-main{grid-area:main;padding:14px;overflow:auto} .video-grid{height:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;align-content:start} .tile{min-height:260px;border-radius:26px;background:radial-gradient(circle at 75% 15%,rgba(47,183,176,.18),transparent 34%),rgba(10,24,43,.84);border:1px solid var(--border);overflow:hidden;position:relative;box-shadow:0 16px 46px rgba(0,0,0,.25)} .tile:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)} .tile video{width:100%;height:100%;min-height:260px;object-fit:cover;display:block;background:#020617} .tile.screen video{object-fit:contain} .placeholder{height:100%;min-height:260px;display:grid;place-items:center;text-align:center;padding:20px;color:var(--muted)} .placeholder .avatar{width:86px;height:86px;border-radius:28px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--ceramic),var(--blue));color:#07111f;font-size:28px;font-weight:950;margin:0 auto 12px;border:3px solid rgba(255,255,255,.12)} .label{position:absolute;left:12px;bottom:12px;padding:8px 10px;border-radius:999px;background:rgba(3,8,17,.76);color:white;font-size:13px;border:1px solid var(--border);max-width:calc(100% - 24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .badge{position:absolute;right:12px;top:12px;padding:7px 9px;border-radius:999px;background:rgba(3,8,17,.76);color:var(--muted);font-size:12px;border:1px solid var(--border)}
-.side{grid-area:side;border-left:1px solid var(--border);background:rgba(3,8,17,.62);display:grid;grid-template-rows:auto 1fr auto;min-height:0;backdrop-filter:blur(14px)} .panel-head{padding:14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px} .panel-head h3{font-size:15px} .panel-head button{border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);border-radius:12px;padding:8px 10px} .participants{padding:12px 14px;border-bottom:1px solid var(--border);display:grid;gap:8px;max-height:170px;overflow:auto} .participant{display:flex;justify-content:space-between;gap:8px;background:rgba(255,255,255,.05);padding:9px 10px;border-radius:12px;border:1px solid var(--border);color:var(--text);font-size:13px} .messages{padding:14px;overflow:auto;display:grid;align-content:start;gap:10px} .msg{padding:10px 11px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--border)} .msg strong{display:block;font-size:12px;color:var(--gold2);margin-bottom:4px} .msg span{color:#e5e9f1;font-size:13px;line-height:1.45;word-break:break-word} .chat-form{padding:12px;display:grid;grid-template-columns:1fr auto;gap:8px;border-top:1px solid var(--border)} .chat-form input{min-width:0;border:1px solid var(--border);background:rgba(255,255,255,.06);color:white;border-radius:14px;padding:12px;outline:none} .chat-form button{border:0;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--ceramic));color:#07111f;border-radius:14px;padding:0 14px;font-weight:900}
-footer{grid-area:footer;border-top:1px solid var(--border);background:rgba(3,8,17,.84);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;z-index:5} .control{min-width:92px;height:60px;border:1px solid var(--border);background:rgba(255,255,255,.07);color:white;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:800;transition:.15s} .control:hover{transform:translateY(-2px);background:rgba(255,255,255,.1)} .control.active{background:rgba(47,183,176,.22);border-color:rgba(47,183,176,.45)} .control.danger{background:rgba(217,66,66,.92);border-color:rgba(255,140,140,.45)} .icon{font-size:20px;line-height:1}
-.modal-wrap{position:fixed;inset:0;display:none;place-items:center;background:rgba(3,8,17,.76);backdrop-filter:blur(9px);z-index:50;padding:16px} .modal-wrap.show{display:grid} .modal{width:min(800px,100%);background:var(--panel);border:1px solid var(--border);border-radius:30px;box-shadow:var(--shadow);overflow:hidden} .modal-body{padding:24px;display:grid;gap:14px} .notice{padding:14px 16px;border-radius:18px;background:rgba(216,180,90,.12);color:#ffe9a8;border:1px solid rgba(216,180,90,.35);line-height:1.45} .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px} label{color:var(--text);font-weight:800;display:grid;gap:7px} .modal input{width:100%;border:1px solid var(--border);background:rgba(255,255,255,.07);color:white;border-radius:16px;padding:14px;outline:none;font-size:15px} .modal-actions{display:flex;justify-content:flex-end;gap:10px;padding:18px 24px;border-top:1px solid var(--border)} .primary{border:0;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--ceramic));color:#07111f;border-radius:16px;padding:13px 18px;font-weight:950} .secondary{border:1px solid var(--border);background:rgba(255,255,255,.07);color:white;border-radius:16px;padding:13px 18px;font-weight:850} .hidden{display:none!important}
-@media(max-width:980px){.app{grid-template-columns:1fr;grid-template-areas:"header" "main" "footer"}.side{display:none}.side.mobile-open{display:grid!important;position:fixed;inset:74px 12px 104px 12px;z-index:40;border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);background:rgba(3,8,17,.94)}} @media(max-width:620px){body{overflow:hidden}.app{height:100dvh;grid-template-rows:60px 1fr;padding-bottom:124px}header{padding:0 10px}.brand span{display:none}.meeting-info{font-size:11px;gap:6px}.pill{padding:7px 9px;max-width:128px}.lang-mini{max-width:96px;padding:7px 8px}main{padding:8px}.video-grid{grid-template-columns:1fr;gap:10px}.tile{min-height:220px;border-radius:18px}.tile video,.placeholder{min-height:220px}footer{position:fixed;left:0;right:0;bottom:0;min-height:116px;padding:8px 8px 10px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;z-index:999}.control{width:100%;min-width:0;height:50px;padding:6px 4px;border-radius:14px;font-size:10px;gap:3px}.control .icon{font-size:18px}.control span:last-child{font-size:10px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.form-grid{grid-template-columns:1fr}.modal-body{padding:18px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HANYUBAN | Xitoy tili o‘quv markazi</title>
+  <meta name="description" content="HANYUBAN - Xitoy tili o‘quv markazi. HSK, speaking, bolalar va kattalar uchun xitoy tili kurslari. 1 ta sinov darsi." />
+  <meta name="theme-color" content="#8b0000" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="app"><header><a class="brand" href="/"><div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="10" x2="54" y1="8" y2="56"><stop stop-color="#E7C76F"/><stop offset=".45" stop-color="#2FB7B0"/><stop offset="1" stop-color="#1F5C87"/></linearGradient></defs><path d="M32 5c8 7 15 9 23 9-1 10-6 17-14 21 5 4 8 9 9 17-9 0-16-3-22-9-6 6-13 9-22 9 1-8 4-13 9-17C7 31 2 24 1 14c8 0 15-2 23-9l4 13 4-13Z" fill="url(#g)"/><path d="M22 23c7-6 13-6 20 0-2 6-5 10-10 13-5-3-8-7-10-13Z" fill="#061222" opacity=".88"/><path d="M19 47c9-7 17-7 26 0" fill="none" stroke="#E7C76F" stroke-width="3" stroke-linecap="round"/></svg></div><span>Uboom</span></a><div class="meeting-info"><select id="roomLang" class="lang-mini" aria-label="Language"><option value="en">EN</option><option value="uz">UZ</option><option value="ru">RU</option><option value="tg">TG</option><option value="hy">HY</option><option value="ky">KY</option><option value="kk">KK</option><option value="hi">HI</option><option value="es">ES</option><option value="de">DE</option><option value="fr">FR</option></select><div class="pill" id="meetingTitle">Room: waiting...</div><div class="pill" id="timer">00:00</div></div></header><main><div class="video-grid" id="videoGrid"></div></main><aside class="side" id="sidePanel"><div><div class="panel-head"><h3 data-i18n="room_chaos">Room chat</h3><button id="closeChatBtn" data-i18n="close">Close</button></div><div class="participants" id="participants"></div></div><div class="messages" id="messages"></div><form class="chat-form" id="chatForm"><input id="chatInput" data-i18n-placeholder="type_message" placeholder="Type message..." autocomplete="off"/><button type="submit" data-i18n="send">Send</button></form></aside><footer><button class="control active" id="micBtn"><span class="icon">🎙️</span><span>Mic</span></button><button class="control active" id="camBtn"><span class="icon">📹</span><span>Camera</span></button><button class="control" id="screenBtn"><span class="icon">🖥️</span><span>Share</span></button><button class="control" id="recordBtn"><span class="icon">⏺️</span><span>Record</span></button><button class="control" id="chatBtn"><span class="icon">💬</span><span>Chat</span></button><button class="control" id="inviteBtn"><span class="icon">🔗</span><span>Invite</span></button><button class="control danger" id="leaveBtn"><span class="icon">⛔</span><span>Leave</span></button></footer></div><div class="modal-wrap show" id="joinModal"><div class="modal"><div class="panel-head"><h3 data-i18n="join_meeting">Join Meeting</h3></div><div class="modal-body"><p class="notice" data-i18n="notice">Uboom is ready. If the call fails, blame the Wi‑Fi first. Tradition matters.</p><div class="form-grid"><label><span data-i18n="your_name">Your name</span><input id="userNameInput" value="Uba"/></label><label><span data-i18n="meeting_name">Meeting name</span><input id="meetingNameInput" value="Personal Meeting"/></label></div></div><div class="modal-actions"><button class="primary" id="startMeetingBtn" data-i18n="start_meeting">Start Meeting</button></div></div></div><div class="modal-wrap" id="inviteModal"><div class="modal"><div class="panel-head"><h3 data-i18n="invite_link">Invite Link</h3><button class="secondary" id="closeInviteBtn" data-i18n="close">Close</button></div><div class="modal-body"><p style="color:var(--muted);line-height:1.5;" data-i18n="invite_copy">Share this link with your friend. If it fails, blame the Wi‑Fi and preserve your dignity.</p><label><span data-i18n="invite_label">Invite link</span><input id="inviteLink" readonly/></label></div><div class="modal-actions"><button class="primary" id="copyInviteBtn" data-i18n="copy_invite">Copy Invite Link</button></div></div></div>
-<script>
-const ROOM_I18N={en:{room_chaos:'Room chat',close:'Close',type_message:'Type message...',send:'Send',join_meeting:'Join Meeting',notice:'Uboom is ready. If the call fails, blame the Wi‑Fi first. Tradition matters.',your_name:'Your name',meeting_name:'Meeting name',start_meeting:'Start Meeting',invite_link:'Invite Link',invite_copy:'Share this link with your friend. If it fails, blame the Wi‑Fi and preserve your dignity.',invite_label:'Invite link',copy_invite:'Copy Invite Link'}};
-['uz','ru','tg','hy','ky','kk','hi','es','de','fr'].forEach(l=>ROOM_I18N[l]={...ROOM_I18N.en});
-Object.assign(ROOM_I18N.uz,{room_chaos:'Xona chati',close:'Yopish',type_message:'Xabar yozing...',send:'Yuborish',join_meeting:'Uchrashuvga kirish',your_name:'Ismingiz',meeting_name:'Uchrashuv nomi',start_meeting:'Boshlash',invite_link:'Taklif linki',invite_label:'Taklif linki',copy_invite:'Linkni nusxalash'});
-Object.assign(ROOM_I18N.ru,{room_chaos:'Чат комнаты',close:'Закрыть',type_message:'Введите сообщение...',send:'Отправить',join_meeting:'Войти во встречу',your_name:'Ваше имя',meeting_name:'Название встречи',start_meeting:'Начать',invite_link:'Ссылка приглашения',invite_label:'Ссылка приглашения',copy_invite:'Скопировать ссылку'});
-function applyRoomLang(lang){localStorage.setItem('uboomLang',lang);const d=ROOM_I18N[lang]||ROOM_I18N.en;document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=d[el.dataset.i18n]||ROOM_I18N.en[el.dataset.i18n]||el.textContent);document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.placeholder=d[el.dataset.i18nPlaceholder]||ROOM_I18N.en[el.dataset.i18nPlaceholder]||el.placeholder);document.documentElement.lang=lang;}
-const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.getItem('uboomLang')||'en';roomLang.addEventListener('change',e=>applyRoomLang(e.target.value));applyRoomLang(roomLang.value);
-</script>
-  <script src="/socket.io/socket.io.js"></script>
+  <div class="bg-glow"></div>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="HANYUBAN home">
+      <span class="brand-mark">汉</span>
+      <span><b>HANYUBAN</b><small>Xitoy tili o‘quv markazi</small></span>
+    </a>
+    <nav class="nav">
+      <a href="#courses" data-i18n="navCourses">Kurslar</a>
+      <a href="#path" data-i18n="navPath">Yo‘l xaritasi</a>
+      <a href="#why" data-i18n="navWhy">Afzalliklar</a>
+      <a href="#contact" data-i18n="navContact">Aloqa</a>
+    </nav>
+    <div class="lang-switch" aria-label="Language switcher">
+      <button data-lang="uz" class="active">UZ</button>
+      <button data-lang="ru">RU</button>
+      <button data-lang="zh">中文</button>
+    </div>
+  </header>
 
-  <script>
-    const ICE_SERVERS = [
-      { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" },
-      { urls: "stun:openrelay.metered.ca:80" },
-
-      {
-        urls: "turn:openrelay.metered.ca:80",
-        username: "openrelayproject",
-        credential: "openrelayproject"
-      },
-      {
-        urls: "turn:openrelay.metered.ca:443",
-        username: "openrelayproject",
-        credential: "openrelayproject"
-      },
-      {
-        urls: "turn:openrelay.metered.ca:443?transport=tcp",
-        username: "openrelayproject",
-        credential: "openrelayproject"
-      }
-    ];
-
-    const socket = io();
-
-    const videoGrid = document.getElementById("videoGrid");
-    const joinModal = document.getElementById("joinModal");
-    const inviteModal = document.getElementById("inviteModal");
-    const userNameInput = document.getElementById("userNameInput");
-    const meetingNameInput = document.getElementById("meetingNameInput");
-    const startMeetingBtn = document.getElementById("startMeetingBtn");
-    const meetingTitle = document.getElementById("meetingTitle");
-    const timer = document.getElementById("timer");
-
-    const micBtn = document.getElementById("micBtn");
-    const camBtn = document.getElementById("camBtn");
-    const screenBtn = document.getElementById("screenBtn");
-    const recordBtn = document.getElementById("recordBtn");
-    const chatBtn = document.getElementById("chatBtn");
-    const inviteBtn = document.getElementById("inviteBtn");
-    const leaveBtn = document.getElementById("leaveBtn");
-
-    const sidePanel = document.getElementById("sidePanel");
-    const closeChatBtn = document.getElementById("closeChatBtn");
-    const participantsBox = document.getElementById("participants");
-    const messages = document.getElementById("messages");
-    const chatForm = document.getElementById("chatForm");
-    const chatInput = document.getElementById("chatInput");
-
-    const inviteLink = document.getElementById("inviteLink");
-    const closeInviteBtn = document.getElementById("closeInviteBtn");
-    const copyInviteBtn = document.getElementById("copyInviteBtn");
-
-    let roomId = null;
-    let userName = "Guest";
-    let meetingName = "Personal Meeting";
-
-    let localStream = null;
-    let activeStream = null;
-    let screenStream = null;
-    let micOn = true;
-    let cameraOn = true;
-    let started = false;
-
-    let recorder = null;
-    let recordedChunks = [];
-
-    let startedAt = null;
-    let timerInterval = null;
-
-    const peers = new Map();
-
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[char]));
-    }
-
-    function makeRoomId() {
-      if (window.crypto && crypto.randomUUID) {
-        return crypto.randomUUID().slice(0, 8);
-      }
-
-      return Math.random().toString(36).slice(2, 10);
-    }
-
-    function getRoomIdFromUrl() {
-      const url = new URL(window.location.href);
-      return url.searchParams.get("room");
-    }
-
-    function ensureRoomInUrl() {
-      const url = new URL(window.location.href);
-      let existingRoom = url.searchParams.get("room");
-
-      if (!existingRoom) {
-        existingRoom = makeRoomId();
-        url.searchParams.set("room", existingRoom);
-        window.history.replaceState({}, "", url.toString());
-      }
-
-      return existingRoom;
-    }
-
-    function initials(name) {
-      return String(name || "G")
-        .trim()
-        .split(/\s+/)
-        .slice(0, 2)
-        .map(part => part[0]?.toUpperCase() || "")
-        .join("") || "G";
-    }
-
-    function addMessage(sender, text) {
-      const msg = document.createElement("div");
-      msg.className = "msg";
-      msg.innerHTML = `
-        <strong>${escapeHTML(sender)}</strong>
-        <span>${escapeHTML(text)}</span>
-      `;
-      messages.appendChild(msg);
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function updateTimer() {
-      if (!startedAt) return;
-
-      const seconds = Math.floor((Date.now() - startedAt) / 1000);
-      const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-      const ss = String(seconds % 60).padStart(2, "0");
-
-      timer.textContent = `${mm}:${ss}`;
-    }
-
-    function startTimer() {
-      startedAt = Date.now();
-      updateTimer();
-      timerInterval = setInterval(updateTimer, 1000);
-    }
-
-    function setLocalPlaceholder(reason) {
-      const old = document.getElementById("localTile");
-      if (old) old.remove();
-
-      const tile = document.createElement("div");
-      tile.className = "tile";
-      tile.id = "localTile";
-      tile.innerHTML = `
-        <div class="placeholder">
-          <div>
-            <div class="avatar">${escapeHTML(initials(userName))}</div>
-            <div>${escapeHTML(reason || "Camera off")}</div>
-          </div>
+  <main id="top">
+    <section class="hero section-pad">
+      <div class="hero-copy">
+        <div class="eyebrow"><span>梦想不是想出来的，是干出来的</span></div>
+        <h1 data-i18n="heroTitle">Xitoy tilini noldan HSK darajasigacha o‘rganing</h1>
+        <p class="lead" data-i18n="heroLead">HANYUBAN bolalar, o‘quvchilar, talabalar va kattalar uchun xitoy tili kurslarini taklif qiladi: noldan boshlash, HSK tayyorgarlik, speaking va amaliy natija.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#lead-form" data-i18n="trialBtn">Sinov darsiga yozilish</a>
+          <a class="btn ghost" href="https://t.me/Hanyubanbot" target="_blank" rel="noopener" data-i18n="telegramBtn">Telegramga yozish</a>
         </div>
-        <div class="label">🔇 ${escapeHTML(userName)} (You)</div>
-        <div class="badge">Local</div>
-      `;
+        <div class="hero-stats">
+          <div><b>3x</b><span data-i18n="statWeek">haftasiga dars</span></div>
+          <div><b>60</b><span data-i18n="statMin">daqiqa</span></div>
+          <div><b>HSK</b><span data-i18n="statHsk">tayyorgarlik</span></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="circle-orbit"></div>
+        <div class="chinese-symbol">学</div>
+        <h2 data-i18n="cardTitle">1 ta sinov darsi</h2>
+        <p data-i18n="cardText">Darajangizni aniqlaymiz, mos guruhni tavsiya qilamiz va o‘qish rejangizni tushuntiramiz.</p>
+        <a class="mini-link" href="tel:+998887070444">88 707-04-44</a>
+        <a class="mini-link" href="tel:+998884339097">88 433-90-97</a>
+      </div>
+    </section>
+
+    <section class="trust-strip">
+      <span>HSK 1-5</span><span>Speaking</span><span>Kids & Adults</span><span>From Zero</span><span>Offline Groups</span>
+    </section>
+
+    <section id="courses" class="section-pad">
+      <div class="section-head">
+        <p class="kicker" data-i18n="coursesKicker">Kurslar</p>
+        <h2 data-i18n="coursesTitle">Har bir maqsad uchun xitoy tili kurslari</h2>
+      </div>
+      <div class="cards-grid">
+        <article class="course-card"><span>01</span><h3 data-i18n="c1Title">Noldan xitoy tili</h3><p data-i18n="c1Text">Pinyin, talaffuz, ierogliflar va eng kerakli so‘zlashuv bazasi.</p></article>
+        <article class="course-card"><span>02</span><h3 data-i18n="c2Title">HSK tayyorgarlik</h3><p data-i18n="c2Text">HSK 1 dan HSK 5 gacha bosqichma-bosqich imtihon tayyorgarligi.</p></article>
+        <article class="course-card"><span>03</span><h3 data-i18n="c3Title">Speaking kursi</h3><p data-i18n="c3Text">Xitoy tilida gapirish, savol-javob, real vaziyatlarda muloqot.</p></article>
+        <article class="course-card"><span>04</span><h3 data-i18n="c4Title">Bolalar guruhlari</h3><p data-i18n="c4Text">Yoshga mos, qiziqarli va tartibli xitoy tili darslari.</p></article>
+        <article class="course-card"><span>05</span><h3 data-i18n="c5Title">Individual darslar</h3><p data-i18n="c5Text">Shaxsiy maqsad, tezroq progress va moslashtirilgan dastur.</p></article>
+        <article class="course-card soon"><span>06</span><h3 data-i18n="c6Title">Online darslar</h3><p data-i18n="c6Text">Tez orada masofadan xitoy tili o‘rganish imkoniyati qo‘shiladi.</p></article>
+      </div>
+    </section>
+
+    <section id="path" class="section-pad split-section">
+      <div>
+        <p class="kicker" data-i18n="pathKicker">Yo‘l xaritasi</p>
+        <h2 data-i18n="pathTitle">Noldan boshlaysiz. Reja bilan o‘sasiz.</h2>
+        <p class="muted" data-i18n="pathText">O‘quvchi shunchaki darsga kelmaydi. U qaysi bosqichda ekanini, keyingi maqsadini va HSK sari yo‘lini bilib boradi.</p>
+      </div>
+      <div class="timeline">
+        <div><b>1</b><span data-i18n="step1">Sinov darsi va daraja aniqlash</span></div>
+        <div><b>2</b><span data-i18n="step2">Mos guruh yoki individual reja</span></div>
+        <div><b>3</b><span data-i18n="step3">Haftasiga 3 marta 60 daqiqalik dars</span></div>
+        <div><b>4</b><span data-i18n="step4">HSK, speaking va real natija</span></div>
+      </div>
+    </section>
+
+    <section id="why" class="section-pad why-section">
+      <div class="section-head">
+        <p class="kicker" data-i18n="whyKicker">Nega HANYUBAN?</p>
+        <h2 data-i18n="whyTitle">Xitoy tili modaga emas, kelajakka kerak</h2>
+      </div>
+      <div class="why-grid">
+        <div><h3 data-i18n="w1Title">Tizimli dastur</h3><p data-i18n="w1Text">Darslar pinyin, lug‘at, grammatika, listening, speaking va HSK ko‘nikmalarini birga rivojlantiradi.</p></div>
+        <div><h3 data-i18n="w2Title">Amaliy yondashuv</h3><p data-i18n="w2Text">O‘quvchi faqat qoida yodlamaydi. Gapirish, tushunish va ishlatishni o‘rganadi.</p></div>
+        <div><h3 data-i18n="w3Title">Hamma uchun</h3><p data-i18n="w3Text">Bolalar, maktab o‘quvchilari, talabalar va kattalar uchun mos guruhlar.</p></div>
+        <div><h3 data-i18n="w4Title">Natijaga yo‘naltirilgan</h3><p data-i18n="w4Text">Maqsad oddiy: o‘quvchi xitoy tilini tushunsin, gapirsin va HSK bosqichlariga tayyor bo‘lsin.</p></div>
+      </div>
+    </section>
+
+    <section class="quote-section">
+      <p class="hanzi">梦想不是想出来的，是干出来的</p>
+      <h2 data-i18n="quoteTitle">Orzu o‘ylab emas, harakat bilan amalga oshadi.</h2>
+    </section>
+
+    <section id="contact" class="section-pad contact-section">
+      <div class="contact-copy">
+        <p class="kicker" data-i18n="contactKicker">Ro‘yxatdan o‘tish</p>
+        <h2 data-i18n="contactTitle">Sinov darsiga yoziling</h2>
+        <p class="muted" data-i18n="contactText">Formani to‘ldiring. Menejer siz bilan bog‘lanib, narx, jadval va mos guruh haqida ma’lumot beradi.</p>
+        <div class="contact-links">
+          <a href="tel:+998887070444">📞 88 707-04-44</a>
+          <a href="tel:+998884339097">📞 88 433-90-97</a>
+          <a href="https://t.me/hanyuban" target="_blank" rel="noopener">✈️ Telegram: @hanyuban</a>
+          <a href="https://www.instagram.com/hanyuban" target="_blank" rel="noopener">📸 Instagram: @hanyuban</a>
+        </div>
+      </div>
+      <form id="lead-form" class="lead-form">
+        <label><span data-i18n="nameLabel">Ismingiz</span><input name="name" type="text" placeholder="Masalan: Aziz" required></label>
+        <label><span data-i18n="phoneLabel">Telefon raqamingiz</span><input name="phone" type="tel" placeholder="+998 __ ___ __ __" required></label>
+        <label><span data-i18n="ageLabel">Yosh</span><input name="age" type="text" placeholder="Masalan: 16"></label>
+        <label><span data-i18n="courseLabel">Qiziqayotgan kurs</span>
+          <select name="course">
+            <option>Noldan xitoy tili</option>
+            <option>HSK tayyorgarlik</option>
+            <option>Speaking</option>
+            <option>Bolalar guruhi</option>
+            <option>Individual dars</option>
+          </select>
+        </label>
+        <label class="full"><span data-i18n="messageLabel">Izoh</span><textarea name="message" placeholder="Qaysi vaqtda darsga qatnasha olasiz?"></textarea></label>
+        <button class="btn primary full" type="submit" data-i18n="submitBtn">Yuborish</button>
+        <p id="form-status" class="form-status"></p>
+      </form>
+    </section>
+  </main>
+
+  <a class="floating-cta" href="#lead-form" data-i18n="floatBtn">Sinov darsi</a>
+
+  <footer>
+    <b>HANYUBAN</b>
+    <span data-i18n="footerText">Xitoy tili o‘quv markazi. Narx va jadval menejer tomonidan tasdiqlanadi.</span>
+  </footer>
 
-      videoGrid.prepend(tile);
-    }
-
-    function addLocalTile(stream) {
-      const old = document.getElementById("localTile");
-      if (old) old.remove();
-
-      const tile = document.createElement("div");
-      tile.className = "tile";
-      tile.id = "localTile";
-
-      const video = document.createElement("video");
-      video.autoplay = true;
-      video.muted = true;
-      video.playsInline = true;
-      video.srcObject = stream;
-
-      tile.appendChild(video);
-
-      const label = document.createElement("div");
-      label.className = "label";
-      label.textContent = `🎙️ ${userName} (You)`;
-      tile.appendChild(label);
-
-      const badge = document.createElement("div");
-      badge.className = "badge";
-      badge.textContent = "Local";
-      tile.appendChild(badge);
-
-      videoGrid.prepend(tile);
-    }
-
-    function addRemoteTile(socketId, name, stream) {
-      let tile = document.getElementById(`tile-${socketId}`);
-
-      if (!tile) {
-        tile = document.createElement("div");
-        tile.className = "tile";
-        tile.id = `tile-${socketId}`;
-
-        const video = document.createElement("video");
-        video.autoplay = true;
-        video.playsInline = true;
-        video.srcObject = stream;
-
-        const label = document.createElement("div");
-        label.className = "label";
-        label.id = `label-${socketId}`;
-        label.textContent = `🎙️ ${name}`;
-
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.id = `badge-${socketId}`;
-        badge.textContent = "Connected";
-
-        tile.appendChild(video);
-        tile.appendChild(label);
-        tile.appendChild(badge);
-        videoGrid.appendChild(tile);
-      } else {
-        const video = tile.querySelector("video");
-        if (video) video.srcObject = stream;
-      }
-    }
-
-    function removeRemoteTile(socketId) {
-      const tile = document.getElementById(`tile-${socketId}`);
-      if (tile) tile.remove();
-    }
-
-    function updateParticipants(users) {
-      participantsBox.innerHTML = "";
-
-      users.forEach(user => {
-        const row = document.createElement("div");
-        row.className = "participant";
-        row.innerHTML = `
-          <span>${escapeHTML(user.userName)}</span>
-          <span>${user.micOn ? "🎙️" : "🔇"} ${user.cameraOn ? "📹" : "🚫"}</span>
-        `;
-        participantsBox.appendChild(row);
-      });
-    }
-
-    async function startMedia() {
-      if (localStream) return localStream;
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setLocalPlaceholder("Unsupported browser. Try Chrome, Edge, or Firefox. Ancient browsers may retire now.");
-        throw new Error("getUserMedia not supported");
-      }
-
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            frameRate: { ideal: 30, max: 30 },
-            facingMode: "user"
-          },
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          }
-        });
-
-        activeStream = localStream;
-        addLocalTile(localStream);
-        return localStream;
-      } catch (error) {
-        console.error("Camera/mic failed:", error);
-        setLocalPlaceholder("Camera or microphone failed. Browser permissions are having a small emotional episode.");
-        throw error;
-      }
-    }
-
-    function createPeerConnection(remoteUser) {
-      const pc = new RTCPeerConnection({
-        iceServers: ICE_SERVERS
-      });
-
-      const remoteStream = new MediaStream();
-
-      peers.set(remoteUser.socketId, {
-        pc,
-        remoteStream,
-        userName: remoteUser.userName
-      });
-
-      if (activeStream) {
-        activeStream.getTracks().forEach(track => {
-          const sender = pc.addTrack(track, activeStream);
-
-          if (track.kind === "video") {
-            const params = sender.getParameters();
-
-            if (!params.encodings) {
-              params.encodings = [{}];
-            }
-
-            params.encodings[0].maxBitrate = 2500000;
-            params.encodings[0].maxFramerate = 30;
-
-            sender.setParameters(params).catch(error => {
-              console.warn("Could not set video quality parameters:", error);
-            });
-          }
-        });
-      }
-
-      pc.ontrack = event => {
-        event.streams[0].getTracks().forEach(track => {
-          remoteStream.addTrack(track);
-        });
-
-        addRemoteTile(remoteUser.socketId, remoteUser.userName, remoteStream);
-      };
-
-      pc.onicecandidate = event => {
-        if (event.candidate) {
-          socket.emit("ice-candidate", {
-            targetSocketId: remoteUser.socketId,
-            candidate: event.candidate
-          });
-        }
-      };
-
-      pc.onconnectionstatechange = () => {
-        const badge = document.getElementById(`badge-${remoteUser.socketId}`);
-
-        if (badge) {
-          badge.textContent = pc.connectionState;
-        }
-
-        if (["failed", "disconnected", "closed"].includes(pc.connectionState)) {
-          console.warn("Peer connection state:", pc.connectionState);
-        }
-      };
-
-      return pc;
-    }
-
-    async function callUser(remoteUser) {
-      const pc = createPeerConnection(remoteUser);
-      const offer = await pc.createOffer();
-
-      await pc.setLocalDescription(offer);
-
-      socket.emit("offer", {
-        targetSocketId: remoteUser.socketId,
-        offer
-      });
-    }
-
-    async function handleOffer({ fromSocketId, userName: remoteName, offer }) {
-      const pc = createPeerConnection({
-        socketId: fromSocketId,
-        userName: remoteName || "Guest"
-      });
-
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-
-      socket.emit("answer", {
-        targetSocketId: fromSocketId,
-        answer
-      });
-    }
-
-    async function handleAnswer({ fromSocketId, answer }) {
-      const peer = peers.get(fromSocketId);
-      if (!peer) return;
-
-      await peer.pc.setRemoteDescription(new RTCSessionDescription(answer));
-    }
-
-    async function handleIceCandidate({ fromSocketId, candidate }) {
-      const peer = peers.get(fromSocketId);
-      if (!peer) return;
-
-      try {
-        await peer.pc.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (error) {
-        console.warn("Could not add ICE candidate:", error);
-      }
-    }
-
-    async function startMeeting() {
-      if (started) return;
-
-      try {
-        userName = userNameInput.value.trim() || "Guest";
-        meetingName = meetingNameInput.value.trim() || "Personal Meeting";
-        roomId = ensureRoomInUrl();
-
-        await startMedia();
-
-        socket.emit("join-room", {
-          roomId,
-          userName
-        });
-
-        meetingTitle.textContent = "Room: " + meetingName;
-        joinModal.classList.remove("show");
-        started = true;
-        startTimer();
-
-        addMessage("System", "Meeting started. Somehow, civilization continues.");
-      } catch (error) {
-        console.error("Start meeting failed:", error);
-        addMessage("System", "Start failed. Check camera/mic permissions, then blame the browser responsibly.");
-      }
-    }
-
-    function emitMediaState() {
-      socket.emit("media-state", {
-        micOn,
-        cameraOn
-      });
-    }
-
-    function toggleMic() {
-      if (!localStream) return;
-
-      micOn = !micOn;
-
-      localStream.getAudioTracks().forEach(track => {
-        track.enabled = micOn;
-      });
-
-      micBtn.classList.toggle("active", micOn);
-      micBtn.querySelector("span:last-child").textContent = micOn ? "Mic" : "Muted";
-
-      emitMediaState();
-    }
-
-    function toggleCamera() {
-      if (!localStream) return;
-
-      cameraOn = !cameraOn;
-
-      localStream.getVideoTracks().forEach(track => {
-        track.enabled = cameraOn;
-      });
-
-      camBtn.classList.toggle("active", cameraOn);
-      camBtn.querySelector("span:last-child").textContent = cameraOn ? "Camera" : "Cam Off";
-
-      emitMediaState();
-    }
-
-    async function replaceVideoTrack(newTrack) {
-      for (const { pc } of peers.values()) {
-        const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
-        if (sender) {
-          await sender.replaceTrack(newTrack);
-        }
-      }
-    }
-
-    async function toggleScreenShare() {
-      if (!started || !localStream) return;
-
-      try {
-        if (!screenStream) {
-          screenStream = await navigator.mediaDevices.getDisplayMedia({
-            video: {
-              width: { ideal: 1920 },
-              height: { ideal: 1080 },
-              frameRate: { ideal: 30, max: 30 }
-            },
-            audio: true
-          });
-
-          const screenTrack = screenStream.getVideoTracks()[0];
-          await replaceVideoTrack(screenTrack);
-
-          activeStream = new MediaStream([
-            screenTrack,
-            ...localStream.getAudioTracks()
-          ]);
-
-          const localTile = document.getElementById("localTile");
-          if (localTile) localTile.classList.add("screen");
-
-          addLocalTile(activeStream);
-          screenBtn.classList.add("active");
-          screenBtn.querySelector("span:last-child").textContent = "Sharing";
-
-          screenTrack.onended = async () => {
-            await stopScreenShare();
-          };
-        } else {
-          await stopScreenShare();
-        }
-      } catch (error) {
-        console.warn("Screen share failed:", error);
-        addMessage("System", "Screen share failed. The browser declined your dramatic presentation.");
-      }
-    }
-
-    async function stopScreenShare() {
-      if (!screenStream) return;
-
-      screenStream.getTracks().forEach(track => track.stop());
-      screenStream = null;
-
-      const cameraTrack = localStream.getVideoTracks()[0];
-      if (cameraTrack) {
-        await replaceVideoTrack(cameraTrack);
-      }
-
-      activeStream = localStream;
-      addLocalTile(localStream);
-
-      const localTile = document.getElementById("localTile");
-      if (localTile) localTile.classList.remove("screen");
-
-      screenBtn.classList.remove("active");
-      screenBtn.querySelector("span:last-child").textContent = "Share";
-    }
-
-    function toggleChatOnMobile() {
-      const isSmall = window.matchMedia("(max-width: 980px)").matches;
-
-      if (isSmall) {
-        sidePanel.classList.toggle("mobile-open");
-      } else {
-        sidePanel.classList.toggle("hidden");
-      }
-    }
-
-    function openInvite() {
-      if (!roomId) {
-        roomId = ensureRoomInUrl();
-      }
-
-      const url = new URL(window.location.href);
-      url.searchParams.set("room", roomId);
-
-      inviteLink.value = url.toString();
-      inviteModal.classList.add("show");
-    }
-
-    async function copyInvite() {
-      const linkToCopy = inviteLink.value;
-
-      try {
-        await navigator.clipboard.writeText(linkToCopy);
-        copyInviteBtn.textContent = "Copied";
-        setTimeout(() => {
-          copyInviteBtn.textContent = "Copy Invite Link";
-        }, 1200);
-      } catch {
-        inviteLink.select();
-        document.execCommand("copy");
-        copyInviteBtn.textContent = "Copied";
-        setTimeout(() => {
-          copyInviteBtn.textContent = "Copy Invite Link";
-        }, 1200);
-      }
-    }
-
-    function toggleRecording() {
-      if (!activeStream) {
-        addMessage("System", "Start the meeting first. Recording empty darkness is not useful, usually.");
-        return;
-      }
-
-      if (recorder && recorder.state === "recording") {
-        recorder.stop();
-        recordBtn.classList.remove("active");
-        recordBtn.querySelector("span:last-child").textContent = "Record";
-        return;
-      }
-
-      recordedChunks = [];
-
-      try {
-        recorder = new MediaRecorder(activeStream);
-
-        recorder.ondataavailable = event => {
-          if (event.data.size > 0) {
-            recordedChunks.push(event.data);
-          }
-        };
-
-        recorder.onstop = () => {
-          const blob = new Blob(recordedChunks, { type: "video/webm" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `uboom-recording-${Date.now()}.webm`;
-          a.click();
-          URL.revokeObjectURL(url);
-        };
-
-        recorder.start();
-        recordBtn.classList.add("active");
-        recordBtn.querySelector("span:last-child").textContent = "Stop";
-      } catch (error) {
-        console.warn("Recording failed:", error);
-        addMessage("System", "Recording failed. The browser decided your masterpiece was too powerful.");
-      }
-    }
-
-    function leaveMeeting() {
-      for (const { pc } of peers.values()) {
-        pc.close();
-      }
-
-      peers.clear();
-
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-      }
-
-      if (screenStream) {
-        screenStream.getTracks().forEach(track => track.stop());
-      }
-
-      window.location.href = "/";
-    }
-
-    startMeetingBtn.addEventListener("click", startMeeting);
-    micBtn.addEventListener("click", toggleMic);
-    camBtn.addEventListener("click", toggleCamera);
-    screenBtn.addEventListener("click", toggleScreenShare);
-    recordBtn.addEventListener("click", toggleRecording);
-    chatBtn.addEventListener("click", toggleChatOnMobile);
-    inviteBtn.addEventListener("click", openInvite);
-    leaveBtn.addEventListener("click", leaveMeeting);
-    closeInviteBtn.addEventListener("click", () => inviteModal.classList.remove("show"));
-    copyInviteBtn.addEventListener("click", copyInvite);
-    closeChatBtn.addEventListener("click", () => sidePanel.classList.remove("mobile-open"));
-
-    chatForm.addEventListener("submit", event => {
-      event.preventDefault();
-
-      const text = chatInput.value.trim();
-      if (!text || !roomId) return;
-
-      socket.emit("chat-message", {
-        roomId,
-        text
-      });
-
-      chatInput.value = "";
-    });
-
-    socket.on("existing-users", async users => {
-      for (const remoteUser of users) {
-        await callUser(remoteUser);
-      }
-    });
-
-    socket.on("user-joined", remoteUser => {
-  addMessage("System", `${remoteUser.userName} joined. The room has gained another witness.`);
-});
-    socket.on("offer", data => {
-      handleOffer(data).catch(error => console.error("Offer error:", error));
-    });
-
-    socket.on("answer", data => {
-      handleAnswer(data).catch(error => console.error("Answer error:", error));
-    });
-
-    socket.on("ice-candidate", data => {
-      handleIceCandidate(data).catch(error => console.error("ICE error:", error));
-    });
-
-    socket.on("user-left", ({ socketId }) => {
-      const peer = peers.get(socketId);
-      if (peer) {
-        peer.pc.close();
-        peers.delete(socketId);
-      }
-
-      removeRemoteTile(socketId);
-      addMessage("System", "Someone left. The internet grows colder.");
-    });
-
-    socket.on("participants-updated", updateParticipants);
-
-    socket.on("media-state", ({ socketId, micOn, cameraOn }) => {
-      const label = document.getElementById(`label-${socketId}`);
-      const badge = document.getElementById(`badge-${socketId}`);
-
-      const peer = peers.get(socketId);
-      const name = peer?.userName || "Guest";
-
-      if (label) {
-        label.textContent = `${micOn ? "🎙️" : "🔇"} ${name}`;
-      }
-
-      if (badge) {
-        badge.textContent = cameraOn ? "Connected" : "Camera off";
-      }
-    });
-
-    socket.on("chat-message", ({ userName, text }) => {
-      addMessage(userName || "Guest", text);
-    });
-
-    window.addEventListener("load", () => {
-      const roomFromUrl = getRoomIdFromUrl();
-
-      if (roomFromUrl) {
-        roomId = roomFromUrl;
-        meetingTitle.textContent = "Room: invite";
-      } else {
-        meetingTitle.textContent = "Room: new";
-      }
-
-      addMessage("System", "Welcome to Uboom. Press Start Meeting and hope the browser behaves.");
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
