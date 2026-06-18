@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Callan Education — Kelajagingiz shu yerdan boshlanadi</title>
+  <meta name="description" content="Callan Education: ingliz, rus, arab tillari, xattotlik, IT kurslari va chet elda o‘qish bo‘yicha yordam.">
+  <style>
+    :root{
+      --green:#052f27;
+      --green2:#0a493b;
+      --gold:#f4bd47;
+      --cream:#fff9e9;
+      --white:#fff;
+      --ink:#10221e;
+      --muted:#64736f;
+      --shadow:0 24px 70px rgba(5,47,39,.17);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,Arial,sans-serif;
+      color:var(--ink);
+      background:var(--cream);
+      overflow-x:hidden;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input,select{font:inherit}
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 5vw;
+      background:rgba(255,249,233,.91);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(5,47,39,.1);
+    }
+
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-mark{
+      width:50px;height:50px;
+      display:grid;place-items:center;
+      border-radius:50%;
+      color:var(--gold);
+      background:linear-gradient(145deg,var(--green2),var(--green));
+      border:2px solid var(--gold);
+      font-size:25px;
+      box-shadow:0 10px 25px rgba(5,47,39,.23);
+    }
+    .brand strong{display:block;font-size:19px}
+    .brand small{display:block;color:var(--muted)}
+
+    nav{display:flex;gap:24px;font-weight:750}
+    nav a:hover{color:var(--green2)}
+
+    .nav-cta,.primary,.form-button{
+      padding:13px 20px;
+      border:0;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--gold),#ffe29a);
+      color:var(--green);
+      font-weight:900;
+      box-shadow:0 14px 30px rgba(244,189,71,.25);
+      cursor:pointer;
+    }
+
+    .hero{
+      min-height:720px;
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:45px;
+      align-items:center;
+      padding:70px 5vw;
+      background:
+        radial-gradient(circle at 80% 20%,rgba(244,189,71,.26),transparent 28%),
+        radial-gradient(circle at 5% 15%,rgba(10,73,59,.1),transparent 30%),
+        var(--cream);
+    }
+
+    .eyebrow,.kicker{
+      color:var(--green2);
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      max-width:850px;
+      margin:16px 0 22px;
+      font-size:clamp(45px,7vw,84px);
+      line-height:.94;
+      letter-spacing:-.05em;
+    }
+
+    h1 span{color:var(--green2)}
+    .hero-copy>p{
+      max-width:700px;
+      color:var(--muted);
+      font-size:19px;
+      line-height:1.7;
+    }
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0}
+    .secondary{
+      padding:13px 20px;
+      border-radius:999px;
+      background:var(--white);
+      border:1px solid rgba(5,47,39,.16);
+      color:var(--green);
+      font-weight:850;
+    }
+
+    .trust{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:32px;
+    }
+    .trust div{
+      min-width:145px;
+      padding:16px;
+      border-radius:20px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(5,47,39,.09);
+    }
+    .trust b{display:block;color:var(--green2);font-size:21px}
+    .trust span{font-size:12px;color:var(--muted)}
+
+    .hero-card{
+      position:relative;
+      min-height:520px;
+      overflow:hidden;
+      padding:38px;
+      border-radius:40px;
+      color:white;
+      background:linear-gradient(145deg,var(--green2),var(--green));
+      box-shadow:var(--shadow);
+    }
+
+    .phoenix{
+      width:190px;height:190px;
+      display:grid;place-items:center;
+      margin:12px auto 80px;
+      border-radius:50%;
+      border:2px solid var(--gold);
+      color:var(--gold);
+      font-size:88px;
+      background:radial-gradient(circle,rgba(244,189,71,.15),transparent 68%);
+    }
+
+    .hero-card h2{font-size:35px;margin:0 0 12px}
+    .hero-card p{color:#e9dcb7;line-height:1.6}
+    .orbit{
+      position:absolute;
+      width:360px;height:360px;
+      border:1px solid rgba(244,189,71,.25);
+      border-radius:50%;
+      top:-130px;right:-120px;
+    }
+
+    .strip{
+      display:flex;
+      justify-content:center;
+      gap:35px;
+      flex-wrap:wrap;
+      padding:25px 5vw;
+      color:var(--gold);
+      background:var(--green);
+      font-weight:850;
+    }
+
+    section{padding:90px 5vw}
+    .section-head{max-width:800px;margin-bottom:38px}
+    .section-head h2{
+      margin:9px 0 15px;
+      font-size:clamp(34px,5vw,60px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+    .section-head p{color:var(--muted);line-height:1.7}
+
+    .course-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .course{
+      min-height:285px;
+      padding:28px;
+      border-radius:30px;
+      background:var(--white);
+      border:1px solid rgba(5,47,39,.1);
+      box-shadow:0 15px 42px rgba(5,47,39,.07);
+      transition:.25s ease;
+    }
+    .course:hover{transform:translateY(-7px);box-shadow:var(--shadow)}
+    .course-icon{
+      width:58px;height:58px;
+      display:grid;place-items:center;
+      border-radius:18px;
+      background:var(--green);
+      color:var(--gold);
+      font-size:26px;
+    }
+    .course h3{font-size:24px;margin:22px 0 10px}
+    .course p{color:var(--muted);line-height:1.65}
+    .course a{display:inline-block;margin-top:10px;color:var(--green2);font-weight:900}
+
+    .method{
+      display:grid;
+      grid-template-columns:.9fr 1.1fr;
+      gap:45px;
+      align-items:center;
+      background:#fff;
+    }
+    .method h2{
+      font-size:clamp(35px,5vw,60px);
+      line-height:1;
+      margin:10px 0 20px;
+    }
+    .method p{color:var(--muted);line-height:1.7}
+
+    .steps{display:grid;gap:14px}
+    .step{
+      display:flex;
+      gap:17px;
+      align-items:center;
+      padding:19px;
+      border-radius:23px;
+      background:var(--cream);
+      border:1px solid rgba(5,47,39,.09);
+    }
+    .step b{
+      width:45px;height:45px;
+      flex:0 0 45px;
+      display:grid;place-items:center;
+      border-radius:50%;
+      background:var(--green);
+      color:var(--gold);
+    }
+    .step strong{display:block;margin-bottom:4px}
+    .step span{color:var(--muted);font-size:14px}
+
+    .study-abroad{
+      margin:35px 5vw;
+      padding:60px;
+      border-radius:38px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:35px;
+      align-items:center;
+      color:white;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      box-shadow:var(--shadow);
+    }
+    .study-abroad h2{font-size:clamp(32px,5vw,55px);margin:10px 0}
+    .study-abroad p{color:#d8e5df;line-height:1.7;max-width:700px}
+    .big-arrow{font-size:90px;color:var(--gold)}
+
+    .contact{
+      display:grid;
+      grid-template-columns:.9fr 1.1fr;
+      gap:40px;
+      align-items:start;
+    }
+
+    .contact h2{
+      font-size:clamp(35px,5vw,58px);
+      line-height:1;
+      margin:10px 0 18px;
+    }
+    .contact p{color:var(--muted);line-height:1.7}
+    .contact-list{display:grid;gap:13px;margin-top:25px}
+    .contact-list a,.contact-list div{
+      padding:16px 18px;
+      border-radius:18px;
+      background:#fff;
+      border:1px solid rgba(5,47,39,.1);
+      font-weight:750;
+    }
+
+    form{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+      padding:27px;
+      border-radius:30px;
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+    label{font-weight:800}
+    label span{display:block;margin-bottom:8px}
+    input,select{
+      width:100%;
+      padding:14px 15px;
+      border-radius:15px;
+      border:1px solid rgba(5,47,39,.18);
+      outline:none;
+      background:white;
+    }
+    input:focus,select:focus{border-color:var(--green2);box-shadow:0 0 0 4px rgba(10,73,59,.08)}
+    .full{grid-column:1/-1}
+    #status{margin:0;color:var(--green2);font-weight:800}
+
+    footer{
+      padding:38px 5vw 90px;
+      display:flex;
+      justify-content:space-between;
+      gap:30px;
+      flex-wrap:wrap;
+      background:#031d18;
+      color:white;
+    }
+    footer p{color:#b9cec7}
+
+    .floating{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      z-index:60;
+      padding:14px 19px;
+      border-radius:999px;
+      color:var(--green);
+      background:var(--gold);
+      box-shadow:0 15px 35px rgba(0,0,0,.23);
+      font-weight:900;
+    }
+
+    @media(max-width:950px){
+      nav,.nav-cta{display:none}
+      .hero,.method,.contact{grid-template-columns:1fr}
+      .course-grid{grid-template-columns:1fr 1fr}
+      .hero{min-height:auto}
+      .hero-card{min-height:420px}
+    }
+
+    @media(max-width:600px){
+      section{padding:65px 5vw}
+      .course-grid{grid-template-columns:1fr}
+      .study-abroad{margin:20px 4vw;padding:35px 25px;grid-template-columns:1fr}
+      .big-arrow{display:none}
+      form{grid-template-columns:1fr}
+      h1{font-size:47px}
+      .brand small{display:none}
+      .floating{left:17px;right:17px;text-align:center}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="#home">
+    <span class="brand-mark">♛</span>
+    <span>
+      <strong>Callan Education</strong>
+      <small>Education Group</small>
+    </span>
+  </a>
+
+  <nav>
+    <a href="#courses">Kurslar</a>
+    <a href="#method">Metodika</a>
+    <a href="#abroad">Chet elda o‘qish</a>
+    <a href="#contact">Aloqa</a>
+  </nav>
+
+  <a class="nav-cta" href="#contact">Sinov darsiga yozilish</a>
+</header>
+
+<main id="home">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Qo‘qondagi zamonaviy ta’lim markazi</div>
+      <h1>Bilim oling. <span>Imkoniyatlaringizni kengaytiring.</span></h1>
+      <p>
+        Ingliz, rus va arab tillari, xattotlik, IT kurslari hamda chet elda
+        o‘qish bo‘yicha yo‘nalishlar — barchasi Callan Education’da.
+      </p>
+
+      <div class="actions">
+        <a class="primary" href="#contact">Bepul konsultatsiya</a>
+        <a class="secondary" href="https://www.instagram.com/callan.education/" target="_blank">Instagramni ko‘rish</a>
+      </div>
+
+      <div class="trust">
+        <div><b>4+</b><span>asosiy ta’lim yo‘nalishi</span></div>
+        <div><b>6.8K+</b><span>Instagram kuzatuvchilari</span></div>
+        <div><b>Qo‘qon</b><span>zamonaviy o‘quv muhiti</span></div>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="orbit"></div>
+      <div class="phoenix">♜</div>
+      <h2>Kelajagingizni bugundan quring</h2>
+      <p>
+        Kuchli ustozlar, amaliy mashg‘ulotlar va maqsadingizga mos
+        yo‘nalish bilan rivojlanishni boshlang.
+      </p>
+    </div>
+  </section>
+
+  <div class="strip">
+    <span>🇬🇧 Ingliz tili</span>
+    <span>🇷🇺 Rus tili</span>
+    <span>🇸🇦 Arab tili va xattotlik</span>
+    <span>💻 IT kurslari</span>
+  </div>
+
+  <section id="courses">
+    <div class="section-head">
+      <div class="kicker">Kurslar</div>
+      <h2>Maqsadingizga mos yo‘nalishni tanlang</h2>
+      <p>
+        Har bir kurs nazariya bilan cheklanmaydi: bilimni amalda ishlatish,
+        muntazam mashq va aniq natijaga e’tibor qaratiladi.
+      </p>
+    </div>
+
+    <div class="course-grid">
+      <article class="course">
+        <div class="course-icon">A</div>
+        <h3>Ingliz tili</h3>
+        <p>Boshlang‘ich darajadan erkin muloqot va xalqaro imkoniyatlargacha.</p>
+        <a href="#contact">Batafsil →</a>
+      </article>
+
+      <article class="course">
+        <div class="course-icon">Я</div>
+        <h3>Rus tili</h3>
+        <p>Grammatika, lug‘at, talaffuz va kundalik suhbat ko‘nikmalari.</p>
+        <a href="#contact">Batafsil →</a>
+      </article>
+
+      <article class="course">
+        <div class="course-icon">ع</div>
+        <h3>Arab tili va xattotlik</h3>
+        <p>Arab yozuvi, o‘qish, til asoslari va nafis xattotlik san’ati.</p>
+        <a href="#contact">Batafsil →</a>
+      </article>
+
+      <article class="course">
+        <div class="course-icon">⌘</div>
+        <h3>IT kurslari</h3>
+        <p>Zamonaviy raqamli ko‘nikmalar va kelajak kasblariga mustahkam kirish.</p>
+        <a href="#contact">Batafsil →</a>
+      </article>
+    </div>
+  </section>
+
+  <section id="method" class="method">
+    <div>
+      <div class="kicker">Ta’lim jarayoni</div>
+      <h2>Oddiy, tushunarli va natijaga yo‘naltirilgan</h2>
+      <p>
+        O‘quvchi o‘z maqsadiga mos yo‘nalish va guruhga joylashtiriladi.
+        Darslarda tushuntirish, mashq, muloqot va muntazam nazorat birga olib boriladi.
+      </p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <b>1</b>
+        <div><strong>Konsultatsiya</strong><span>Maqsad va ehtiyojlar aniqlanadi.</span></div>
+      </div>
+      <div class="step">
+        <b>2</b>
+        <div><strong>Darajani aniqlash</strong><span>O‘quvchining hozirgi bilimi baholanadi.</span></div>
+      </div>
+      <div class="step">
+        <b>3</b>
+        <div><strong>Mos guruhni tanlash</strong><span>Daraja va jadvalga mos guruh tavsiya qilinadi.</span></div>
+      </div>
+      <div class="step">
+        <b>4</b>
+        <div><strong>Natija sari harakat</strong><span>Dars, amaliyot va nazorat boshlanadi.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="abroad" class="study-abroad">
+    <div>
+      <div class="kicker" style="color:var(--gold)">Xalqaro imkoniyatlar</div>
+      <h2>Chet elda o‘qish rejangiz bormi?</h2>
+      <p>
+        Callan Education sizga ta’lim yo‘nalishini tanlash va xalqaro
+        imkoniyatlar bo‘yicha kerakli ma’lumotlarni olishda yordam beradi.
+      </p>
+      <div class="actions">
+        <a class="primary" href="https://t.me/callan_uz" target="_blank">@callan_uz bilan bog‘lanish</a>
+      </div>
+    </div>
+    <div class="big-arrow">↗</div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div>
+      <div class="kicker">Bog‘lanish</div>
+      <h2>Birinchi qadamni bugun qo‘ying</h2>
+      <p>
+        Kurs, jadval va guruhlar haqida ma’lumot olish uchun Callan Education
+        bilan bog‘laning.
+      </p>
+
+      <div class="contact-list">
+        <a href="tel:+998911500016">📞 +998 91 150 00 16</a>
+        <a href="https://t.me/callaneducation_official" target="_blank">✈️ Telegram kanal</a>
+        <a href="https://www.instagram.com/callan.education/" target="_blank">📷 @callan.education</a>
+        <div>📍 Farg‘ona viloyati, Qo‘qon shahri, Hamza ko‘chasi, 12-uy</div>
+      </div>
+    </div>
+
+    <form id="leadForm">
+      <label>
+        <span>Ismingiz</span>
+        <input name="name" required placeholder="Ismingiz">
+      </label>
+
+      <label>
+        <span>Telefon raqamingiz</span>
+        <input name="phone" required placeholder="+998 90 123 45 67">
+      </label>
+
+      <label class="full">
+        <span>Qiziqqan kursingiz</span>
+        <select name="course">
+          <option>Ingliz tili</option>
+          <option>Rus tili</option>
+          <option>Arab tili va xattotlik</option>
+          <option>IT kurslari</option>
+          <option>Chet elda o‘qish</option>
+        </select>
+      </label>
+
+      <button class="form-button full" type="submit">Ariza qoldirish</button>
+      <p class="full" id="status"></p>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <div>
+    <strong>Callan Education Group</strong>
+    <p>Bilim. Rivojlanish. Yangi imkoniyatlar.</p>
+  </div>
+  <div>
+    <strong>Qo‘qon shahri</strong>
+    <p>Hamza ko‘chasi, 12-uy</p>
+  </div>
+</footer>
+
+<a class="floating" href="tel:+998911500016">📞 Bog‘lanish</a>
+
+<script>
+  const form = document.getElementById("leadForm");
+  const status = document.getElementById("status");
+
+  form.addEventListener("submit", function(event){
+    event.preventDefault();
+
+    const data = new FormData(form);
+    const name = data.get("name");
+    const phone = data.get("phone");
+    const course = data.get("course");
+
+    const message =
+      "Assalomu alaykum! Callan Education kursiga yozilmoqchiman.%0A%0A" +
+      "Ism: " + encodeURIComponent(name) + "%0A" +
+      "Telefon: " + encodeURIComponent(phone) + "%0A" +
+      "Kurs: " + encodeURIComponent(course);
+
+    status.innerHTML =
+      '✅ Ma’lumot tayyor. <a href="https://t.me/callaneducation_official" target="_blank" style="color:#0a493b">Telegram orqali yuboring →</a>';
+
+    form.reset();
+  });
+</script>
+
+</body>
+</html>
