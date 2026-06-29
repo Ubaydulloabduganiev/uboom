@@ -50,7 +50,12 @@ const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.g
       }
     ];
 
-    const socket = io();
+    const socket = io({
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionAttempts: 8,
+      reconnectionDelay: 700
+    });
 
     const videoGrid = document.getElementById("videoGrid");
     const joinModal = document.getElementById("joinModal");
@@ -98,6 +103,32 @@ const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.g
     let timerInterval = null;
 
     const peers = new Map();
+    const pendingIceCandidates = new Map();
+
+    function queueIceCandidate(socketId, candidate) {
+      if (!pendingIceCandidates.has(socketId)) {
+        pendingIceCandidates.set(socketId, []);
+      }
+
+      pendingIceCandidates.get(socketId).push(candidate);
+    }
+
+    async function flushIceCandidates(socketId) {
+      const peer = peers.get(socketId);
+      const queued = pendingIceCandidates.get(socketId) || [];
+
+      if (!peer || !peer.pc.remoteDescription) return;
+
+      for (const candidate of queued) {
+        try {
+          await peer.pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (error) {
+          console.warn("Queued ICE candidate failed:", error);
+        }
+      }
+
+      pendingIceCandidates.delete(socketId);
+    }
 
     function escapeHTML(value) {
       return String(value).replace(/[&<>"']/g, char => ({
@@ -307,8 +338,12 @@ const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.g
     }
 
     function createPeerConnection(remoteUser) {
+      const existing = peers.get(remoteUser.socketId);
+      if (existing) return existing.pc;
+
       const pc = new RTCPeerConnection({
-        iceServers: ICE_SERVERS
+        iceServers: ICE_SERVERS,
+        iceCandidatePoolSize: 10
       });
 
       const remoteStream = new MediaStream();
@@ -369,12 +404,38 @@ const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.g
         }
       };
 
+      pc.oniceconnectionstatechange = () => {
+        console.log("ICE state with", remoteUser.socketId, pc.iceConnectionState);
+
+        const badge = document.getElementById(`badge-${remoteUser.socketId}`);
+        if (badge) {
+          badge.textContent = "ICE: " + pc.iceConnectionState;
+        }
+
+        if (["failed", "disconnected"].includes(pc.iceConnectionState)) {
+          addMessage("System", "Connection failed. Try refreshing, switching network, or using mobile data. The router has chosen violence.");
+        }
+      };
+
+      pc.onicegatheringstatechange = () => {
+        console.log("ICE gathering with", remoteUser.socketId, pc.iceGatheringState);
+      };
+
+      pc.onsignalingstatechange = () => {
+        console.log("Signaling state with", remoteUser.socketId, pc.signalingState);
+      };
+
       return pc;
     }
 
     async function callUser(remoteUser) {
+      if (!remoteUser || !remoteUser.socketId || remoteUser.socketId === socket.id) return;
+
       const pc = createPeerConnection(remoteUser);
-      const offer = await pc.createOffer();
+      const offer = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true
+      });
 
       await pc.setLocalDescription(offer);
 
@@ -391,6 +452,7 @@ const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.g
       });
 
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      await flushIceCandidates(fromSocketId);
 
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
@@ -405,12 +467,19 @@ const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.g
       const peer = peers.get(fromSocketId);
       if (!peer) return;
 
-      await peer.pc.setRemoteDescription(new RTCSessionDescription(answer));
+      if (!peer.pc.remoteDescription) {
+        await peer.pc.setRemoteDescription(new RTCSessionDescription(answer));
+        await flushIceCandidates(fromSocketId);
+      }
     }
 
     async function handleIceCandidate({ fromSocketId, candidate }) {
       const peer = peers.get(fromSocketId);
-      if (!peer) return;
+
+      if (!peer || !peer.pc.remoteDescription) {
+        queueIceCandidate(fromSocketId, candidate);
+        return;
+      }
 
       try {
         await peer.pc.addIceCandidate(new RTCIceCandidate(candidate));
@@ -682,9 +751,28 @@ const roomLang=document.getElementById('roomLang');roomLang.value=localStorage.g
       chatInput.value = "";
     });
 
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      addMessage("System", "Signaling server connected.");
+    });
+
+    socket.on("connect_error", error => {
+      console.error("Socket connection error:", error);
+      addMessage("System", "Could not connect to the signaling server. Backend may be asleep, dead, or having a Render free-plan moment.");
+    });
+
+    socket.on("disconnect", reason => {
+      console.warn("Socket disconnected:", reason);
+      addMessage("System", "Signaling server disconnected: " + reason);
+    });
+
     socket.on("existing-users", async users => {
       for (const remoteUser of users) {
-        await callUser(remoteUser);
+        try {
+          await callUser(remoteUser);
+        } catch (error) {
+          console.error("Call user failed:", error);
+        }
       }
     });
 
