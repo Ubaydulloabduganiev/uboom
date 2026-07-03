@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>U.A. Edition — CDI Reading Practice</title>
+  <style>
+    :root{
+      --bg:#eef2f7;
+      --panel:#ffffff;
+      --panel-soft:#f7f9fc;
+      --text:#1d2a39;
+      --muted:#5f7083;
+      --line:#d8e0ea;
+      --accent:#2f5ea6;
+      --accent-soft:#e9f0fb;
+      --success:#176b43;
+      --success-soft:#e8f5ee;
+      --danger:#b32d2e;
+      --danger-soft:#fdecec;
+      --warning:#8a6316;
+      --warning-soft:#fff6db;
+      --mark:#fff1a8;
+      --evidence:#ffe49f;
+      --font-scale: 1;
+      --shadow:0 10px 25px rgba(26,39,59,0.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      line-height:1.55;
+      font-size: calc(16px * var(--font-scale));
+    }
+    .app{
+      max-width:1600px;
+      margin:0 auto;
+      padding:18px;
+    }
+    .topbar{
+      background:rgba(255,255,255,0.88);
+      backdrop-filter: blur(14px);
+      border:1px solid rgba(255,255,255,0.8);
+      box-shadow:var(--shadow);
+      border-radius:22px;
+      padding:16px 18px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      position:sticky;
+      top:10px;
+      z-index:30;
+    }
+    .brand h1{
+      margin:0;
+      font-size:1.2rem;
+      font-weight:700;
+      letter-spacing:0.02em;
+    }
+    .brand .sub{
+      font-size:0.88rem;
+      color:var(--muted);
+      margin-top:2px;
+    }
+    .top-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    button, .chip, select, input[type="text"]{
+      font:inherit;
+    }
+    button{
+      border:none;
+      background:var(--panel);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:14px;
+      box-shadow:0 2px 8px rgba(38,53,77,0.06);
+      cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+      border:1px solid var(--line);
+    }
+    button:hover{transform:translateY(-1px); box-shadow:0 8px 18px rgba(38,53,77,0.08)}
+    button.primary{background:var(--accent); color:#fff; border-color:transparent}
+    button.ghost{background:transparent}
+    button.danger{background:var(--danger); color:#fff; border-color:transparent}
+    button.success{background:var(--success); color:#fff; border-color:transparent}
+    button:disabled{opacity:.55; cursor:not-allowed; transform:none; box-shadow:none}
+    .timer{
+      padding:10px 16px;
+      border-radius:16px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:700;
+      letter-spacing:.03em;
+      border:1px solid #d9e5fb;
+      min-width:122px;
+      text-align:center;
+    }
+    .timer.warning{background:var(--warning-soft); color:var(--warning); border-color:#f1deb0}
+    .timer.danger{background:var(--danger-soft); color:var(--danger); border-color:#f4caca}
+    .main{
+      display:grid;
+      grid-template-columns: minmax(300px, 1.1fr) minmax(300px, 0.95fr);
+      gap:18px;
+      margin-top:18px;
+      align-items:start;
+    }
+    .panel{
+      background:var(--panel);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,0.85);
+      overflow:hidden;
+    }
+    .panel-head{
+      padding:18px 22px 10px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,249,252,0.98));
+    }
+    .panel-body{padding:20px 22px 24px}
+    .passage-title{
+      margin:0 0 6px;
+      font-size:1.55rem;
+      line-height:1.25;
+    }
+    .byline{
+      color:var(--muted);
+      font-size:.95rem;
+      margin-bottom:10px;
+    }
+    .intro-note{
+      background:var(--panel-soft);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 14px;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+    .passage-controls{
+      display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 10px;
+    }
+    .passage{
+      font-size:1rem;
+      user-select:text;
+      -webkit-user-select:text;
+    }
+    .passage p{margin:0 0 18px}
+    .paragraph-label{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:700;
+      margin-right:8px;
+      vertical-align:top;
+      flex:0 0 auto;
+    }
+    .para-wrap{
+      padding:10px 12px;
+      border-radius:16px;
+      transition:background .2s ease, outline-color .2s ease;
+    }
+    .para-wrap.active-evidence{
+      background:#fffaf0;
+      outline:2px solid #ffd983;
+      scroll-margin-top:110px;
+    }
+    mark.user-highlight{
+      background:var(--mark);
+      padding:0 .08em;
+      border-radius:.2em;
+    }
+    .evidence-highlight{
+      background:var(--evidence);
+      padding:.06em .08em;
+      border-radius:.18em;
+      box-shadow:0 0 0 1px rgba(220,174,48,.18);
+    }
+    .vocab-box{
+      display:none;
+      background:var(--panel-soft);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      margin-top:12px;
+    }
+    .vocab-box.active{display:block}
+    .vocab-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px}
+    .vocab-item{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+    }
+    .vocab-item strong{display:block; margin-bottom:4px}
+    .questions-header{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .small{
+      font-size:.9rem;
+      color:var(--muted);
+    }
+    .nav-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(42px,1fr));
+      gap:8px;
+      margin-top:14px;
+    }
+    .nav-btn{
+      height:42px;
+      padding:0;
+      font-weight:700;
+      border-radius:12px;
+      background:#fff;
+    }
+    .nav-btn.answered{background:var(--accent-soft); color:var(--accent); border-color:#d6e4fe}
+    .nav-btn.correct{background:var(--success-soft); color:var(--success); border-color:#cde7d7}
+    .nav-btn.incorrect{background:var(--danger-soft); color:var(--danger); border-color:#f1caca}
+    .question-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      margin-top:14px;
+      scroll-margin-top:96px;
+    }
+    .question-card h3{
+      margin:0 0 10px;
+      font-size:1rem;
+      line-height:1.35;
+    }
+    .question-meta{
+      font-size:.85rem;
+      color:var(--muted);
+      margin-bottom:10px;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+    .stem{margin-bottom:10px}
+    .option-list{display:grid; gap:8px}
+    .option{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:11px 12px;
+      background:#fff;
+    }
+    .option input{margin-top:3px}
+    .dropdown-row, .text-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px}
+    select, input[type="text"]{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      min-width:220px;
+    }
+    .feedback{
+      margin-top:12px;
+      padding:12px 13px;
+      border-radius:14px;
+      display:none;
+      border:1px solid var(--line);
+      background:var(--panel-soft);
+    }
+    .feedback.show{display:block}
+    .feedback.correct{background:var(--success-soft); border-color:#cfe7d8}
+    .feedback.incorrect{background:var(--danger-soft); border-color:#f0cdcd}
+    .feedback .label{
+      font-weight:700; display:block; margin-bottom:6px;
+    }
+    .feedback .evidence-meta{margin-top:8px; color:var(--muted); font-size:.92rem}
+    .summary-strip{
+      display:grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap:10px;
+      margin-top:16px;
+    }
+    .summary-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+    }
+    .summary-card .k{font-size:.82rem; color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+    .summary-card .v{font-size:1.25rem; font-weight:700; margin-top:3px}
+    .actions-bottom{
+      display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;
+    }
+    .teacher-panel{
+      display:none;
+      margin-top:14px;
+      background:var(--panel-soft);
+      border:1px dashed var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+    .teacher-panel.active{display:block}
+    .teacher-panel ul{margin:8px 0 0 18px; padding:0}
+    .teacher-panel li{margin-bottom:8px}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--panel-soft);
+      color:var(--muted);
+      border:1px solid var(--line);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:.9rem;
+    }
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      display:none;
+      background:rgba(10,18,31,0.45);
+      backdrop-filter: blur(8px);
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:40;
+    }
+    .modal-backdrop.show{display:flex}
+    .modal{
+      width:min(680px,100%);
+      background:#fff;
+      border-radius:24px;
+      box-shadow:0 25px 50px rgba(0,0,0,.18);
+      padding:22px;
+      border:1px solid rgba(255,255,255,0.9);
+    }
+    .modal h2{margin:0 0 6px; font-size:1.4rem}
+    .modal .sub{color:var(--muted); margin-bottom:14px}
+    .score-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:12px 0 14px}
+    .score-grid .box{background:var(--panel-soft); border:1px solid var(--line); border-radius:16px; padding:14px}
+    .score-grid .box .big{font-size:1.4rem; font-weight:800}
+    .score-grid .box .small{margin-top:4px}
+    .sarcasm{
+      background:#f4f7fb;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 14px;
+      font-style:italic;
+    }
+    .footer-note{margin-top:10px; color:var(--muted); font-size:.92rem}
+    .muted{color:var(--muted)}
+    .hidden{display:none !important}
+    @media (max-width: 1020px){
+      .main{grid-template-columns:1fr}
+    }
+    @media (max-width: 720px){
+      .app{padding:12px}
+      .panel-head,.panel-body{padding-left:16px; padding-right:16px}
+      .topbar{top:6px; border-radius:20px}
+      .score-grid,.summary-strip{grid-template-columns:1fr}
+      .top-actions{justify-content:flex-start}
+      select,input[type="text"]{min-width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>U.A. Edition — CDI Academic Reading</h1>
+        <div class="sub">Passage 3 Practice • AI & Society • Strict 30-minute mode</div>
+      </div>
+      <div class="top-actions">
+        <div id="timer" class="timer">30:00</div>
+        <button id="fontDownBtn" title="Decrease font size">A−</button>
+        <button id="fontUpBtn" title="Increase font size">A+</button>
+        <button id="fullscreenBtn">Full Screen</button>
+        <button id="vocabBtn">Vocabulary Support</button>
+        <button id="teacherBtn">Teacher Mode</button>
+        <button id="submitBtn" class="primary">Submit</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <section class="panel">
+        <div class="panel-head">
+          <h2 class="passage-title">The Social Consequences of Artificial Intelligence</h2>
+          <div class="byline">Adapted from an article by <strong>Prof. Dr. Aytül Erçil</strong> — Member of the Swiss Innovation Valley advisory board and the joint scientific and industrial Advisory Board of the European Machine Vision Association; published in <em>AI Horizon Journal</em> for the AI Ethics &amp; Integrity International Association.</div>
+          <div class="intro-note">
+            Read the passage and answer Questions 1–13. You may copy text, select text, and use the highlight tool. In exam mode, feedback appears only after submission. The timer starts immediately, because life is cruel and IELTS agrees.
+          </div>
+          <div class="passage-controls">
+            <button id="highlightBtn">Highlight Selection</button>
+            <button id="clearHighlightsBtn">Clear Highlights</button>
+            <span class="pill">Questions: 13</span>
+            <span class="pill">Types: Matching Headings • T/F/NG • MCQ • Sentence Completion</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="passage" class="passage"></div>
+
+          <div id="vocabBox" class="vocab-box">
+            <strong>Vocabulary Support</strong>
+            <div class="small" style="margin:4px 0 10px;">This optional support mode is for learning, not for pretending the real exam will babysit you.</div>
+            <div class="vocab-grid">
+              <div class="vocab-item"><strong>genomic</strong><span>relating to the complete set of genes in an organism</span></div>
+              <div class="vocab-item"><strong>streamline</strong><span>to make a process more efficient or effective</span></div>
+              <div class="vocab-item"><strong>displace</strong><span>to force something or someone out of a position</span></div>
+              <div class="vocab-item"><strong>marginalized</strong><span>socially excluded or pushed to the edge of society</span></div>
+              <div class="vocab-item"><strong>consent</strong><span>permission or agreement</span></div>
+              <div class="vocab-item"><strong>autonomously</strong><span>independently, without direct human control</span></div>
+              <div class="vocab-item"><strong>oversight</strong><span>supervision or official monitoring</span></div>
+              <div class="vocab-item"><strong>interdisciplinary</strong><span>involving two or more academic subjects together</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="questions-header">
+            <div>
+              <h2 style="margin:0 0 4px; font-size:1.25rem;">Questions 1–13</h2>
+              <div class="small">Choose the correct answers according to the passage.</div>
+            </div>
+            <div class="small">Teacher password required for the answer key.</div>
+          </div>
+
+          <div class="summary-strip">
+            <div class="summary-card"><div class="k">Answered</div><div id="answeredCount" class="v">0 / 13</div></div>
+            <div class="summary-card"><div class="k">Estimated Band</div><div id="bandPreview" class="v">—</div></div>
+            <div class="summary-card"><div class="k">Mode</div><div id="modeLabel" class="v">Exam</div></div>
+          </div>
+
+          <div id="navGrid" class="nav-grid"></div>
+          <div id="teacherPanel" class="teacher-panel"></div>
+        </div>
+        <div class="panel-body">
+          <div id="questions"></div>
+          <div class="actions-bottom">
+            <button id="reviewBtn" class="success hidden">Review Incorrect Only</button>
+            <button id="showAllBtn" class="ghost hidden">Show All Questions</button>
+            <button id="resetBtn" class="danger">Reset Test</button>
+          </div>
+          <div class="footer-note">Auto-submit is enabled when the timer reaches zero. No pause button. No mercy. Very academic.</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="resultModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Submission Complete</h2>
+      <div class="sub">Your answers have been checked. Now comes the sacred ritual of consequences.</div>
+      <div class="score-grid">
+        <div class="box"><div id="scoreBig" class="big">0 / 13</div><div class="small">Raw Score</div></div>
+        <div class="box"><div id="bandBig" class="big">Band —</div><div class="small">Estimated IELTS Band</div></div>
+        <div class="box"><div id="timeBig" class="big">30:00</div><div class="small">Time Used</div></div>
+      </div>
+      <div id="sarcasmBox" class="sarcasm"></div>
+      <div class="footer-note">Use the question feedback panels and the “Show Evidence” buttons to review the exact supporting sentences in the passage.</div>
+      <div class="actions-bottom">
+        <button id="closeModalBtn" class="primary">Continue Review</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TEACHER_PASSWORD = 'IELTS fukcs';
+    const TOTAL_SECONDS = 30 * 60;
+    let timeLeft = TOTAL_SECONDS;
+    let timerInterval = null;
+    let submitted = false;
+    let teacherMode = false;
+    let reviewMode = false;
+    let fontScale = 1;
+
+    const paragraphs = [
+      { id:'A', html:`Artificial intelligence (AI) has developed rapidly in recent years and now influences many areas of daily life, from business operations to the ways in which individuals interact with digital tools. It includes technologies such as machine learning, natural language processing and computer vision. <strong>It is no longer adequate to view AI as merely a technical innovation; it is also reshaping economic, social and cultural life.</strong> For that reason, examining its social consequences has become increasingly important.` },
+      { id:'B', html:`Some of AI’s most visible benefits appear in healthcare and education. AI-assisted diagnostic systems can examine medical images and genomic information with high accuracy, allowing earlier diagnosis and more personalised treatment. In addition, chatbots can respond to routine patient questions and reduce pressure on healthcare providers. In education, adaptive systems analyse learning behaviour, identify areas of difficulty and recommend suitable resources. At the same time, the automation of administrative work may allow teachers to devote more attention to instruction itself.` },
+      { id:'C', html:`The business sector also benefits from AI through greater efficiency and productivity. <strong>By automating routine operations, AI enables employees to concentrate on more strategic work</strong> and helps organisations distribute resources more effectively. It can improve supply chains, support customer service and shape personalised marketing on e-commerce platforms. Beyond commerce, AI-supported translation tools reduce language barriers, while online community systems connect people with similar interests across geographical distance. In some contexts, crime prediction models and surveillance systems are also seen as tools for improving public safety.` },
+      { id:'D', html:`However, the spread of AI has also produced serious concerns. One of the most frequently discussed is job displacement through automation. Workers in manufacturing, retail and customer service may be particularly vulnerable when machines become capable of carrying out tasks once performed by humans. A McKinsey report predicts that <strong>by 2030, automation could displace as many as 800 million jobs</strong>. Although new occupations may emerge, people who cannot access retraining may be left at a severe disadvantage, and existing inequalities may deepen.` },
+      { id:'E', html:`Another major concern is bias. AI systems can absorb and intensify patterns already present in their training data, leading to unfair outcomes in hiring, policing and credit assessment. <strong>Facial recognition technology, for example, has often been found to be less accurate for people with darker skin tones</strong>, which raises particular concerns about its use in policing and surveillance. Privacy is equally significant. Large-scale data collection can occur without individuals fully understanding how their information is gathered, analysed or reused. Data breaches and cyberattacks increase these risks, while deepfake technology, despite its legitimate uses, introduces further ethical challenges.` },
+      { id:'F', html:`There are also psychological and societal risks associated with overdependence on AI. If people begin to accept algorithmic recommendations without questioning them, critical thinking may weaken and human judgement may be undervalued. Heavy reliance on AI-assisted devices may also contribute to social isolation and excessive screen time. These problems make ethical governance essential. Transparent rules, regular audits and greater public understanding are necessary if AI is to be developed responsibly. Such concerns become even sharper with agentic AI, which is designed to operate autonomously, adjust its behaviour and pursue goals with reduced human input. While useful in fields such as robotics and autonomous transport, <strong>independent decision-making can also produce unintended consequences</strong>.` },
+      { id:'G', html:`As AI continues to evolve, societies will need adaptation rather than simple resistance. Education systems should strengthen <strong>critical thinking, digital literacy and interdisciplinary education</strong> so that future generations can engage with AI more responsibly. Governments and policymakers should also establish ethical oversight, create retraining programmes for workers affected by automation and encourage organisations to prioritise fairness. Above all, collaboration among government, industry, academia and the public is vital if the benefits of AI are to be shared more widely than its harms.` }
+    ];
+
+    const headingOptions = [
+      {value:'i', text:'AI and the need for public oversight'},
+      {value:'ii', text:'Bias, privacy and misuse of data'},
+      {value:'iii', text:'AI as a force that reaches beyond technology'},
+      {value:'iv', text:'Economic gains and social convenience'},
+      {value:'v', text:'Health and education as early beneficiaries'},
+      {value:'vi', text:'The displacement of workers by automation'},
+      {value:'vii', text:'Overdependence and autonomous decision-making'},
+      {value:'viii', text:'A blueprint for social adaptation'}
+    ];
+
+    const questions = [
+      {
+        number:1,
+        type:'matching',
+        section:'Questions 1–4',
+        prompt:'Choose the correct heading for Paragraph A from the list of headings below.',
+        paragraph:'A',
+        answer:'iii',
+        evidence:'It is no longer adequate to view AI as merely a technical innovation; it is also reshaping economic, social and cultural life.',
+        explanation:'The correct heading is “AI as a force that reaches beyond technology” because Paragraph A introduces AI as something that affects economic, social and cultural life, not just technical systems. Other headings focus on specific domains such as healthcare, business, or oversight, which are discussed later rather than introduced here.'
+      },
+      {
+        number:2,
+        type:'matching',
+        section:'Questions 1–4',
+        prompt:'Choose the correct heading for Paragraph B from the list of headings below.',
+        paragraph:'B',
+        answer:'v',
+        evidence:'Some of AI’s most visible benefits appear in healthcare and education.',
+        explanation:'The correct heading is “Health and education as early beneficiaries” because the entire paragraph explains how AI improves diagnosis, patient communication, adaptive learning and classroom administration. Other headings do not fit because they focus on business, job loss or ethical concerns rather than these two sectors.'
+      },
+      {
+        number:3,
+        type:'matching',
+        section:'Questions 1–4',
+        prompt:'Choose the correct heading for Paragraph C from the list of headings below.',
+        paragraph:'C',
+        answer:'iv',
+        evidence:'By automating routine operations, AI enables employees to concentrate on more strategic work and helps organisations distribute resources more effectively.',
+        explanation:'The correct heading is “Economic gains and social convenience” because Paragraph C discusses efficiency in business, better customer experience, translation tools, community-building and even public safety. The distractors are too narrow or refer to problems rather than the mainly beneficial functions described here.'
+      },
+      {
+        number:4,
+        type:'matching',
+        section:'Questions 1–4',
+        prompt:'Choose the correct heading for Paragraph D from the list of headings below.',
+        paragraph:'D',
+        answer:'vi',
+        evidence:'One of the most frequently discussed is job displacement through automation.',
+        explanation:'The correct heading is “The displacement of workers by automation” because the paragraph centres on employment loss, vulnerable sectors and the possibility that 800 million jobs could be displaced. None of the other headings capture this labour-market focus.'
+      },
+      {
+        number:5,
+        type:'tfng',
+        section:'Questions 5–8',
+        prompt:'The writer suggests that AI should be seen only as a technical development.',
+        answer:'false',
+        evidence:'It is no longer adequate to view AI as merely a technical innovation; it is also reshaping economic, social and cultural life.',
+        paragraph:'A',
+        explanation:'The answer is FALSE because the passage explicitly rejects the idea that AI is only a technical matter. The statement contradicts the text. This is not “Not Given” because the writer addresses the point directly.'
+      },
+      {
+        number:6,
+        type:'tfng',
+        section:'Questions 5–8',
+        prompt:'AI-based education systems can identify students’ problem areas and recommend suitable resources.',
+        answer:'true',
+        evidence:'In education, adaptive systems analyse learning behaviour, identify areas of difficulty and recommend suitable resources.',
+        paragraph:'B',
+        explanation:'The answer is TRUE because the passage states this idea almost directly. The wording “problem areas” paraphrases “areas of difficulty”, and “recommend suitable resources” matches the passage.'
+      },
+      {
+        number:7,
+        type:'tfng',
+        section:'Questions 5–8',
+        prompt:'The article says that facial recognition technology is often more accurate for people with darker skin tones.',
+        answer:'false',
+        evidence:'Facial recognition technology, for example, has often been found to be less accurate for people with darker skin tones.',
+        paragraph:'E',
+        explanation:'The answer is FALSE because the statement reverses the meaning of the text. The passage says “less accurate”, not “more accurate”. This is a direct contradiction.'
+      },
+      {
+        number:8,
+        type:'tfng',
+        section:'Questions 5–8',
+        prompt:'The article provides statistics showing how many annual cyberattacks are caused specifically by deepfake technology.',
+        answer:'not given',
+        evidence:'Data breaches and cyberattacks increase these risks, while deepfake technology, despite its legitimate uses, introduces further ethical challenges.',
+        paragraph:'E',
+        explanation:'The answer is NOT GIVEN because the passage mentions cyberattacks and deepfakes but does not provide annual statistics linking cyberattacks specifically to deepfake technology. The subject appears, but the numerical claim in the question does not.'
+      },
+      {
+        number:9,
+        type:'mcq',
+        section:'Questions 9–11',
+        prompt:'According to the passage, one benefit of AI in business is that it',
+        options:[
+          'replaces all managerial decision-making.',
+          'frees workers to concentrate on strategic work.',
+          'eliminates the need for customer service.',
+          'removes the need for human marketing staff.'
+        ],
+        answer:'B',
+        evidence:'By automating routine operations, AI enables employees to concentrate on more strategic work and helps organisations distribute resources more effectively.',
+        paragraph:'C',
+        explanation:'The correct answer is B. The passage says AI automates routine operations so employees can focus on strategic work. Option A is too extreme, because the text never says all managerial decisions are replaced. Option C is wrong because customer service is supported, not eliminated. Option D is wrong because personalised marketing is improved, not fully handed over with no human role.'
+      },
+      {
+        number:10,
+        type:'mcq',
+        section:'Questions 9–11',
+        prompt:'What is the main concern raised about agentic AI?',
+        options:[
+          'It cannot be applied outside the entertainment sector.',
+          'It depends entirely on fixed human instructions.',
+          'It may make autonomous decisions that lead to unintended consequences.',
+          'It is less advanced than earlier forms of AI.'
+        ],
+        answer:'C',
+        evidence:'While useful in fields such as robotics and autonomous transport, independent decision-making can also produce unintended consequences.',
+        paragraph:'F',
+        explanation:'The correct answer is C. The key concern is that agentic AI may act independently and produce unintended consequences. Option A is false because the text mentions robotics and autonomous transport. Option B is the opposite of the text because agentic AI operates with reduced human input. Option D is unsupported.'
+      },
+      {
+        number:11,
+        type:'mcq',
+        section:'Questions 9–11',
+        prompt:'Which action does the writer appear to support most strongly?',
+        options:[
+          'Restricting AI use to universities and research laboratories.',
+          'Slowing all AI research until the public fully accepts it.',
+          'Leaving ethical decisions entirely to technology companies.',
+          'Building cooperation among government, industry, academia and the public.'
+        ],
+        answer:'D',
+        evidence:'Above all, collaboration among government, industry, academia and the public is vital if the benefits of AI are to be shared more widely than its harms.',
+        paragraph:'G',
+        explanation:'The correct answer is D. The writer explicitly says that broad collaboration is vital. Option A is never recommended. Option B is too absolute and unsupported. Option C directly conflicts with the passage, which argues for wide stakeholder involvement, not company-only control.'
+      },
+      {
+        number:12,
+        type:'completion',
+        section:'Questions 12–13',
+        prompt:'By 2030, automation could displace as many as _________ jobs.',
+        instruction:'Choose NO MORE THAN TWO WORDS AND/OR A NUMBER from the passage.',
+        answer:'800 million',
+        evidence:'by 2030, automation could displace as many as 800 million jobs',
+        paragraph:'D',
+        explanation:'The correct answer is “800 million”. The sentence in Paragraph D gives this figure directly. Adding unnecessary extra words would make the answer incorrect in an IELTS-style task.'
+      },
+      {
+        number:13,
+        type:'completion',
+        section:'Questions 12–13',
+        prompt:'Schools should strengthen critical thinking, digital literacy and _________ education.',
+        instruction:'Choose NO MORE THAN TWO WORDS AND/OR A NUMBER from the passage.',
+        answer:'interdisciplinary',
+        evidence:'critical thinking, digital literacy and interdisciplinary education',
+        paragraph:'G',
+        explanation:'The correct answer is “interdisciplinary”. The passage lists three educational priorities together, and the missing word completes the exact phrase from Paragraph G.'
+      }
+    ];
+
+    const passageEl = document.getElementById('passage');
+    const questionsEl = document.getElementById('questions');
+    const navGridEl = document.getElementById('navGrid');
+    const answeredCountEl = document.getElementById('answeredCount');
+    const bandPreviewEl = document.getElementById('bandPreview');
+    const modeLabelEl = document.getElementById('modeLabel');
+    const timerEl = document.getElementById('timer');
+    const teacherPanelEl = document.getElementById('teacherPanel');
+    const vocabBoxEl = document.getElementById('vocabBox');
+
+    function renderPassage(activeQuestionNumber=null){
+      passageEl.innerHTML = paragraphs.map(p => {
+        let html = p.html;
+        if (submitted && activeQuestionNumber !== null) {
+          const q = questions.find(item => item.number === activeQuestionNumber);
+          if (q && q.paragraph === p.id && q.evidence) {
+            const escaped = q.evidence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escaped);
+            html = html.replace(regex, `<span class="evidence-highlight">${q.evidence}</span>`);
+          }
+        }
+        const activeClass = submitted && activeQuestionNumber !== null && questions.find(item => item.number === activeQuestionNumber)?.paragraph === p.id ? 'active-evidence' : '';
+        return `<div class="para-wrap ${activeClass}" id="para-${p.id}"><p><span class="paragraph-label">${p.id}</span>${html}</p></div>`;
+      }).join('');
+    }
+
+    function getAnswerValue(q){
+      if(q.type === 'matching'){
+        const el = document.querySelector(`select[data-q="${q.number}"]`);
+        return el ? el.value.trim() : '';
+      }
+      if(q.type === 'tfng'){
+        const checked = document.querySelector(`input[name="q${q.number}"]:checked`);
+        return checked ? checked.value : '';
+      }
+      if(q.type === 'mcq'){
+        const checked = document.querySelector(`input[name="q${q.number}"]:checked`);
+        return checked ? checked.value : '';
+      }
+      if(q.type === 'completion'){
+        const el = document.querySelector(`input[data-q="${q.number}"]`);
+        return el ? el.value.trim() : '';
+      }
+      return '';
+    }
+
+    function setAnsweredPreview(){
+      const count = questions.filter(q => getAnswerValue(q) !== '').length;
+      answeredCountEl.textContent = `${count} / ${questions.length}`;
+      bandPreviewEl.textContent = submitted ? bandPreviewEl.textContent : '—';
+      updateNavState();
+    }
+
+    function renderQuestions(){
+      const html = [];
+      html.push(`
+        <div class="question-card">
+          <div class="question-meta">List of Headings</div>
+          <div class="small">i. AI and the need for public oversight<br>
+          ii. Bias, privacy and misuse of data<br>
+          iii. AI as a force that reaches beyond technology<br>
+          iv. Economic gains and social convenience<br>
+          v. Health and education as early beneficiaries<br>
+          vi. The displacement of workers by automation<br>
+          vii. Overdependence and autonomous decision-making<br>
+          viii. A blueprint for social adaptation</div>
+        </div>
+      `);
+
+      questions.forEach(q => {
+        let body = '';
+        if(q.type === 'matching'){
+          body = `
+            <div class="stem">${q.prompt}</div>
+            <div class="dropdown-row">
+              <label for="q-${q.number}"><strong>Question ${q.number}</strong></label>
+              <select id="q-${q.number}" data-q="${q.number}">
+                <option value="">Select heading</option>
+                ${headingOptions.map(opt => `<option value="${opt.value}">${opt.value}. ${opt.text}</option>`).join('')}
+              </select>
+            </div>
+          `;
+        } else if(q.type === 'tfng'){
+          body = `
+            <div class="stem">${q.prompt}</div>
+            <div class="option-list">
+              ${['true','false','not given'].map(opt => `<label class="option"><input type="radio" name="q${q.number}" value="${opt}"> <span>${opt.toUpperCase()}</span></label>`).join('')}
+            </div>
+          `;
+        } else if(q.type === 'mcq'){
+          const letters = ['A','B','C','D'];
+          body = `
+            <div class="stem">${q.prompt}</div>
+            <div class="option-list">
+              ${q.options.map((opt,i) => `<label class="option"><input type="radio" name="q${q.number}" value="${letters[i]}"> <span><strong>${letters[i]}.</strong> ${opt}</span></label>`).join('')}
+            </div>
+          `;
+        } else if(q.type === 'completion'){
+          body = `
+            <div class="stem">${q.prompt}</div>
+            <div class="small">${q.instruction}</div>
+            <div class="text-row">
+              <input type="text" data-q="${q.number}" placeholder="Type your answer here">
+            </div>
+          `;
+        }
+
+        html.push(`
+          <div class="question-card" id="question-${q.number}" data-question-card="${q.number}">
+            <div class="question-meta">${q.section} • ${q.type.replace('tfng','True / False / Not Given').replace('mcq','Multiple Choice').replace('matching','Matching Headings').replace('completion','Sentence Completion')}</div>
+            <h3>${q.number}. ${q.type === 'matching' ? `Paragraph ${q.paragraph}` : 'Question'}</h3>
+            ${body}
+            <div class="feedback" id="feedback-${q.number}"></div>
+          </div>
+        `);
+      });
+      questionsEl.innerHTML = html.join('');
+      attachInputListeners();
+    }
+
+    function renderNav(){
+      navGridEl.innerHTML = questions.map(q => `<button class="nav-btn" data-nav="${q.number}">${q.number}</button>`).join('');
+      navGridEl.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = document.getElementById(`question-${btn.dataset.nav}`);
+          if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+        });
+      });
+    }
+
+    function updateNavState(){
+      questions.forEach(q => {
+        const nav = document.querySelector(`.nav-btn[data-nav="${q.number}"]`);
+        if(!nav) return;
+        nav.classList.remove('answered','correct','incorrect');
+        const val = getAnswerValue(q);
+        if(val !== '') nav.classList.add('answered');
+        if(submitted){
+          const result = isCorrect(q, val);
+          nav.classList.remove('answered');
+          nav.classList.add(result ? 'correct' : 'incorrect');
+        }
+      });
+    }
+
+    function normaliseText(value){
+      return value.toLowerCase().replace(/\s+/g,' ').trim();
+    }
+
+    function isCorrect(q, value){
+      if(q.type === 'completion') return normaliseText(value) === normaliseText(q.answer);
+      return normaliseText(value) === normaliseText(q.answer);
+    }
+
+    function submitQuiz(auto=false){
+      if(submitted) return;
+      submitted = true;
+      reviewMode = false;
+      clearInterval(timerInterval);
+      modeLabelEl.textContent = 'Review';
+      let score = 0;
+      questions.forEach(q => {
+        const val = getAnswerValue(q);
+        const correct = isCorrect(q, val);
+        if(correct) score++;
+        const feedback = document.getElementById(`feedback-${q.number}`);
+        feedback.className = `feedback show ${correct ? 'correct' : 'incorrect'}`;
+        feedback.innerHTML = `
+          <span class="label">${correct ? 'Correct' : 'Incorrect'}</span>
+          <div><strong>Your answer:</strong> ${val === '' ? '<em>No answer</em>' : escapeHtml(val.toUpperCase ? val.toUpperCase() : val)}</div>
+          <div><strong>Correct answer:</strong> ${formatCorrectAnswer(q)}</div>
+          <div style="margin-top:8px;"><strong>Explanation:</strong> ${q.explanation}</div>
+          <div class="evidence-meta"><strong>Evidence:</strong> Paragraph ${q.paragraph}</div>
+          <div class="actions-bottom" style="margin-top:10px;">
+            <button type="button" class="ghost" onclick="showEvidence(${q.number})">Show Evidence</button>
+          </div>
+        `;
+      });
+      updateNavState();
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('reviewBtn').classList.remove('hidden');
+      document.getElementById('showAllBtn').classList.remove('hidden');
+      showModal(score, auto);
+    }
+
+    function formatCorrectAnswer(q){
+      if(q.type === 'matching'){
+        const opt = headingOptions.find(o => o.value === q.answer);
+        return `${q.answer}. ${opt ? opt.text : q.answer}`;
+      }
+      if(q.type === 'tfng') return q.answer.toUpperCase();
+      return q.answer;
+    }
+
+    function showEvidence(qNumber){
+      renderPassage(qNumber);
+      const q = questions.find(item => item.number === qNumber);
+      if(q){
+        const para = document.getElementById(`para-${q.paragraph}`);
+        if(para) para.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+    }
+    window.showEvidence = showEvidence;
+
+    function showModal(score, auto=false){
+      const raw = `${score} / ${questions.length}`;
+      const band = estimateBand(score);
+      const timeUsed = TOTAL_SECONDS - timeLeft;
+      document.getElementById('scoreBig').textContent = raw;
+      document.getElementById('bandBig').textContent = `Band ${band}`;
+      document.getElementById('timeBig').textContent = formatTime(timeUsed);
+      document.getElementById('sarcasmBox').textContent = getSarcasticComment(score);
+      document.getElementById('resultModal').classList.add('show');
+      bandPreviewEl.textContent = band;
+      if(auto){
+        document.querySelector('#resultModal .sub').textContent = 'Time expired, the system submitted your work automatically. The timer, like fate, had no interest in your excuses.';
+      } else {
+        document.querySelector('#resultModal .sub').textContent = 'Your answers have been checked. Now comes the sacred ritual of consequences.';
+      }
+    }
+
+    function estimateBand(score){
+      const map = {
+        13:'9.0', 12:'8.5', 11:'8.0', 10:'7.5', 9:'7.0', 8:'6.5', 7:'6.0', 6:'5.5', 5:'5.0', 4:'4.5', 3:'4.0', 2:'3.5', 1:'3.0', 0:'2.5'
+      };
+      return map[score] || '—';
+    }
+
+    function getSarcasticComment(score){
+      if(score === 13) return 'Band 9 energy. Suspiciously competent. Either you read brilliantly or the passage begged for mercy.';
+      if(score >= 11) return 'Very strong work. The exam tried to humble you and mostly failed. Tragic for the exam.';
+      if(score >= 9) return 'Solid performance. Not flawless, but definitely too intelligent to blame the font.';
+      if(score >= 7) return 'Respectable. A few wounds, a few poor decisions, but the academic machinery remains alive.';
+      if(score >= 5) return 'You survived, technically. The score suggests effort, confusion, and perhaps a light spiritual crisis.';
+      if(score >= 3) return 'This was less “careful reading” and more “negotiating with destiny.” We rebuild from the rubble.';
+      return 'A bold performance in the field of wrong answers. Magnificent disaster. Review mode is now your religion.';
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
+    function attachInputListeners(){
+      document.querySelectorAll('select, input[type="radio"], input[type="text"]').forEach(el => {
+        el.addEventListener('change', setAnsweredPreview);
+        el.addEventListener('input', setAnsweredPreview);
+      });
+    }
+
+    function formatTime(seconds){
+      const mins = Math.floor(seconds / 60).toString().padStart(2,'0');
+      const secs = Math.floor(seconds % 60).toString().padStart(2,'0');
+      return `${mins}:${secs}`;
+    }
+
+    function startTimer(){
+      timerEl.textContent = formatTime(timeLeft);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = formatTime(timeLeft);
+        if(timeLeft <= 300) timerEl.classList.add('warning');
+        if(timeLeft <= 60) timerEl.classList.add('danger');
+        if(timeLeft <= 0){
+          timeLeft = 0;
+          timerEl.textContent = '00:00';
+          clearInterval(timerInterval);
+          submitQuiz(true);
+        }
+      }, 1000);
+    }
+
+    function resetTest(){
+      if(!confirm('Reset the entire test? This will clear answers, review, timer, and whatever fragile sense of progress you had.')) return;
+      submitted = false;
+      teacherMode = false;
+      reviewMode = false;
+      timeLeft = TOTAL_SECONDS;
+      clearInterval(timerInterval);
+      timerEl.className = 'timer';
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('reviewBtn').classList.add('hidden');
+      document.getElementById('showAllBtn').classList.add('hidden');
+      modeLabelEl.textContent = 'Exam';
+      teacherPanelEl.classList.remove('active');
+      teacherPanelEl.innerHTML = '';
+      renderPassage();
+      renderQuestions();
+      renderNav();
+      setAnsweredPreview();
+      startTimer();
+    }
+
+    function toggleTeacherMode(){
+      if(!teacherMode){
+        const pw = prompt('Enter teacher mode password:');
+        if(pw !== TEACHER_PASSWORD){
+          alert('Incorrect password. The gate remains closed.');
+          return;
+        }
+        teacherMode = true;
+      } else {
+        teacherMode = false;
+      }
+      if(teacherMode){
+        teacherPanelEl.classList.add('active');
+        teacherPanelEl.innerHTML = `
+          <strong>Teacher Mode: Answer Key</strong>
+          <div class="small" style="margin:4px 0 8px;">Use this to guide feedback, not to ruin honest suffering too early.</div>
+          <ul>
+            ${questions.map(q => `<li><strong>${q.number}.</strong> ${formatCorrectAnswer(q)} <span class="muted">(Paragraph ${q.paragraph})</span></li>`).join('')}
+          </ul>
+        `;
+      } else {
+        teacherPanelEl.classList.remove('active');
+        teacherPanelEl.innerHTML = '';
+      }
+    }
+
+    function toggleVocab(){
+      vocabBoxEl.classList.toggle('active');
+    }
+
+    function adjustFont(delta){
+      fontScale = Math.min(1.35, Math.max(0.85, +(fontScale + delta).toFixed(2)));
+      document.documentElement.style.setProperty('--font-scale', fontScale);
+    }
+
+    function toggleFullscreen(){
+      if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+
+    function highlightSelection(){
+      const sel = window.getSelection();
+      if(!sel || sel.rangeCount === 0 || sel.isCollapsed){
+        alert('Select some text in the passage first. The highlight tool is not telepathic.');
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      const passageNode = document.getElementById('passage');
+      if(!passageNode.contains(range.commonAncestorContainer)){
+        alert('Please select text inside the passage. We are not highlighting your entire browser.');
+        return;
+      }
+      try {
+        const mark = document.createElement('mark');
+        mark.className = 'user-highlight';
+        range.surroundContents(mark);
+        sel.removeAllRanges();
+      } catch (e) {
+        alert('Please select a smaller piece of text within one paragraph. Browsers become dramatic when selections are messy.');
+      }
+    }
+
+    function clearUserHighlights(){
+      passageEl.querySelectorAll('mark.user-highlight').forEach(mark => {
+        const parent = mark.parentNode;
+        while(mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+        parent.removeChild(mark);
+      });
+      renderPassage();
+    }
+
+    function reviewIncorrectOnly(){
+      if(!submitted) return;
+      reviewMode = true;
+      modeLabelEl.textContent = 'Incorrect Review';
+      questions.forEach(q => {
+        const val = getAnswerValue(q);
+        const correct = isCorrect(q, val);
+        const card = document.getElementById(`question-${q.number}`);
+        if(card) card.classList.toggle('hidden', correct);
+      });
+    }
+
+    function showAllQuestions(){
+      reviewMode = false;
+      modeLabelEl.textContent = submitted ? 'Review' : 'Exam';
+      questions.forEach(q => {
+        const card = document.getElementById(`question-${q.number}`);
+        if(card) card.classList.remove('hidden');
+      });
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', () => submitQuiz(false));
+    document.getElementById('resetBtn').addEventListener('click', resetTest);
+    document.getElementById('reviewBtn').addEventListener('click', reviewIncorrectOnly);
+    document.getElementById('showAllBtn').addEventListener('click', showAllQuestions);
+    document.getElementById('teacherBtn').addEventListener('click', toggleTeacherMode);
+    document.getElementById('vocabBtn').addEventListener('click', toggleVocab);
+    document.getElementById('fontDownBtn').addEventListener('click', () => adjustFont(-0.05));
+    document.getElementById('fontUpBtn').addEventListener('click', () => adjustFont(0.05));
+    document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+    document.getElementById('highlightBtn').addEventListener('click', highlightSelection);
+    document.getElementById('clearHighlightsBtn').addEventListener('click', clearUserHighlights);
+    document.getElementById('closeModalBtn').addEventListener('click', () => document.getElementById('resultModal').classList.remove('show'));
+
+    renderPassage();
+    renderQuestions();
+    renderNav();
+    setAnsweredPreview();
+    startTimer();
+  </script>
+</body>
+</html>
