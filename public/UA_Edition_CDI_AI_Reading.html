@@ -27,7 +27,7 @@
       --radius:18px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
+    html,body{height:100%; overflow:hidden}
     body{
       margin:0;
       background:var(--bg);
@@ -37,9 +37,14 @@
       font-size: calc(16px * var(--font-scale));
     }
     .app{
+      width:100%;
       max-width:1600px;
+      height:100vh;
       margin:0 auto;
       padding:18px;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
     }
     .topbar{
       background:rgba(255,255,255,0.88);
@@ -53,9 +58,10 @@
       gap:14px;
       align-items:center;
       justify-content:space-between;
-      position:sticky;
-      top:10px;
+      position:relative;
+      top:auto;
       z-index:30;
+      flex:0 0 auto;
     }
     .brand h1{
       margin:0;
@@ -110,10 +116,13 @@
     .timer.danger{background:var(--danger-soft); color:var(--danger); border-color:#f4caca}
     .main{
       display:grid;
-      grid-template-columns: minmax(300px, 1.1fr) minmax(300px, 0.95fr);
+      grid-template-columns:minmax(300px, 1.1fr) minmax(300px, 0.95fr);
       gap:18px;
       margin-top:18px;
-      align-items:start;
+      align-items:stretch;
+      flex:1;
+      min-height:0;
+      overflow:hidden;
     }
     .panel{
       background:var(--panel);
@@ -121,13 +130,38 @@
       box-shadow:var(--shadow);
       border:1px solid rgba(255,255,255,0.85);
       overflow:hidden;
+      min-height:0;
+      height:100%;
+      display:flex;
+      flex-direction:column;
     }
     .panel-head{
       padding:18px 22px 10px;
       border-bottom:1px solid var(--line);
       background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,249,252,0.98));
+      flex:0 0 auto;
+      position:relative;
+      z-index:2;
     }
-    .panel-body{padding:20px 22px 24px}
+    .panel-body{
+      padding:20px 22px 24px;
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      overflow-x:hidden;
+      overscroll-behavior:contain;
+      scrollbar-gutter:stable;
+      scroll-behavior:smooth;
+    }
+    .panel-body::-webkit-scrollbar{width:10px}
+    .panel-body::-webkit-scrollbar-track{background:transparent}
+    .panel-body::-webkit-scrollbar-thumb{
+      background:#c8d1dc;
+      border-radius:999px;
+      border:3px solid transparent;
+      background-clip:padding-box;
+    }
+    .panel-body::-webkit-scrollbar-thumb:hover{background:#aeb9c6; background-clip:padding-box}
     .passage-title{
       margin:0 0 6px;
       font-size:1.55rem;
@@ -365,12 +399,27 @@
     .muted{color:var(--muted)}
     .hidden{display:none !important}
     @media (max-width: 1020px){
-      .main{grid-template-columns:1fr}
+      html,body{overflow:auto}
+      .app{
+        height:auto;
+        min-height:100vh;
+        overflow:visible;
+      }
+      .main{
+        grid-template-columns:1fr;
+        overflow:visible;
+        flex:none;
+      }
+      .panel{
+        height:68vh;
+        min-height:520px;
+      }
     }
     @media (max-width: 720px){
       .app{padding:12px}
+      .panel{height:72vh; min-height:500px}
       .panel-head,.panel-body{padding-left:16px; padding-right:16px}
-      .topbar{top:6px; border-radius:20px}
+      .topbar{border-radius:20px}
       .score-grid,.summary-strip{grid-template-columns:1fr}
       .top-actions{justify-content:flex-start}
       select,input[type="text"]{min-width:100%}
@@ -401,7 +450,7 @@
           <h2 class="passage-title">The Social Consequences of Artificial Intelligence</h2>
           <div class="byline">Adapted from an article by <strong>Prof. Dr. Aytül Erçil</strong> — Member of the Swiss Innovation Valley advisory board and the joint scientific and industrial Advisory Board of the European Machine Vision Association; published in <em>AI Horizon Journal</em> for the AI Ethics &amp; Integrity International Association.</div>
           <div class="intro-note">
-            Read the passage and answer Questions 1–13. You may copy text, select text, and use the highlight tool. In exam mode, feedback appears only after submission. The timer starts immediately, because life is cruel and IELTS agrees.
+            Read the passage and answer Questions 1–13. The passage and question sections scroll independently. You may copy text, select text, and use the highlight tool. In exam mode, feedback appears only after submission. The timer starts immediately, because life is cruel and IELTS agrees.
           </div>
           <div class="passage-controls">
             <button id="highlightBtn">Highlight Selection</button>
