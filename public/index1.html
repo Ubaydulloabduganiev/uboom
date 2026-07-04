@@ -4,186 +4,531 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Uboom IELTS Reading CDI test library by U.A. Edition" />
+  <meta name="theme-color" content="#0b1830" />
   <title>Uboom IELTS Reading Library | U.A. Edition</title>
+
   <style>
     :root{
       --navy:#0b1830;
-      --navy-2:#122546;
+      --navy-2:#13294d;
+      --navy-3:#1e3d70;
       --gold:#d6ad52;
-      --gold-soft:#f3e7c4;
-      --bg:#f4f6f9;
-      --card:#ffffff;
+      --gold-2:#f2d58c;
+      --gold-soft:#f8efd9;
+      --bg:#f4f6fa;
+      --bg-2:#e9eef5;
+      --card:rgba(255,255,255,.88);
+      --card-solid:#ffffff;
       --text:#172033;
       --muted:#667085;
-      --line:#e4e8ef;
-      --shadow:0 16px 40px rgba(18,37,70,.10);
-      --radius:24px;
+      --line:rgba(141,153,174,.24);
+      --shadow:0 18px 48px rgba(18,37,70,.11);
+      --shadow-strong:0 24px 65px rgba(11,24,48,.18);
+      --radius:26px;
+      --focus:rgba(214,173,82,.28);
+    }
+
+    html[data-theme="dark"]{
+      --bg:#07101f;
+      --bg-2:#0c1729;
+      --card:rgba(18,31,53,.88);
+      --card-solid:#122039;
+      --text:#edf2f8;
+      --muted:#aeb9ca;
+      --line:rgba(255,255,255,.10);
+      --shadow:0 18px 48px rgba(0,0,0,.28);
+      --shadow-strong:0 24px 65px rgba(0,0,0,.42);
+      --gold-soft:rgba(214,173,82,.14);
     }
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
+
     body{
       margin:0;
+      min-height:100vh;
+      overflow-x:hidden;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at top right, rgba(214,173,82,.12), transparent 28%),
-        linear-gradient(180deg,#f7f8fb 0%,#eef2f6 100%);
-      min-height:100vh;
+        radial-gradient(circle at 82% 4%, rgba(214,173,82,.16), transparent 24%),
+        radial-gradient(circle at 6% 30%, rgba(50,96,170,.12), transparent 28%),
+        linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+      transition:background .35s ease,color .35s ease;
     }
 
-    .shell{max-width:1240px;margin:0 auto;padding:24px}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.38;
+      background-image:
+        linear-gradient(rgba(67,88,123,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(67,88,123,.035) 1px,transparent 1px);
+      background-size:38px 38px;
+      mask-image:linear-gradient(to bottom,black,transparent 78%);
+      z-index:-1;
+    }
+
+    button,input{font:inherit}
+    a{color:inherit}
+
+    .shell{max-width:1320px;margin:0 auto;padding:24px}
 
     .hero{
       position:relative;
       overflow:hidden;
-      background:linear-gradient(135deg,var(--navy),var(--navy-2));
       color:#fff;
-      border-radius:32px;
-      padding:42px;
-      box-shadow:0 26px 60px rgba(11,24,48,.22);
+      border-radius:34px;
+      padding:46px;
+      background:
+        radial-gradient(circle at 85% 25%,rgba(214,173,82,.20),transparent 22%),
+        linear-gradient(135deg,var(--navy),var(--navy-2) 60%,var(--navy-3));
+      box-shadow:0 30px 80px rgba(11,24,48,.26);
+      isolation:isolate;
     }
 
+    .hero::before,
     .hero::after{
       content:"";
       position:absolute;
-      inset:auto -80px -120px auto;
-      width:320px;
-      height:320px;
       border-radius:50%;
-      border:1px solid rgba(214,173,82,.28);
-      box-shadow:0 0 0 42px rgba(214,173,82,.06),0 0 0 84px rgba(214,173,82,.03);
+      pointer-events:none;
+      z-index:-1;
     }
 
-    .hero-grid{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;position:relative;z-index:1}
-    .brand-row{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .hero::before{
+      width:360px;height:360px;
+      right:-125px;bottom:-170px;
+      border:1px solid rgba(214,173,82,.28);
+      box-shadow:
+        0 0 0 48px rgba(214,173,82,.055),
+        0 0 0 96px rgba(214,173,82,.028);
+      animation:orbit 15s linear infinite;
+    }
+
+    .hero::after{
+      width:130px;height:130px;
+      left:47%;top:-75px;
+      background:radial-gradient(circle,rgba(255,255,255,.10),transparent 68%);
+      animation:drift 7s ease-in-out infinite alternate;
+    }
+
+    .hero-grid{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:28px;
+      align-items:center;
+    }
+
+    .brand-row{display:flex;align-items:center;gap:17px;margin-bottom:18px}
 
     .owl{
-      width:62px;
-      height:62px;
-      border-radius:20px;
+      width:68px;height:68px;
+      flex:0 0 auto;
       display:grid;
       place-items:center;
+      border-radius:22px;
       background:rgba(255,255,255,.08);
-      border:1px solid rgba(214,173,82,.42);
-      flex-shrink:0;
+      border:1px solid rgba(214,173,82,.45);
+      box-shadow:inset 0 0 25px rgba(255,255,255,.04);
+      animation:owlFloat 4s ease-in-out infinite;
     }
 
-    .owl svg{width:42px;height:42px}
-    .eyebrow{font-size:.82rem;text-transform:uppercase;letter-spacing:.18em;color:#e8cf94;font-weight:800}
-    h1{margin:5px 0 12px;font-size:clamp(2rem,5vw,4rem);line-height:1.02;letter-spacing:-.045em}
-    .hero p{margin:0;max-width:720px;color:#c9d3e3;font-size:1.05rem;line-height:1.65}
+    .owl svg{width:46px;height:46px;overflow:visible}
+    .owl .eye{transform-origin:center;animation:blink 5.2s infinite}
 
-    .hero-stat{
-      min-width:160px;
+    .eyebrow{
+      font-size:.80rem;
+      text-transform:uppercase;
+      letter-spacing:.19em;
+      color:#ecd18d;
+      font-weight:900;
+    }
+
+    h1{
+      margin:6px 0 13px;
+      font-size:clamp(2.15rem,5vw,4.35rem);
+      line-height:.98;
+      letter-spacing:-.05em;
+      text-wrap:balance;
+    }
+
+    .hero-copy{
+      margin:0;
+      max-width:790px;
+      color:#cad5e5;
+      font-size:1.06rem;
+      line-height:1.68;
+    }
+
+    .hero-copy strong{color:#f4ddb0}
+
+    .hero-side{display:grid;gap:12px;min-width:190px}
+
+    .hero-stat,
+    .hero-random{
       padding:20px;
       border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.07);
+      background:rgba(255,255,255,.075);
       border-radius:22px;
-      backdrop-filter:blur(12px);
-      text-align:center;
+      backdrop-filter:blur(14px);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
     }
-    .hero-stat strong{display:block;font-size:2.6rem;color:#f5ddb0}
-    .hero-stat span{color:#c8d1df;font-size:.9rem}
+
+    .hero-stat{text-align:center}
+    .hero-stat strong{display:block;font-size:2.7rem;line-height:1;color:#f4ddb0}
+    .hero-stat span{display:block;margin-top:6px;color:#c9d3e1;font-size:.9rem}
+
+    .hero-random{
+      border:none;
+      color:#fff;
+      cursor:pointer;
+      font-weight:850;
+      text-align:left;
+      transition:transform .18s ease,background .18s ease,border-color .18s ease;
+    }
+
+    .hero-random small{display:block;margin-top:5px;color:#c8d2e1;font-weight:500}
+    .hero-random:hover{transform:translateY(-3px) rotate(-.4deg);background:rgba(214,173,82,.16)}
+    .hero-random:active{transform:translateY(0) scale(.98)}
+
+    .snark-strip{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:18px 0 0;
+      min-height:48px;
+      padding:12px 15px;
+      border-radius:16px;
+      color:#e8edf5;
+      background:rgba(0,0,0,.16);
+      border:1px solid rgba(255,255,255,.09);
+      max-width:850px;
+    }
+
+    .snark-strip .pulse{
+      width:9px;height:9px;border-radius:50%;flex:0 0 auto;
+      background:var(--gold-2);
+      box-shadow:0 0 0 0 rgba(242,213,140,.55);
+      animation:pulse 2s infinite;
+    }
+
+    #snarkText{transition:opacity .22s ease,transform .22s ease}
+    #snarkText.changing{opacity:0;transform:translateY(4px)}
 
     .toolbar{
-      margin:24px 0 18px;
+      position:sticky;
+      top:10px;
+      z-index:20;
+      margin:24px 0 20px;
+      padding:12px;
       display:flex;
       gap:12px;
       align-items:center;
       justify-content:space-between;
       flex-wrap:wrap;
+      border:1px solid var(--line);
+      border-radius:21px;
+      background:color-mix(in srgb,var(--card-solid) 78%,transparent);
+      box-shadow:0 12px 35px rgba(18,37,70,.07);
+      backdrop-filter:blur(16px);
     }
 
-    .search-wrap{position:relative;flex:1;min-width:260px;max-width:560px}
+    .search-wrap{position:relative;flex:1;min-width:245px;max-width:510px}
     .search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;color:#98a2b3}
     .search-wrap input{
       width:100%;
-      padding:15px 18px 15px 48px;
+      padding:14px 18px 14px 48px;
       border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-      font:inherit;
+      border-radius:15px;
+      color:var(--text);
+      background:var(--card-solid);
       outline:none;
-      box-shadow:0 8px 20px rgba(16,24,40,.04);
+      transition:border-color .18s ease,box-shadow .18s ease,background .35s ease;
     }
     .search-wrap input:focus{border-color:#8aa6d8;box-shadow:0 0 0 4px rgba(46,95,166,.10)}
-    .status{color:var(--muted);font-size:.94rem}
 
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+    .filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+    .chip,
+    .icon-btn{
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:var(--card-solid);
+      cursor:pointer;
+      transition:transform .14s ease,border-color .14s ease,background .14s ease,color .14s ease;
+    }
+
+    .chip{padding:9px 12px;border-radius:999px;font-size:.84rem;font-weight:800}
+    .chip:hover,.icon-btn:hover{transform:translateY(-1px);border-color:rgba(214,173,82,.65)}
+    .chip.active{color:#fff;background:var(--navy);border-color:var(--navy)}
+
+    .icon-btn{
+      width:42px;height:42px;border-radius:13px;
+      display:grid;place-items:center;
+      font-size:1.05rem;
+    }
+
+    .status{color:var(--muted);font-size:.9rem;white-space:nowrap;padding:0 4px}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:20px;
+    }
 
     .card{
-      background:rgba(255,255,255,.94);
-      border:1px solid rgba(228,232,239,.95);
-      border-radius:var(--radius);
-      padding:24px;
-      box-shadow:var(--shadow);
-      transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+      --mx:50%;
+      --my:50%;
+      position:relative;
+      overflow:hidden;
+      min-height:355px;
       display:flex;
       flex-direction:column;
-      min-height:300px;
+      padding:23px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:
+        radial-gradient(circle at var(--mx) var(--my),rgba(214,173,82,.11),transparent 29%),
+        var(--card);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(13px);
+      opacity:0;
+      transform:translateY(18px) scale(.985);
+      animation:cardIn .55s cubic-bezier(.2,.72,.2,1) forwards;
+      animation-delay:calc(var(--i) * 55ms);
+      transition:transform .20s ease,box-shadow .20s ease,border-color .20s ease,background .35s ease;
     }
-    .card:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(18,37,70,.14);border-color:#d8c28a}
 
-    .card-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      pointer-events:none;
+      border-radius:inherit;
+      background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.32) 45%,transparent 65%);
+      transform:translateX(-120%);
+      transition:transform .7s ease;
+      mix-blend-mode:soft-light;
+    }
+
+    .card:hover{
+      transform:translateY(-7px) rotate(-.25deg);
+      box-shadow:var(--shadow-strong);
+      border-color:rgba(214,173,82,.62);
+    }
+
+    .card:hover::after{transform:translateX(120%)}
+
+    .card-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+
+    .number-icon{display:flex;align-items:center;gap:10px}
+
     .number{
-      width:44px;height:44px;border-radius:15px;display:grid;place-items:center;
-      background:var(--gold-soft);color:#7b5a14;font-weight:900;flex-shrink:0
+      width:44px;height:44px;
+      display:grid;place-items:center;
+      border-radius:15px;
+      color:#795817;
+      background:var(--gold-soft);
+      font-weight:950;
+      flex:0 0 auto;
+      border:1px solid rgba(214,173,82,.18);
     }
-    .badge{padding:7px 11px;border-radius:999px;background:#eef3fb;color:#315f9f;font-size:.78rem;font-weight:800;white-space:nowrap}
-    .card h2{margin:20px 0 9px;font-size:1.45rem;line-height:1.2;letter-spacing:-.02em}
-    .card p{margin:0;color:var(--muted);line-height:1.58}
 
-    .meta{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px}
-    .meta span{font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#fafbfc;color:#475467}
+    html[data-theme="dark"] .number{color:#f1d88f}
 
-    .actions{margin-top:auto;display:grid;grid-template-columns:1fr auto;gap:10px}
+    .topic-icon{
+      width:42px;height:42px;
+      display:grid;place-items:center;
+      border-radius:14px;
+      background:color-mix(in srgb,var(--card-solid) 76%,var(--gold-soft));
+      border:1px solid var(--line);
+      font-size:1.25rem;
+      transition:transform .22s ease;
+    }
+
+    .card:hover .topic-icon{transform:rotate(-7deg) scale(1.08)}
+
+    .badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+
+    .badge{
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(49,95,159,.10);
+      color:#315f9f;
+      font-size:.72rem;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    html[data-theme="dark"] .badge{color:#9fc2f1;background:rgba(100,155,230,.13)}
+    .badge.new{color:#785412;background:rgba(214,173,82,.17)}
+    html[data-theme="dark"] .badge.new{color:#f0d58e}
+
+    .card h2{
+      margin:19px 0 9px;
+      font-size:1.31rem;
+      line-height:1.22;
+      letter-spacing:-.025em;
+      text-wrap:balance;
+    }
+
+    .card p{margin:0;color:var(--muted);line-height:1.57;font-size:.94rem}
+
+    .quip{
+      margin-top:14px;
+      padding:10px 12px;
+      border-left:3px solid var(--gold);
+      border-radius:0 11px 11px 0;
+      color:color-mix(in srgb,var(--muted) 82%,var(--text));
+      background:color-mix(in srgb,var(--gold-soft) 48%,transparent);
+      font-size:.82rem;
+      font-style:italic;
+    }
+
+    .meta{display:flex;flex-wrap:wrap;gap:7px;margin:17px 0 20px}
+    .meta span{
+      padding:6px 9px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--muted);
+      background:color-mix(in srgb,var(--card-solid) 72%,transparent);
+      font-size:.75rem;
+    }
+
+    .actions{margin-top:auto;display:grid;grid-template-columns:1fr 48px;gap:9px}
+
     .btn{
-      border:none;text-decoration:none;cursor:pointer;font:inherit;font-weight:800;
-      border-radius:14px;padding:13px 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
-      transition:transform .12s ease,background .15s ease;
+      min-height:46px;
+      border:none;
+      border-radius:14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-decoration:none;
+      cursor:pointer;
+      font-weight:900;
+      transition:transform .13s ease,background .17s ease,box-shadow .17s ease;
     }
-    .btn:hover{transform:translateY(-1px)}
-    .btn-primary{background:var(--navy);color:#fff}
-    .btn-primary:hover{background:#13294d}
-    .btn-copy{background:#f5f6f8;color:#344054;border:1px solid var(--line);min-width:48px}
-    .direct-link{margin-top:12px;font-size:.8rem;color:#98a2b3;word-break:break-all}
-    .direct-link a{color:#667085;text-decoration:none}
-    .direct-link a:hover{text-decoration:underline}
 
-    .empty{display:none;text-align:center;padding:60px 20px;color:var(--muted)}
+    .btn:hover{transform:translateY(-2px)}
+    .btn:active{transform:translateY(0) scale(.985)}
+    .btn-primary{color:#fff;background:linear-gradient(135deg,var(--navy),var(--navy-2));box-shadow:0 10px 22px rgba(11,24,48,.17)}
+    .btn-primary:hover{background:linear-gradient(135deg,#112447,#1c3a6a)}
+    .btn-copy{color:var(--text);background:var(--card-solid);border:1px solid var(--line)}
 
-    footer{padding:34px 4px 12px;color:#7b8494;font-size:.88rem;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-    footer strong{color:#344054}
+    .direct-link{margin-top:11px;color:#98a2b3;font-size:.72rem;word-break:break-all}
+    .direct-link a{text-decoration:none}
+    .direct-link a:hover{text-decoration:underline;color:var(--text)}
+
+    .empty{
+      display:none;
+      text-align:center;
+      padding:70px 20px;
+      color:var(--muted);
+      border:1px dashed var(--line);
+      border-radius:24px;
+      background:var(--card);
+    }
+
+    .empty strong{display:block;margin-bottom:7px;color:var(--text);font-size:1.15rem}
+
+    footer{
+      padding:34px 5px 14px;
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:.86rem;
+    }
+
+    footer strong{color:var(--text)}
+    footer code{padding:3px 6px;border-radius:7px;background:var(--card-solid);border:1px solid var(--line)}
 
     .toast{
-      position:fixed;right:22px;bottom:22px;z-index:50;
-      background:#111827;color:#fff;border-radius:14px;padding:13px 16px;
-      box-shadow:0 16px 30px rgba(0,0,0,.22);
-      opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s ease;
+      position:fixed;
+      right:22px;bottom:22px;
+      z-index:50;
+      max-width:min(360px,calc(100vw - 44px));
+      padding:13px 16px;
+      border-radius:14px;
+      color:#fff;
+      background:#111827;
+      box-shadow:0 16px 35px rgba(0,0,0,.28);
+      opacity:0;
+      transform:translateY(14px) scale(.98);
+      pointer-events:none;
+      transition:.22s ease;
     }
-    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.show{opacity:1;transform:translateY(0) scale(1)}
 
-    @media(max-width:800px){
+    .spotlight{
+      animation:spotlight 1.15s ease both !important;
+      border-color:var(--gold) !important;
+    }
+
+    :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+    @keyframes orbit{to{transform:rotate(360deg)}}
+    @keyframes drift{to{transform:translate(34px,24px) scale(1.18)}}
+    @keyframes owlFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-1.5deg)}}
+    @keyframes blink{0%,44%,49%,100%{transform:scaleY(1)}46%,47%{transform:scaleY(.08)}}
+    @keyframes pulse{70%{box-shadow:0 0 0 9px rgba(242,213,140,0)}100%{box-shadow:0 0 0 0 rgba(242,213,140,0)}}
+    @keyframes cardIn{to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes spotlight{0%,100%{transform:translateY(0)}35%{transform:translateY(-10px) rotate(-.7deg)}65%{transform:translateY(-5px) rotate(.5deg)}}
+
+    @media(max-width:1080px){
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media(max-width:820px){
       .shell{padding:14px}
-      .hero{padding:28px 22px;border-radius:26px}
+      .hero{padding:30px 23px;border-radius:27px}
       .hero-grid{grid-template-columns:1fr}
-      .hero-stat{display:none}
+      .hero-side{grid-template-columns:1fr 1fr;min-width:0}
+      .toolbar{position:relative;top:auto}
+      .search-wrap{max-width:none}
+      .filter-row{width:100%}
+      .status{margin-left:auto}
+    }
+
+    @media(max-width:640px){
       .grid{grid-template-columns:1fr}
+      .hero-side{grid-template-columns:1fr}
+      .hero-stat{display:none}
+      .hero-random{text-align:center}
+      .filter-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+      .filter-row::-webkit-scrollbar{display:none}
+      .chip{flex:0 0 auto}
+      .status{display:none}
       .card{min-height:auto}
     }
 
-    @media(max-width:480px){
+    @media(max-width:430px){
       .brand-row{align-items:flex-start}
-      .owl{width:54px;height:54px;border-radius:17px}
-      .actions{grid-template-columns:1fr 52px}
-      .card{padding:20px;border-radius:20px}
+      .owl{width:56px;height:56px;border-radius:18px}
+      .owl svg{width:39px;height:39px}
+      .hero{padding:26px 19px}
+      .snark-strip{align-items:flex-start}
+      .card{padding:20px;border-radius:22px}
+      .topic-icon{display:none}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;transition-duration:.001ms !important}
     }
   </style>
 </head>
 <body>
+  <!-- The browser is doing the heavy lifting. As usual, nobody thanks it. -->
   <main class="shell">
-    <section class="hero">
+    <section class="hero" aria-labelledby="pageTitle">
       <div class="hero-grid">
         <div>
           <div class="brand-row">
@@ -191,122 +536,247 @@
               <svg viewBox="0 0 64 64" fill="none">
                 <path d="M14 21 9 10l14 7M50 21l5-11-14 7" stroke="#D6AD52" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M12 31c0-13 8-21 20-21s20 8 20 21c0 16-9 24-20 24S12 47 12 31Z" stroke="#F2E2B8" stroke-width="4"/>
-                <circle cx="24" cy="31" r="7" stroke="#D6AD52" stroke-width="4"/>
-                <circle cx="40" cy="31" r="7" stroke="#D6AD52" stroke-width="4"/>
+                <g class="eye">
+                  <circle cx="24" cy="31" r="7" stroke="#D6AD52" stroke-width="4"/>
+                  <circle cx="40" cy="31" r="7" stroke="#D6AD52" stroke-width="4"/>
+                </g>
                 <path d="m29 40 3 4 3-4" stroke="#F2E2B8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
             <div>
               <div class="eyebrow">U.A. Edition • Uboom.uz</div>
-              <h1>IELTS Reading Library</h1>
+              <h1 id="pageTitle">IELTS Reading Library</h1>
             </div>
           </div>
-          <p>Choose a CDI-style reading test, work under timed conditions, submit your answers, and review the evidence. Seven tests are available. Humanity has finally organised its HTML files.</p>
+
+          <p class="hero-copy">
+            Choose a CDI-style reading test, work under timed conditions, and review the evidence instead of negotiating with the answer key. <strong>Eleven tests are available.</strong> Apparently one difficult passage was not enough.
+          </p>
+
+          <div class="snark-strip" aria-live="polite">
+            <span class="pulse" aria-hidden="true"></span>
+            <span id="snarkText">Your answer is probably in the passage. A revolutionary concept.</span>
+          </div>
         </div>
-        <div class="hero-stat"><strong>7</strong><span>Available tests</span></div>
+
+        <div class="hero-side">
+          <div class="hero-stat">
+            <strong id="heroCount">11</strong>
+            <span>Available tests</span>
+          </div>
+          <button id="randomTest" class="hero-random" type="button">
+            🎲 Choose my suffering
+            <small>Open a random reading test</small>
+          </button>
+        </div>
       </div>
     </section>
 
-    <div class="toolbar">
+    <section class="toolbar" aria-label="Test controls">
       <div class="search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-        <input id="searchInput" type="search" placeholder="Search reading tests…" autocomplete="off" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input id="searchInput" type="search" placeholder="Search tests, topics, or excuses…" autocomplete="off" />
       </div>
-      <div id="statusText" class="status">Showing 7 tests</div>
-    </div>
 
-    <section id="testGrid" class="grid"></section>
-    <div id="emptyState" class="empty">No tests match that search. The passage did not disappear; your filter did.</div>
+      <div id="filterRow" class="filter-row" aria-label="Filter by category"></div>
+
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+      <div id="statusText" class="status">Showing 11 tests</div>
+    </section>
+
+    <section id="testGrid" class="grid" aria-live="polite"></section>
+
+    <div id="emptyState" class="empty">
+      <strong>No tests match that search.</strong>
+      The passage did not disappear. Your filter simply became ambitious.
+    </div>
 
     <footer>
       <span><strong>Uboom IELTS Reading</strong> • U.A. Edition</span>
-      <span>Files loaded from the <code>/IELTS/</code> folder.</span>
+      <span>This page lives in <code>/public/</code>; tests load from <code>/public/IELTS/</code>. The folders are now behaving themselves.</span>
     </footer>
   </main>
 
-  <div id="toast" class="toast">Link copied</div>
+  <div id="toast" class="toast" role="status" aria-live="polite">Link copied</div>
 
   <script>
     const tests = [
       {
-        number: '01',
-        title: 'Mortality, Meaning and the Use of Time',
-        description: 'A reflective academic passage about mortality, temporal perception, priorities, meaningful choices and the legacy people leave behind.',
-        file: 'after-100-years.html',
-        level: 'Passage 2–3',
-        duration: '25 min',
-        questions: '13 questions',
-        types: 'Mixed tasks'
+        number:'01',
+        icon:'❄️',
+        title:'Can People Survive in Antarctica?',
+        description:'Survival, scientific research, wildlife, isolation and the practical inconvenience of living on the coldest continent.',
+        file:'Antarctica.html',
+        category:'Science',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'Cold passage. Warmer score, ideally.',
+        isNew:false
       },
       {
-        number: '02',
-        title: 'Bathing Frequency: Hygiene, Culture and Skin Balance',
-        description: 'An evidence-based reading test exploring hygiene, the skin microbiome, cultural habits and the risks of excessive washing.',
-        file: 'bathing-frequency.html',
-        level: 'Passage 2–3',
-        duration: '25 min',
-        questions: '13 questions',
-        types: 'Mixed tasks'
+        number:'02',
+        icon:'⌛',
+        title:'Mortality, Meaning and the Use of Time',
+        description:'A reflective academic passage about mortality, priorities, meaningful choices and what remains after a century has passed.',
+        file:'after-100-years.html',
+        category:'Ideas',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'A cheerful reminder that both time and the IELTS timer keep moving.',
+        isNew:true
       },
       {
-        number: '03',
-        title: 'Defining Greatness in Boxing',
-        description: 'A test on legendary boxers, technical excellence, sporting influence, personal development and Uzbekistan’s rise in boxing.',
-        file: 'boxing-greatness.html',
-        level: 'Passage 2–3',
-        duration: '25 min',
-        questions: '13 questions',
-        types: 'Mixed tasks'
+        number:'03',
+        icon:'✈️',
+        title:'The History of the Airplane',
+        description:'From early experiments and the Wright brothers to modern aviation and the science that keeps large metal objects in the sky.',
+        file:'airplane-history.html',
+        category:'History',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'Try not to crash directly into “Not Given.”',
+        isNew:false
       },
       {
-        number: '04',
-        title: 'Children, Responsibility and Legacy in Islamic Thought',
-        description: 'An academic-style passage examining parenthood, provision, responsibility, gratitude and the idea of family legacy in Islamic thought.',
-        file: 'children-legacy.html',
-        level: 'Passage 2–3',
-        duration: '25 min',
-        questions: '13 questions',
-        types: 'Mixed tasks'
+        number:'04',
+        icon:'🛁',
+        title:'Bathing Frequency: Hygiene, Culture and Skin Balance',
+        description:'An evidence-based reading test on hygiene, the skin microbiome, cultural habits and the risks of excessive washing.',
+        file:'bathing-frequency.html',
+        category:'Science',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'Clean reasoning first. The skincare debate can wait.',
+        isNew:true
       },
       {
-        number: '05',
-        title: 'Earth at Solar Scale',
-        description: 'A planetary-science test imagining Earth at the size of the Sun and examining gravity, distance, climate, scale and habitability.',
-        file: 'earth-sun-scale.html',
-        level: 'Passage 2–3',
-        duration: '25 min',
-        questions: '13 questions',
-        types: 'Mixed tasks'
+        number:'05',
+        icon:'🥊',
+        title:'Defining Greatness in Boxing',
+        description:'Legendary fighters, technical excellence, sporting influence, personal development and Uzbekistan’s rise in boxing.',
+        file:'boxing-greatness.html',
+        category:'Society',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'The answer choices also hit back.',
+        isNew:true
       },
       {
-        number: '06',
-        title: 'Euclid’s Elements: A Manual for Clear Thinking',
-        description: 'A reading passage on deductive reasoning, first principles, intellectual history and the continuing value of disciplined thought.',
-        file: 'euclids-elements.html',
-        level: 'Passage 2–3',
-        duration: '25 min',
-        questions: '13 questions',
-        types: 'Mixed tasks'
+        number:'06',
+        icon:'📈',
+        title:'The Habit of Consistency',
+        description:'A reading test on motivation, behavioural systems, deliberate practice, resilience and long-term achievement.',
+        file:'consistency-success.html',
+        category:'Ideas',
+        level:'Passage 2',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'Motivation left early. Discipline is still at work.',
+        isNew:false
       },
       {
-        number: '07',
-        title: 'Skilled Migration: Brain Drain or Brain Circulation?',
-        description: 'An academic test weighing migration, remittances, knowledge diffusion, labour shortages and the development effects of skilled mobility.',
-        file: 'skilled-migration.html',
-        level: 'Passage 2–3',
-        duration: '25 min',
-        questions: '13 questions',
-        types: 'Mixed tasks'
+        number:'07',
+        icon:'🌍',
+        title:'Earth at Solar Scale',
+        description:'A planetary-science test imagining Earth at the size of the Sun and examining gravity, distance, climate and habitability.',
+        file:'earth-sun-scale.html',
+        category:'Science',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'A small scaling problem. Quite literally the opposite.',
+        isNew:true
+      },
+      {
+        number:'08',
+        icon:'📐',
+        title:'Euclid’s Elements: A Manual for Clear Thinking',
+        description:'Deductive reasoning, first principles, intellectual history and the continuing value of disciplined thought.',
+        file:'euclids-elements.html',
+        category:'History',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'Proof that geometry was stressful long before Wi-Fi.',
+        isNew:true
+      },
+      {
+        number:'09',
+        icon:'📰',
+        title:'Reading Newspapers',
+        description:'The benefits and risks of newspapers, including civic awareness, bias, information overload and media literacy.',
+        file:'newspaper-reading.html',
+        category:'Society',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'Bias, facts and humanity’s oldest public comment section.',
+        isNew:false
+      },
+      {
+        number:'10',
+        icon:'🧳',
+        title:'Skilled Migration: Brain Drain or Brain Circulation?',
+        description:'Migration, remittances, knowledge diffusion, labour shortages and the development effects of skilled mobility.',
+        file:'skilled-migration.html',
+        category:'Society',
+        level:'Passage 2–3',
+        duration:'25 min',
+        questions:'13 questions',
+        quip:'Brain drain, but with headings and matching information.',
+        isNew:true
+      },
+      {
+        number:'11',
+        icon:'🤖',
+        title:'U.A. Edition: Artificial Intelligence Reading',
+        description:'A CDI-style academic reading test focused on artificial intelligence, modern learning and the changing relationship between people and information.',
+        file:'UA_Edition_CDI_AI_Reading.html',
+        category:'Technology',
+        level:'CDI Reading',
+        duration:'Timed practice',
+        questions:'Mixed tasks',
+        quip:'AI cannot choose your answer for you. A devastating setback.',
+        isNew:true
       }
+    ];
+
+    const snarks = [
+      'Your answer is probably in the passage. A revolutionary concept.',
+      'Read the question twice. Humans do enjoy losing marks to one word.',
+      'The timer is not judging you. It has outsourced that task.',
+      '“Not Given” is not the same as “I did not notice it.” Tragic, but important.',
+      'Ctrl+F is not an IELTS strategy. Nice try.',
+      'Evidence first, intuition second. Your intuition has had enough freedom.',
+      'Matching headings: where every paragraph suddenly develops a secret identity.'
     ];
 
     const grid = document.getElementById('testGrid');
     const searchInput = document.getElementById('searchInput');
+    const filterRow = document.getElementById('filterRow');
     const statusText = document.getElementById('statusText');
     const emptyState = document.getElementById('emptyState');
     const toast = document.getElementById('toast');
+    const randomTest = document.getElementById('randomTest');
+    const themeToggle = document.getElementById('themeToggle');
+    const snarkText = document.getElementById('snarkText');
+    const heroCount = document.getElementById('heroCount');
+
+    let activeCategory = 'All';
+    let visibleTests = [...tests];
+    let lastRandomIndex = -1;
+
+    heroCount.textContent = tests.length;
 
     function relativeUrl(file){
+      // index1.html lives in /public/, while the test files live in /public/IELTS/.
       return `IELTS/${file}`;
     }
 
@@ -314,64 +784,157 @@
       return new URL(relativeUrl(file), window.location.href).href;
     }
 
-    function render(list){
-      grid.innerHTML = list.map(test => {
-        const href = relativeUrl(test.file);
-        return `
-          <article class="card">
-            <div class="card-top">
+    function renderFilters(){
+      const categories = ['All', ...new Set(tests.map(test => test.category))];
+      filterRow.innerHTML = categories.map(category => `
+        <button class="chip ${category === activeCategory ? 'active' : ''}" type="button" data-category="${category}">
+          ${category}
+        </button>
+      `).join('');
+
+      filterRow.querySelectorAll('[data-category]').forEach(button => {
+        button.addEventListener('click', () => {
+          activeCategory = button.dataset.category;
+          renderFilters();
+          applyFilters();
+        });
+      });
+    }
+
+    function cardMarkup(test,index){
+      const href = relativeUrl(test.file);
+      return `
+        <article class="card" style="--i:${index}" data-file="${test.file}" data-title="${test.title}">
+          <div class="card-top">
+            <div class="number-icon">
               <div class="number">${test.number}</div>
-              <div class="badge">CDI Reading</div>
+              <div class="topic-icon" aria-hidden="true">${test.icon}</div>
             </div>
-            <h2>${test.title}</h2>
-            <p>${test.description}</p>
-            <div class="meta">
-              <span>${test.level}</span>
-              <span>${test.duration}</span>
-              <span>${test.questions}</span>
-              <span>${test.types}</span>
+            <div class="badges">
+              ${test.isNew ? '<span class="badge new">Recently added</span>' : ''}
+              <span class="badge">${test.category}</span>
             </div>
-            <div class="actions">
-              <a class="btn btn-primary" href="${href}">Start Test <span aria-hidden="true">→</span></a>
-              <button class="btn btn-copy" type="button" data-copy="${test.file}" title="Copy direct link" aria-label="Copy direct link">⧉</button>
-            </div>
-            <div class="direct-link"><a href="${href}">${href}</a></div>
-          </article>`;
-      }).join('');
+          </div>
+
+          <h2>${test.title}</h2>
+          <p>${test.description}</p>
+          <div class="quip">“${test.quip}”</div>
+
+          <div class="meta">
+            <span>${test.level}</span>
+            <span>${test.duration}</span>
+            <span>${test.questions}</span>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="${href}">Start Test <span aria-hidden="true">→</span></a>
+            <button class="btn btn-copy" type="button" data-copy="${test.file}" title="Copy direct link" aria-label="Copy direct link to ${test.title}">⧉</button>
+          </div>
+
+          <div class="direct-link"><a href="${href}">${test.file}</a></div>
+        </article>
+      `;
+    }
+
+    function render(list){
+      visibleTests = list;
+      grid.innerHTML = list.map(cardMarkup).join('');
 
       grid.style.display = list.length ? 'grid' : 'none';
       emptyState.style.display = list.length ? 'none' : 'block';
       statusText.textContent = `Showing ${list.length} test${list.length === 1 ? '' : 's'}`;
 
-      document.querySelectorAll('[data-copy]').forEach(button => {
+      grid.querySelectorAll('[data-copy]').forEach(button => {
         button.addEventListener('click', async () => {
           const url = absoluteUrl(button.dataset.copy);
-          try {
+          try{
             await navigator.clipboard.writeText(url);
-            showToast('Direct test link copied');
-          } catch {
-            window.prompt('Copy this link:', url);
+            showToast('Direct link copied. Civilization advances by one millimetre.');
+          }catch{
+            window.prompt('Copy this link manually, because browsers enjoy paperwork:',url);
           }
         });
       });
+
+      grid.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('pointermove', event => {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty('--mx',`${event.clientX - rect.left}px`);
+          card.style.setProperty('--my',`${event.clientY - rect.top}px`);
+        });
+      });
+    }
+
+    function applyFilters(){
+      const query = searchInput.value.trim().toLowerCase();
+      const filtered = tests.filter(test => {
+        const matchesCategory = activeCategory === 'All' || test.category === activeCategory;
+        const haystack = `${test.title} ${test.description} ${test.category} ${test.level} ${test.file}`.toLowerCase();
+        return matchesCategory && haystack.includes(query);
+      });
+      render(filtered);
     }
 
     function showToast(message){
       toast.textContent = message;
       toast.classList.add('show');
       clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'),2200);
     }
 
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.trim().toLowerCase();
-      const filtered = tests.filter(test =>
-        `${test.title} ${test.description} ${test.level} ${test.types}`.toLowerCase().includes(query)
-      );
-      render(filtered);
+    function rotateSnark(){
+      const current = snarkText.textContent;
+      const alternatives = snarks.filter(item => item !== current);
+      const next = alternatives[Math.floor(Math.random() * alternatives.length)];
+      snarkText.classList.add('changing');
+      setTimeout(() => {
+        snarkText.textContent = next;
+        snarkText.classList.remove('changing');
+      },220);
+    }
+
+    function chooseRandomTest(){
+      const pool = visibleTests.length ? visibleTests : tests;
+      let index = Math.floor(Math.random() * pool.length);
+      if(pool.length > 1 && index === lastRandomIndex){
+        index = (index + 1) % pool.length;
+      }
+      lastRandomIndex = index;
+      const selected = pool[index];
+      const card = grid.querySelector(`[data-file="${CSS.escape(selected.file)}"]`);
+
+      if(card){
+        card.classList.remove('spotlight');
+        void card.offsetWidth;
+        card.classList.add('spotlight');
+        card.scrollIntoView({behavior:'smooth',block:'center'});
+        showToast(`Fate selected “${selected.title}”. Fate has questionable taste.`);
+      }else{
+        window.location.href = relativeUrl(selected.file);
+      }
+    }
+
+    function applyTheme(theme){
+      document.documentElement.dataset.theme = theme;
+      themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      themeToggle.setAttribute('aria-label',theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      localStorage.setItem('uboom-reading-theme',theme);
+    }
+
+    searchInput.addEventListener('input',applyFilters);
+    randomTest.addEventListener('click',chooseRandomTest);
+    themeToggle.addEventListener('click',() => {
+      const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
     });
 
+    const storedTheme = localStorage.getItem('uboom-reading-theme');
+    const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    applyTheme(storedTheme || preferredTheme);
+
+    renderFilters();
     render(tests);
+    setInterval(rotateSnark,5200);
   </script>
 </body>
 </html>
