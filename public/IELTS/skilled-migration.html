@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U.A. Edition | Skilled Migration</title>
+<style>
+:root{
+  --ink:#17202b;
+  --muted:#667085;
+  --line:#d9dee7;
+  --paper:#ffffff;
+  --soft:#f4f6f8;
+  --navy:#0b1524;
+  --navy-2:#14243a;
+  --gold:#c9a24b;
+  --gold-soft:#f6edda;
+  --blue:#2f73c9;
+  --blue-soft:#e8f1fc;
+  --green:#16805a;
+  --green-soft:#e8f6f0;
+  --red:#c23b42;
+  --red-soft:#fceced;
+  --yellow:#fff1a8;
+  --header-h:68px;
+  --footer-h:78px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  overflow:hidden;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+
+/* Header */
+.header{
+  position:fixed;
+  top:0;left:0;right:0;
+  height:var(--header-h);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:0 18px;
+  background:linear-gradient(100deg,var(--navy),var(--navy-2));
+  color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  box-shadow:0 4px 18px rgba(8,18,31,.18);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:250px;
+}
+.owl-logo{
+  width:42px;
+  height:42px;
+  flex:0 0 auto;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(201,162,75,.55);
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+}
+.owl-logo svg{width:30px;height:30px;display:block}
+.brand-title{font-weight:800;letter-spacing:.05em;font-size:15px}
+.brand-sub{font-size:12px;color:#b9c4d2;margin-top:2px}
+.timer-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 14px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);
+  border-radius:999px;
+}
+.timer-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#b9c4d2}
+.timer-display{font-weight:800;min-width:54px;text-align:center;letter-spacing:.04em}
+.timer-display.warning{color:#ffd46c}
+.timer-display.danger{color:#ff8b90}
+.header-actions{display:flex;align-items:center;gap:8px;min-width:250px;justify-content:flex-end}
+.header-btn{
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  background:rgba(255,255,255,.06);
+  border-radius:9px;
+  padding:9px 11px;
+  font-size:13px;
+  font-weight:700;
+}
+.header-btn:hover{background:rgba(255,255,255,.12)}
+.header-btn.gold{border-color:rgba(201,162,75,.65);color:#f4d990}
+
+/* Main split area */
+.main-container{
+  position:fixed;
+  top:var(--header-h);
+  bottom:var(--footer-h);
+  left:0;right:0;
+  background:#fff;
+}
+.exam-strip{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  background:#f0f2f4;
+  border-bottom:1px solid var(--line);
+  color:#333;
+  font-size:14px;
+}
+.exam-strip strong{font-size:15px}
+.exam-strip .right-note{color:var(--muted);font-size:12px}
+.panels-container{
+  display:flex;
+  height:calc(100% - 44px);
+  overflow:hidden;
+}
+.passage-panel,.questions-panel{
+  overflow-y:auto;
+  scrollbar-gutter:stable;
+  min-width:260px;
+  background:#fff;
+}
+.passage-panel{
+  width:52%;
+  padding:26px 28px 110px;
+}
+.questions-panel{
+  width:48%;
+  padding:26px 28px 110px;
+  border-left:1px solid var(--line);
+}
+.resizer{
+  width:9px;
+  flex:0 0 9px;
+  cursor:col-resize;
+  background:
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 41%/6px 8px no-repeat,
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 50%/6px 8px no-repeat,
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 59%/6px 8px no-repeat,
+    #eef0f3;
+  border-left:1px solid #e2e5ea;
+  border-right:1px solid #e2e5ea;
+}
+body.resizing{cursor:col-resize;user-select:none}
+
+/* Passage */
+.passage-head{text-align:center;margin-bottom:22px}
+.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#9b772d;font-weight:800}
+.passage-title{font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.2;margin:7px 0 8px;color:#111927}
+.source{font-size:12px;color:var(--muted);line-height:1.45}
+.reading-passage{font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.68}
+.reading-passage p{margin:0 0 20px}
+.paragraph{
+  position:relative;
+  padding:8px 10px 8px 44px;
+  border-radius:8px;
+  scroll-margin-top:18px;
+}
+.paragraph:hover{background:#fafbfc}
+.paragraph.evidence{background:#fff8e8;outline:2px solid #e6bd62}
+.para-label{
+  position:absolute;
+  left:8px;top:10px;
+  width:25px;height:25px;
+  display:grid;place-items:center;
+  border:1px solid #b99340;
+  color:#8b6928;
+  font:700 13px Arial,sans-serif;
+  border-radius:50%;
+  background:#fffaf0;
+}
+mark.user-highlight{background:var(--yellow);padding:0 2px;border-radius:2px}
+.evidence-text{background:#ffd96b;padding:1px 2px;border-radius:2px}
+
+/* Questions */
+.question-group{margin-bottom:34px}
+.question-group-title{font-size:19px;font-weight:800;margin-bottom:6px}
+.instructions{color:#3d4652;font-size:15px;line-height:1.5;margin-bottom:18px}
+.heading-bank{
+  border:1px solid var(--line);
+  background:#fafbfc;
+  padding:14px 16px;
+  margin-bottom:18px;
+  border-radius:8px;
+}
+.heading-bank-title{font-weight:800;margin-bottom:8px}
+.heading-bank ol{margin:0;padding-left:26px}
+.heading-bank li{margin:6px 0}
+.question-card{
+  padding:14px 0 18px;
+  border-bottom:1px solid #eceff3;
+  scroll-margin-top:18px;
+}
+.question-card.active-question .q-badge{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,115,201,.12)}
+.q-line{display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.q-badge{
+  flex:0 0 auto;
+  min-width:31px;height:29px;
+  display:grid;place-items:center;
+  border:2px solid #c7ced8;
+  border-radius:5px;
+  font-weight:800;
+  background:#fff;
+}
+.q-text{padding-top:3px}
+.answer-select,.answer-text{
+  margin-top:12px;
+  width:min(100%,430px);
+  border:1px solid #aeb7c4;
+  border-radius:6px;
+  min-height:40px;
+  padding:8px 10px;
+  background:#fff;
+  font-weight:700;
+}
+.answer-select:focus,.answer-text:focus{outline:2px solid rgba(47,115,201,.25);border-color:var(--blue)}
+.option-list{margin-top:11px;display:grid;gap:7px}
+.option{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:10px 11px;
+  border:1px solid transparent;
+  border-radius:7px;
+  transition:.15s;
+}
+.option:hover{background:#f3f7fc;border-color:#cbdcf2}
+.option:has(input:checked){background:#dfeeff;border-color:#83b1e8}
+.option input{margin-top:3px;transform:scale(1.15);accent-color:var(--blue)}
+.question-card.correct .q-badge{border-color:var(--green);color:var(--green)}
+.question-card.incorrect .q-badge{border-color:var(--red);color:var(--red)}
+.option.correct-option{background:var(--green-soft)!important;border-color:#8bcab1!important}
+.option.wrong-option{background:var(--red-soft)!important;border-color:#e1a0a4!important}
+.answer-select.correct,.answer-text.correct{border-color:var(--green);background:var(--green-soft)}
+.answer-select.incorrect,.answer-text.incorrect{border-color:var(--red);background:var(--red-soft)}
+.feedback{
+  display:none;
+  margin-top:12px;
+  padding:11px 12px;
+  border-left:4px solid var(--gold);
+  background:#f7f3e9;
+  font-size:14px;
+  line-height:1.55;
+}
+.feedback.show{display:block}
+.feedback strong{color:#5e4619}
+.evidence-btn{
+  margin-top:8px;
+  border:1px solid #9d7a31;
+  background:#fffaf0;
+  color:#6e531e;
+  border-radius:6px;
+  padding:6px 9px;
+  font-weight:700;
+  font-size:12px;
+}
+
+/* Footer navigation */
+.nav-row{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:var(--footer-h);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 18px;
+  background:#fff;
+  border-top:1px solid var(--line);
+  box-shadow:0 -4px 18px rgba(24,33,45,.08);
+}
+.section-info{min-width:150px}
+.section-info strong{display:block;font-size:14px}
+.section-info span{font-size:12px;color:var(--muted)}
+.question-nav{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.nav-q{
+  width:34px;height:34px;
+  border:1px solid #c9d0da;
+  background:#fff;
+  color:#2b3340;
+  border-radius:4px;
+  font-weight:700;
+}
+.nav-q:hover{border-color:#8592a4}
+.nav-q.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav-q.answered{background:#e7ecf2;border-color:#b8c2cf}
+.nav-q.correct{background:var(--green);color:#fff;border-color:var(--green)}
+.nav-q.incorrect{background:var(--red);color:#fff;border-color:var(--red)}
+.submit-btn{
+  margin-left:auto;
+  min-width:155px;
+  padding:11px 18px;
+  border:none;
+  background:var(--navy);
+  color:#fff;
+  font-weight:800;
+  border-radius:6px;
+  box-shadow:0 6px 14px rgba(11,21,36,.16);
+}
+.submit-btn:hover{background:#162a44}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Selection menu */
+.selection-menu{
+  position:fixed;
+  display:none;
+  z-index:1000;
+  background:var(--navy);
+  color:#fff;
+  padding:6px;
+  border-radius:8px;
+  box-shadow:0 10px 24px rgba(0,0,0,.24);
+}
+.selection-menu button{
+  border:none;
+  color:#fff;
+  background:transparent;
+  padding:7px 10px;
+  border-radius:5px;
+  font-size:13px;
+  font-weight:700;
+}
+.selection-menu button:hover{background:rgba(255,255,255,.12)}
+
+/* Modals */
+.modal-overlay{
+  position:fixed;inset:0;z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  padding:18px;
+  background:rgba(6,13,24,.68);
+  backdrop-filter:blur(5px);
+}
+.modal-overlay.hidden{display:none}
+.modal{
+  width:min(760px,100%);
+  max-height:88vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:14px;
+  border:1px solid rgba(201,162,75,.45);
+  box-shadow:0 28px 80px rgba(0,0,0,.35);
+}
+.modal-head{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 22px;
+  color:#fff;
+  background:linear-gradient(110deg,var(--navy),#1b304d);
+}
+.modal-head .owl-logo{width:50px;height:50px}
+.modal-head h2{margin:0;font-size:22px}
+.modal-head p{margin:4px 0 0;color:#c7d2e0;font-size:13px}
+.modal-body{padding:22px}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.score-box{padding:15px;border:1px solid var(--line);border-radius:9px;background:#fafbfc;text-align:center}
+.score-box span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.score-box strong{font-size:25px;display:block;margin-top:4px}
+.sarcasm{padding:14px 16px;background:#f5efe2;border-left:5px solid var(--gold);font:italic 16px Georgia,serif;line-height:1.55}
+.result-list{margin-top:16px;border-top:1px solid var(--line)}
+.result-row{display:grid;grid-template-columns:50px 1fr 1fr;gap:10px;padding:10px 4px;border-bottom:1px solid #eceff3;font-size:13px}
+.result-row.ok{background:#f4fbf8}
+.result-row.bad{background:#fff7f7}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.modal-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 13px;font-weight:700}
+.modal-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Owl watermark */
+.owl-watermark{
+  position:fixed;
+  left:50%;top:54%;
+  transform:translate(-50%,-50%);
+  width:370px;height:370px;
+  opacity:.022;
+  pointer-events:none;
+  z-index:1;
+}
+.main-container,.nav-row,.header{isolation:isolate}
+.panels-container{position:relative;z-index:2}
+
+/* Responsive */
+@media(max-width:850px){
+  body{overflow:auto}
+  .header{position:sticky;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}
+  .brand,.header-actions{min-width:unset}
+  .brand-sub{display:none}
+  .main-container{position:relative;top:auto;bottom:auto;height:auto}
+  .panels-container{display:block;height:auto;overflow:visible}
+  .resizer{display:none}
+  .passage-panel,.questions-panel{width:100%!important;min-width:0;height:72vh;overflow-y:auto;padding:20px 18px 90px}
+  .questions-panel{border-left:none;border-top:2px solid var(--navy)}
+  .nav-row{position:sticky;height:auto;min-height:78px;flex-wrap:wrap;padding:10px 12px}
+  .question-nav{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+  .submit-btn{min-width:130px}
+  .score-grid{grid-template-columns:1fr}
+  .result-row{grid-template-columns:42px 1fr}
+  .result-row div:last-child{grid-column:2}
+  .owl-watermark{display:none}
+}
+@media(max-width:560px){
+  .header-actions .header-btn:not(.gold){display:none}
+  .brand-title{font-size:13px}
+  .passage-title{font-size:25px}
+  .reading-passage{font-size:16px}
+  .exam-strip .right-note{display:none}
+  .section-info{min-width:120px}
+}
+
+.matching-endings-bank{border:1px solid var(--line);background:#fafbfc;padding:14px 16px;margin:12px 0 20px;border-radius:8px}.matching-endings-bank div{margin:7px 0;line-height:1.45}.word-limit{font-size:13px;color:var(--muted);font-weight:700;margin-top:5px}.short-answer-wrap{margin-top:10px}.teacher-list{margin:0;padding-left:22px}.teacher-list li{margin:8px 0;line-height:1.45}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand"><div class="owl-logo" aria-label="U.A. owl emblem"><svg viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14z" fill="none" stroke="#c9a24b" stroke-width="3.2" stroke-linejoin="round"/>
+  <circle cx="24" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="40" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="24" cy="34" r="2.4" fill="#c9a24b"/>
+  <circle cx="40" cy="34" r="2.4" fill="#c9a24b"/>
+  <path d="M29 42l3 5 3-5M23 53c6 3 12 3 18 0" fill="none" stroke="#c9a24b" stroke-width="3" stroke-linecap="round"/>
+</svg></div><div><div class="brand-title">U.A. EDITION · READING LAB</div><div class="brand-sub">Computer-delivered IELTS practice. Talent crosses borders; thirteen questions inspect who actually gains.</div></div></div>
+  <div class="timer-wrap"><span class="timer-label">Time left</span><span class="timer-display" id="timerDisplay">25:00</span></div>
+  <div class="header-actions"><button class="header-btn" id="fontDownBtn">A−</button><button class="header-btn" id="fontUpBtn">A+</button><button class="header-btn" id="fullscreenBtn">Full screen</button><button class="header-btn gold" id="teacherBtn">Owl key</button></div>
+</header>
+<svg class="owl-watermark" viewBox="0 0 64 64" aria-hidden="true"><path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14zM17 27l15 9 15-9M32 36v19" fill="none" stroke="#0b1524" stroke-width="3"/></svg>
+<main class="main-container">
+  <div class="exam-strip"><div><strong>Reading Passage</strong> &nbsp; Answer Questions 1–13.</div><div class="right-note">Select passage text to highlight it. Drag the divider to resize the panels.</div></div>
+  <div class="panels-container" id="panelsContainer">
+    <section class="passage-panel" id="passagePanel">
+      <div class="passage-head"><div class="kicker">Migration · Labour Markets · Development</div><h1 class="passage-title">Skilled Migration: Brain Drain or Brain Circulation?</h1><div class="source">Adapted into IELTS Academic style from “The Advantages and Disadvantages of Skilled Workers Leaving Developing Countries”, published by @articles_in_english.</div></div>
+      <article class="reading-passage" id="readingPassage">
+<div class="paragraph" id="para-A"><span class="para-label">A</span><p>The international movement of highly trained workers presents a persistent policy dilemma. Doctors seek hospitals with better equipment, engineers move towards technology centres, and researchers pursue laboratories able to support ambitious work. For the individual, such decisions may bring higher income, professional growth and greater security. Yet when skilled citizens leave developing countries in large numbers, the societies that financed their education may lose precisely the people required to strengthen public services and economic institutions. Skilled migration is therefore neither wholly beneficial nor wholly damaging. Its effects depend on who moves, whether links with the country of origin are maintained, and whether migration becomes permanent departure or continuing exchange.</p></div>
+<div class="paragraph" id="para-B"><span class="para-label">B</span><p>Migration decisions rarely have a single cause. In many developing economies, lower salaries combine with limited research funding, weak infrastructure and slow career progression. These conditions push professionals towards external opportunities. At the same time, wealthier countries actively create a pull: universities recruit internationally, technology companies search globally, and hospitals facing staff shortages employ foreign clinicians. The result is an increasingly integrated labour market in which highly transferable skills can move more easily than many other economic resources. Talent does not simply escape one country; it is also deliberately attracted by another.</p></div>
+<div class="paragraph" id="para-C"><span class="para-label">C</span><p>The clearest gains often belong to migrants and their families. A doctor may obtain specialist training unavailable at home, while an engineer may work with advanced systems and experienced colleagues. Such exposure expands human capital: the knowledge, skills and professional judgement accumulated by an individual. Migration may also provide safer living conditions, improved healthcare and stronger educational opportunities for children. From this perspective, restricting movement can appear counterproductive. Preventing qualified people from entering environments where their abilities can develop may protect national statistics while limiting human potential.</p></div>
+<div class="paragraph" id="para-D"><span class="para-label">D</span><p>Benefits can also travel back without the worker. Migrants send remittances to relatives, and these transfers collectively amount to hundreds of billions of dollars each year. Unlike much foreign aid, which first passes through governments or organisations, remittances generally reach households directly. Families use them for school fees, medical treatment, housing and small enterprises. In some economies, such payments form a substantial share of national income. However, money cannot automatically replace specialised labour. A village may receive income from a nurse working abroad while still lacking a nurse in its local clinic. Financial inflow and professional absence can therefore exist simultaneously.</p></div>
+<div class="paragraph" id="para-E"><span class="para-label">E</span><p>Migration also carries ideas. Professionals working abroad encounter new technologies, management practices and research methods. If they return, invest, teach or collaborate remotely, this expertise can spread through the home economy. An entrepreneur may create employment, a scientist may establish a laboratory, and an engineer may improve infrastructure. This process is known as knowledge diffusion. Its importance lies in the fact that physical return is not always necessary: digital communication allows members of a diaspora to supervise projects, advise institutions and finance innovation from a distance. In favourable circumstances, mobility can enlarge a country's access to expertise rather than simply reduce it.</p></div>
+<div class="paragraph" id="para-F"><span class="para-label">F</span><p>The strongest criticism of skilled migration concerns brain drain, which occurs when educated workers leave faster than they can be replaced. The loss is particularly severe in healthcare, education, engineering and public administration. Hospitals lose specialists, universities lose experienced teachers, companies lose innovators and governments lose technical knowledge. Developing states may have invested heavily in training these professionals, only to see the return on that investment realised elsewhere. Such departures weaken institutional capacity, meaning the ability of organisations and systems to perform effectively. Where essential services were already understaffed, even a relatively small outflow can produce consequences far greater than the number of migrants suggests.</p></div>
+<div class="paragraph" id="para-G"><span class="para-label">G</span><p>The experience of a physician named Ahmed illustrates why the distinction between permanent and temporary migration matters. After qualifying in a developing country, he faced outdated equipment, limited resources and low compensation. A European hospital offered advanced technology, specialised training and expert mentorship, so he accepted the position. Nearly a decade later, however, he returned and helped establish a modern medical centre serving thousands of patients. Ahmed's departure initially removed a doctor from an area that needed one, but his eventual return brought substantially greater expertise. The case demonstrates the possible repatriation of skills: migration may create a delayed benefit if home countries provide realistic reasons for experienced professionals to return.</p></div>
+<div class="paragraph" id="para-H"><span class="para-label">H</span><p>Economists remain divided about the long-term balance. One view holds that global efficiency rises when talent moves to places where it can produce the greatest output. Another emphasises productivity differentials: the same engineer may create more value in an advanced technological system, while their absence simultaneously lowers productive capacity at home. The central question is therefore not whether migration creates value, but where that value accumulates. Increasingly, policymakers promote brain circulation rather than attempting to prevent departure altogether. Through remote collaboration, cross-border investment, temporary return programmes and professional networks, migrants can remain connected to their countries of origin. The most successful response may be neither open indifference nor strict restriction, but systems ensuring that mobile talent continues to contribute in more than one place.</p></div>
+</article>
+    </section>
+    <div class="resizer" id="resizer" title="Drag to resize"></div>
+    <section class="questions-panel" id="questionsPanel">
+<div class="question-group">
+  <div class="question-group-title">Questions 1–4</div>
+  <div class="instructions">Choose the correct heading for Paragraphs <strong>B, D, F and H</strong> from the list below.</div>
+  <div class="matching-endings-bank">
+    <div><strong>i</strong> &nbsp; The personal rewards of advanced workplaces</div>
+    <div><strong>ii</strong> &nbsp; Push and pull forces behind professional migration</div>
+    <div><strong>iii</strong> &nbsp; Private transfers with mixed public consequences</div>
+    <div><strong>iv</strong> &nbsp; When departure weakens essential systems</div>
+    <div><strong>v</strong> &nbsp; A returnee’s impact on healthcare</div>
+    <div><strong>vi</strong> &nbsp; Replacing permanent loss with continued connection</div>
+    <div><strong>vii</strong> &nbsp; Why global productivity always benefits the country of origin</div>
+    <div><strong>viii</strong> &nbsp; The legal case for preventing professional movement</div>
+  </div>
+  <div class="question-card" data-q="1" data-type="select" data-answer="ii" data-paragraph="B" data-evidence="lower salaries combine with limited research funding, weak infrastructure and slow career progression">
+    <div class="q-line"><span class="q-badge">1</span><div class="q-text">Paragraph B</div></div>
+    <select class="answer-select" data-q="1"><option value="">Choose a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option></select>
+    <div class="feedback"><strong>Why:</strong> Paragraph B explains both the conditions that push workers out and the active recruitment that pulls them towards richer economies.</div>
+  </div>
+  <div class="question-card" data-q="2" data-type="select" data-answer="iii" data-paragraph="D" data-evidence="Financial inflow and professional absence can therefore exist simultaneously">
+    <div class="q-line"><span class="q-badge">2</span><div class="q-text">Paragraph D</div></div>
+    <select class="answer-select" data-q="2"><option value="">Choose a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option></select>
+    <div class="feedback"><strong>Why:</strong> Paragraph D balances household remittance benefits against the fact that money does not replace absent professionals.</div>
+  </div>
+  <div class="question-card" data-q="3" data-type="select" data-answer="iv" data-paragraph="F" data-evidence="Such departures weaken institutional capacity">
+    <div class="q-line"><span class="q-badge">3</span><div class="q-text">Paragraph F</div></div>
+    <select class="answer-select" data-q="3"><option value="">Choose a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option></select>
+    <div class="feedback"><strong>Why:</strong> Paragraph F focuses on shortages and the weakening of hospitals, universities, firms and governments.</div>
+  </div>
+  <div class="question-card" data-q="4" data-type="select" data-answer="vi" data-paragraph="H" data-evidence="policymakers promote brain circulation rather than attempting to prevent departure altogether">
+    <div class="q-line"><span class="q-badge">4</span><div class="q-text">Paragraph H</div></div>
+    <select class="answer-select" data-q="4"><option value="">Choose a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option></select>
+    <div class="feedback"><strong>Why:</strong> Paragraph H proposes ongoing cross-border connections as an alternative to viewing migration as permanent national loss.</div>
+  </div>
+</div>
+
+<div class="question-group">
+  <div class="question-group-title">Questions 5–7</div>
+  <div class="instructions">Classify the following benefits according to who receives them most directly.<br><strong>A</strong> &nbsp; Migrants and their immediate families<br><strong>B</strong> &nbsp; Communities or institutions in the country of origin<br><strong>C</strong> &nbsp; Both groups</div>
+  <div class="question-card" data-q="5" data-type="select" data-answer="a" data-paragraph="C" data-evidence="specialist training unavailable at home">
+    <div class="q-line"><span class="q-badge">5</span><div class="q-text">access to advanced professional training and safer living conditions</div></div>
+    <select class="answer-select" data-q="5"><option value="">Choose A, B or C</option><option value="a">A</option><option value="b">B</option><option value="c">C</option></select>
+    <div class="feedback"><strong>Why:</strong> These are presented primarily as direct gains for migrants and their households.</div>
+  </div>
+  <div class="question-card" data-q="6" data-type="select" data-answer="b" data-paragraph="D" data-evidence="Families use them for school fees, medical treatment, housing and small enterprises">
+    <div class="q-line"><span class="q-badge">6</span><div class="q-text">household spending supported by money earned abroad</div></div>
+    <select class="answer-select" data-q="6"><option value="">Choose A, B or C</option><option value="a">A</option><option value="b">B</option><option value="c">C</option></select>
+    <div class="feedback"><strong>Why:</strong> The remittance is earned by the migrant but the stated spending benefit reaches households and communities at home.</div>
+  </div>
+  <div class="question-card" data-q="7" data-type="select" data-answer="c" data-paragraph="E" data-evidence="Professionals working abroad encounter new technologies, management practices and research methods">
+    <div class="q-line"><span class="q-badge">7</span><div class="q-text">expertise gained overseas and later shared with the home economy</div></div>
+    <select class="answer-select" data-q="7"><option value="">Choose A, B or C</option><option value="a">A</option><option value="b">B</option><option value="c">C</option></select>
+    <div class="feedback"><strong>Why:</strong> Migrants acquire additional human capital, while their country of origin may later receive the knowledge through return, investment or collaboration.</div>
+  </div>
+</div>
+
+<div class="question-group">
+  <div class="question-group-title">Questions 8–10</div>
+  <div class="instructions">Complete the summary using the words in the box. There are more words than you need.</div>
+  <div class="matching-endings-bank"><div><strong>brain drain</strong> &nbsp;&nbsp; <strong>economic inflow</strong> &nbsp;&nbsp; <strong>human capital</strong> &nbsp;&nbsp; <strong>institutional capacity</strong> &nbsp;&nbsp; <strong>productivity differentials</strong> &nbsp;&nbsp; <strong>repatriation</strong></div></div>
+  <div class="question-card" data-q="8" data-type="select" data-answer="brain drain" data-paragraph="F" data-evidence="brain drain, which occurs when educated workers leave faster than they can be replaced">
+    <div class="q-line"><span class="q-badge">8</span><div class="q-text">When skilled workers depart more rapidly than replacements can be trained, the country experiences <select class="answer-select" data-q="8"><option value="">Choose an answer</option><option value="brain drain">brain drain</option><option value="economic inflow">economic inflow</option><option value="human capital">human capital</option><option value="institutional capacity">institutional capacity</option><option value="productivity differentials">productivity differentials</option><option value="repatriation">repatriation</option></select>.</div></div>
+    <div class="feedback"><strong>Why:</strong> Paragraph F defines brain drain as skilled departure occurring faster than replacement.</div>
+  </div>
+  <div class="question-card" data-q="9" data-type="select" data-answer="institutional capacity" data-paragraph="F" data-evidence="institutional capacity, meaning the ability of organisations and systems to perform effectively">
+    <div class="q-line"><span class="q-badge">9</span><div class="q-text">Shortages in essential professions can reduce national <select class="answer-select" data-q="9"><option value="">Choose an answer</option><option value="brain drain">brain drain</option><option value="economic inflow">economic inflow</option><option value="human capital">human capital</option><option value="institutional capacity">institutional capacity</option><option value="productivity differentials">productivity differentials</option><option value="repatriation">repatriation</option></select>, particularly in healthcare and education.</div></div>
+    <div class="feedback"><strong>Why:</strong> The passage uses institutional capacity for the effective performance of organisations and systems.</div>
+  </div>
+  <div class="question-card" data-q="10" data-type="select" data-answer="repatriation" data-paragraph="G" data-evidence="The case demonstrates the possible repatriation of skills">
+    <div class="q-line"><span class="q-badge">10</span><div class="q-text">Ahmed’s return demonstrates the possible <select class="answer-select" data-q="10"><option value="">Choose an answer</option><option value="brain drain">brain drain</option><option value="economic inflow">economic inflow</option><option value="human capital">human capital</option><option value="institutional capacity">institutional capacity</option><option value="productivity differentials">productivity differentials</option><option value="repatriation">repatriation</option></select> of expertise acquired overseas.</div></div>
+    <div class="feedback"><strong>Why:</strong> Paragraph G explicitly describes his return as repatriation of skills.</div>
+  </div>
+</div>
+
+<div class="question-group">
+  <div class="question-group-title">Questions 11–13</div>
+  <div class="instructions">Choose the correct letter, <strong>A, B, C or D</strong>.</div>
+  <div class="question-card" data-q="11" data-type="radio" data-answer="b" data-paragraph="C" data-evidence="restricting movement can appear counterproductive">
+    <div class="q-line"><span class="q-badge">11</span><div class="q-text">Why does the writer suggest that restricting skilled migration may be counterproductive?</div></div>
+    <div class="option-list"><label class="option"><input type="radio" name="q11" value="a">A. It guarantees that workers will migrate illegally.</label><label class="option"><input type="radio" name="q11" value="b">B. It may prevent individuals from developing their abilities in better-equipped environments.</label><label class="option"><input type="radio" name="q11" value="c">C. It causes foreign governments to stop recruiting internationally.</label><label class="option"><input type="radio" name="q11" value="d">D. It removes all financial support received through foreign aid.</label></div>
+    <div class="feedback"><strong>Why:</strong> Paragraph C argues that restrictions can limit human potential by preventing professionals from entering environments where their abilities can flourish.</div>
+  </div>
+  <div class="question-card" data-q="12" data-type="radio" data-answer="c" data-paragraph="H" data-evidence="The central question is therefore not whether migration creates value, but where that value accumulates">
+    <div class="q-line"><span class="q-badge">12</span><div class="q-text">What is the central issue in the debate over productivity differentials?</div></div>
+    <div class="option-list"><label class="option"><input type="radio" name="q12" value="a">A. Whether skilled workers are more productive than unskilled workers</label><label class="option"><input type="radio" name="q12" value="b">B. Whether every migrant eventually returns home</label><label class="option"><input type="radio" name="q12" value="c">C. Whether value created by migration benefits the same places that bear its costs</label><label class="option"><input type="radio" name="q12" value="d">D. Whether remittances should be classified as foreign aid</label></div>
+    <div class="feedback"><strong>Why:</strong> The passage accepts that migration creates value but questions where that value finally accumulates.</div>
+  </div>
+  <div class="question-card" data-q="13" data-type="radio" data-answer="d" data-paragraph="H" data-evidence="systems ensuring that mobile talent continues to contribute in more than one place">
+    <div class="q-line"><span class="q-badge">13</span><div class="q-text">Which policy approach most closely matches the writer’s conclusion?</div></div>
+    <div class="option-list"><label class="option"><input type="radio" name="q13" value="a">A. Prevent all publicly educated professionals from leaving.</label><label class="option"><input type="radio" name="q13" value="b">B. Treat remittances as a complete replacement for lost expertise.</label><label class="option"><input type="radio" name="q13" value="c">C. Allow migration without attempting to preserve any connection with migrants.</label><label class="option"><input type="radio" name="q13" value="d">D. Build systems through which mobile professionals continue contributing across borders.</label></div>
+    <div class="feedback"><strong>Why:</strong> The conclusion favours brain circulation and continuing connections rather than either strict restriction or passive acceptance.</div>
+  </div>
+</div>
+</section>
+  </div>
+</main>
+<footer class="nav-row"><div class="section-info"><strong>Reading Passage</strong><span id="attemptedCount">0 of 13 answered</span></div><div class="question-nav" id="questionNav"></div><button class="submit-btn" id="submitBtn">Submit answers</button></footer>
+<div class="selection-menu" id="selectionMenu"><button id="highlightSelectionBtn">Highlight</button><button id="clearHighlightsBtn">Clear all</button></div>
+<div class="modal-overlay hidden" id="resultsModal"><div class="modal"><div class="modal-head"><div class="owl-logo"><svg viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14z" fill="none" stroke="#c9a24b" stroke-width="3.2" stroke-linejoin="round"/>
+  <circle cx="24" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="40" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="24" cy="34" r="2.4" fill="#c9a24b"/>
+  <circle cx="40" cy="34" r="2.4" fill="#c9a24b"/>
+  <path d="M29 42l3 5 3-5M23 53c6 3 12 3 18 0" fill="none" stroke="#c9a24b" stroke-width="3" stroke-linecap="round"/>
+</svg></div><div><h2>Results · Skilled Migration</h2><p>The borders stayed open. Your answers are now undergoing economic inspection.</p></div></div><div class="modal-body"><div class="score-grid"><div class="score-box"><span>Raw score</span><strong id="rawScore">0 / 13</strong></div><div class="score-box"><span>Estimated band</span><strong id="bandScore">—</strong></div><div class="score-box"><span>Time used</span><strong id="timeUsed">00:00</strong></div></div><div class="sarcasm" id="sarcasmText"></div><div class="result-list" id="resultList"></div><div class="modal-actions"><button class="modal-btn" id="resetBtn">Restart</button><button class="modal-btn primary" id="reviewBtn">Review evidence</button></div></div></div></div>
+<div class="modal-overlay hidden" id="teacherModal"><div class="modal"><div class="modal-head"><div class="owl-logo"><svg viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14z" fill="none" stroke="#c9a24b" stroke-width="3.2" stroke-linejoin="round"/>
+  <circle cx="24" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="40" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="24" cy="34" r="2.4" fill="#c9a24b"/>
+  <circle cx="40" cy="34" r="2.4" fill="#c9a24b"/>
+  <path d="M29 42l3 5 3-5M23 53c6 3 12 3 18 0" fill="none" stroke="#c9a24b" stroke-width="3" stroke-linecap="round"/>
+</svg></div><div><h2>Owl Key · Teacher Mode</h2><p>Answers are protected because apparently integrity requires architecture.</p></div></div><div class="modal-body"><div id="teacherContent"></div><div class="modal-actions"><button class="modal-btn primary" id="closeTeacherBtn">Close</button></div></div></div></div>
+<script>
+(() => {
+  const TOTAL_SECONDS=25*60, TEACHER_PASSWORD='IELTS fukcs', TEST_ID='skilled-migration', TEST_TITLE='Skilled Migration: Brain Drain or Brain Circulation?';
+  let timeLeft=TOTAL_SECONDS,timerId=null,submitted=false,fontScale=1,activeQuestion=1,lastSelectionRange=null;
+  const byId=id=>document.getElementById(id);
+  const timerDisplay=byId('timerDisplay'),passagePanel=byId('passagePanel'),questionsPanel=byId('questionsPanel'),resizer=byId('resizer'),panelsContainer=byId('panelsContainer'),questionNav=byId('questionNav'),attemptedCount=byId('attemptedCount'),submitBtn=byId('submitBtn'),selectionMenu=byId('selectionMenu'),resultsModal=byId('resultsModal');
+  const cards=[...document.querySelectorAll('.question-card')];
+  function formatTime(sec){const m=String(Math.floor(sec/60)).padStart(2,'0'),s=String(sec%60).padStart(2,'0');return `${m}:${s}`}
+  function startTimer(){clearInterval(timerId);timerDisplay.textContent=formatTime(timeLeft);timerId=setInterval(()=>{timeLeft--;timerDisplay.textContent=formatTime(timeLeft);timerDisplay.classList.toggle('warning',timeLeft<=300&&timeLeft>60);timerDisplay.classList.toggle('danger',timeLeft<=60);if(timeLeft<=0){timeLeft=0;clearInterval(timerId);submitTest(true)}},1000)}
+  function getCard(q){return document.querySelector(`.question-card[data-q="${q}"]`)}
+  function getInput(q){const card=getCard(q);if(!card)return null;const type=card.dataset.type;if(type==='radio')return card.querySelector(`input[name="q${q}"]:checked`);if(type==='select')return card.querySelector('.answer-select');return card.querySelector('.answer-text')}
+  function getAnswer(q){const el=getInput(q);return el?(el.value||'').trim():''}
+  function normalise(v){return String(v).toLowerCase().replace(/[.,;:!?]/g,'').replace(/\s+/g,' ').trim()}
+  function buildNav(){questionNav.innerHTML='';for(let q=1;q<=13;q++){const b=document.createElement('button');b.className='nav-q';b.textContent=q;b.dataset.q=q;b.addEventListener('click',()=>goToQuestion(q));questionNav.appendChild(b)}updateIndicators()}
+  function updateIndicators(){let answered=0;for(let q=1;q<=13;q++){const nav=document.querySelector(`.nav-q[data-q="${q}"]`);nav.classList.remove('answered','active');if(getAnswer(q)){answered++;nav.classList.add('answered')}if(q===activeQuestion)nav.classList.add('active')}attemptedCount.textContent=`${answered} of 13 answered`}
+  function goToQuestion(q){activeQuestion=Number(q);cards.forEach(c=>c.classList.remove('active-question'));const target=getCard(q);target?.classList.add('active-question');target?.scrollIntoView({behavior:'smooth',block:'center'});updateIndicators()}
+  document.querySelectorAll('.answer-select,.answer-text,input[type="radio"]').forEach(el=>{el.addEventListener('change',updateIndicators);el.addEventListener('input',updateIndicators);el.addEventListener('focus',()=>{const q=el.dataset.q||el.closest('.question-card')?.dataset.q||el.name?.replace('q','');if(q){activeQuestion=Number(q);updateIndicators()}})});
+  let resizing=false;resizer.addEventListener('mousedown',()=>{resizing=true;document.body.classList.add('resizing')});document.addEventListener('mousemove',e=>{if(!resizing||innerWidth<=850)return;const rect=panelsContainer.getBoundingClientRect();const left=Math.min(rect.width*.72,Math.max(rect.width*.28,e.clientX-rect.left));passagePanel.style.width=`${left}px`;questionsPanel.style.width=`${rect.width-left-resizer.offsetWidth}px`});document.addEventListener('mouseup',()=>{resizing=false;document.body.classList.remove('resizing')});
+  byId('readingPassage').addEventListener('mouseup',e=>{const sel=getSelection();if(!sel||sel.isCollapsed||!sel.rangeCount){selectionMenu.style.display='none';return}const range=sel.getRangeAt(0);if(!byId('readingPassage').contains(range.commonAncestorContainer))return;lastSelectionRange=range.cloneRange();selectionMenu.style.left=`${Math.min(innerWidth-170,e.clientX+8)}px`;selectionMenu.style.top=`${Math.max(76,e.clientY-42)}px`;selectionMenu.style.display='block'});
+  byId('highlightSelectionBtn').addEventListener('click',()=>{if(!lastSelectionRange)return;try{const mark=document.createElement('mark');mark.className='user-highlight';lastSelectionRange.surroundContents(mark)}catch(e){alert('Select a smaller piece of text inside one paragraph. Even browsers require manageable borders.')}getSelection()?.removeAllRanges();selectionMenu.style.display='none'});
+  byId('clearHighlightsBtn').addEventListener('click',()=>{document.querySelectorAll('mark.user-highlight').forEach(m=>m.replaceWith(...m.childNodes));selectionMenu.style.display='none'});
+  function estimateBand(score){return ({13:'9.0',12:'8.5',11:'8.0',10:'7.5',9:'7.0',8:'6.5',7:'6.0',6:'5.5',5:'5.0',4:'4.5',3:'4.0',2:'3.5',1:'3.0',0:'2.5'})[score]||'—'}
+  function comment(score){if(score===13)return 'Perfect circulation. Not one answer emigrated from logic.';if(score>=11)return 'Excellent. You tracked both the benefits and the institutional damage without losing the plot at customs.';if(score>=9)return 'Strong work. A few details crossed the border without documentation, but the argument remained intact.';if(score>=7)return 'Respectable. Your comprehension produced value, though some of it accumulated in the wrong option.';if(score>=5)return 'Economically active, academically unstable. Several answers experienced permanent brain drain.';if(score>=3)return 'The distractors recruited your attention more successfully than the passage did.';return 'Complete institutional collapse. The owl recommends immediate repatriation of your reading skills.'}
+  function markQuestion(q,ok){const card=getCard(q),nav=document.querySelector(`.nav-q[data-q="${q}"]`),input=getInput(q);nav.classList.remove('answered','active');nav.classList.add(ok?'correct':'incorrect');card.classList.add(ok?'correct':'incorrect');if(card.dataset.type==='radio'){input?.closest('.option')?.classList.add(ok?'correct-option':'wrong-option');card.querySelector(`input[value="${CSS.escape(card.dataset.answer)}"]`)?.closest('.option')?.classList.add('correct-option')}else input?.classList.add(ok?'correct':'incorrect');const fb=card.querySelector('.feedback');fb.classList.add('show');const b=document.createElement('button');b.className='evidence-btn';b.type='button';b.textContent='Show evidence';b.addEventListener('click',()=>showEvidence(q));fb.appendChild(b)}
+  function showEvidence(q){document.querySelectorAll('.paragraph').forEach(p=>p.classList.remove('evidence'));document.querySelectorAll('.evidence-text').forEach(s=>s.replaceWith(...s.childNodes));const card=getCard(q),para=byId(`para-${card.dataset.paragraph}`),evidence=card.dataset.evidence;if(!para)return;para.classList.add('evidence');if(evidence){const w=document.createTreeWalker(para,NodeFilter.SHOW_TEXT);let node;while(node=w.nextNode()){const idx=node.nodeValue.toLowerCase().indexOf(evidence.toLowerCase());if(idx>=0){const r=document.createRange();r.setStart(node,idx);r.setEnd(node,idx+evidence.length);const span=document.createElement('span');span.className='evidence-text';r.surroundContents(span);break}}}para.scrollIntoView({behavior:'smooth',block:'center'})}
+  function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+  function submitTest(auto=false){if(submitted)return;submitted=true;clearInterval(timerId);submitBtn.disabled=true;let score=0,rows=[];for(let q=1;q<=13;q++){const user=getAnswer(q),correct=getCard(q).dataset.answer,ok=normalise(user)===normalise(correct);if(ok)score++;markQuestion(q,ok);rows.push(`<div class="result-row ${ok?'ok':'bad'}"><div><strong>${q}</strong></div><div>Your answer: <strong>${user?escapeHtml(user):'—'}</strong></div><div>Correct: <strong>${escapeHtml(correct.toUpperCase())}</strong></div></div>`)}byId('rawScore').textContent=`${score} / 13`;byId('bandScore').textContent=estimateBand(score);byId('timeUsed').textContent=formatTime(TOTAL_SECONDS-timeLeft);byId('sarcasmText').textContent=comment(score);byId('resultList').innerHTML=rows.join('');resultsModal.classList.remove('hidden');try{localStorage.setItem(`uboomReadingResult:${TEST_ID}`,JSON.stringify({id:TEST_ID,title:TEST_TITLE,score,total:13,band:estimateBand(score),completedAt:new Date().toISOString()}))}catch(e){console.warn('Progress could not be stored.',e)}if(auto)document.querySelector('#resultsModal .modal-head p').textContent='Time expired. The professionals migrated; several answers failed to send remittances.'}
+  submitBtn.addEventListener('click',()=>submitTest(false));byId('reviewBtn').addEventListener('click',()=>resultsModal.classList.add('hidden'));byId('resetBtn').addEventListener('click',()=>location.reload());
+  byId('fontDownBtn').addEventListener('click',()=>{fontScale=Math.max(.86,fontScale-.06);document.documentElement.style.fontSize=`${fontScale}em`});byId('fontUpBtn').addEventListener('click',()=>{fontScale=Math.min(1.3,fontScale+.06);document.documentElement.style.fontSize=`${fontScale}em`});byId('fullscreenBtn').addEventListener('click',()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen());
+  byId('teacherBtn').addEventListener('click',()=>{const pw=prompt('Enter Owl Key password:');if(pw!==TEACHER_PASSWORD){alert('Wrong password. The owl has rejected your visa application.');return}byId('teacherContent').innerHTML=`<ol class="teacher-list">${cards.map(c=>`<li><strong>${c.dataset.q}.</strong> ${escapeHtml(c.dataset.answer.toUpperCase())} <span class="muted">(Paragraph ${c.dataset.paragraph})</span></li>`).join('')}</ol>`;byId('teacherModal').classList.remove('hidden')});byId('closeTeacherBtn').addEventListener('click',()=>byId('teacherModal').classList.add('hidden'));
+  buildNav();startTimer();goToQuestion(1);
+})();
+</script>
+</body>
+</html>

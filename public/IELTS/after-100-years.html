@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U.A. Edition | Mortality, Meaning and the Use of Time</title>
+<style>
+:root{
+  --ink:#17202b;
+  --muted:#667085;
+  --line:#d9dee7;
+  --paper:#ffffff;
+  --soft:#f4f6f8;
+  --navy:#0b1524;
+  --navy-2:#14243a;
+  --gold:#c9a24b;
+  --gold-soft:#f6edda;
+  --blue:#2f73c9;
+  --blue-soft:#e8f1fc;
+  --green:#16805a;
+  --green-soft:#e8f6f0;
+  --red:#c23b42;
+  --red-soft:#fceced;
+  --yellow:#fff1a8;
+  --header-h:68px;
+  --footer-h:78px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  overflow:hidden;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+
+/* Header */
+.header{
+  position:fixed;
+  top:0;left:0;right:0;
+  height:var(--header-h);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:0 18px;
+  background:linear-gradient(100deg,var(--navy),var(--navy-2));
+  color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  box-shadow:0 4px 18px rgba(8,18,31,.18);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:250px;
+}
+.owl-logo{
+  width:42px;
+  height:42px;
+  flex:0 0 auto;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(201,162,75,.55);
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+}
+.owl-logo svg{width:30px;height:30px;display:block}
+.brand-title{font-weight:800;letter-spacing:.05em;font-size:15px}
+.brand-sub{font-size:12px;color:#b9c4d2;margin-top:2px}
+.timer-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 14px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);
+  border-radius:999px;
+}
+.timer-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#b9c4d2}
+.timer-display{font-weight:800;min-width:54px;text-align:center;letter-spacing:.04em}
+.timer-display.warning{color:#ffd46c}
+.timer-display.danger{color:#ff8b90}
+.header-actions{display:flex;align-items:center;gap:8px;min-width:250px;justify-content:flex-end}
+.header-btn{
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  background:rgba(255,255,255,.06);
+  border-radius:9px;
+  padding:9px 11px;
+  font-size:13px;
+  font-weight:700;
+}
+.header-btn:hover{background:rgba(255,255,255,.12)}
+.header-btn.gold{border-color:rgba(201,162,75,.65);color:#f4d990}
+
+/* Main split area */
+.main-container{
+  position:fixed;
+  top:var(--header-h);
+  bottom:var(--footer-h);
+  left:0;right:0;
+  background:#fff;
+}
+.exam-strip{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  background:#f0f2f4;
+  border-bottom:1px solid var(--line);
+  color:#333;
+  font-size:14px;
+}
+.exam-strip strong{font-size:15px}
+.exam-strip .right-note{color:var(--muted);font-size:12px}
+.panels-container{
+  display:flex;
+  height:calc(100% - 44px);
+  overflow:hidden;
+}
+.passage-panel,.questions-panel{
+  overflow-y:auto;
+  scrollbar-gutter:stable;
+  min-width:260px;
+  background:#fff;
+}
+.passage-panel{
+  width:52%;
+  padding:26px 28px 110px;
+}
+.questions-panel{
+  width:48%;
+  padding:26px 28px 110px;
+  border-left:1px solid var(--line);
+}
+.resizer{
+  width:9px;
+  flex:0 0 9px;
+  cursor:col-resize;
+  background:
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 41%/6px 8px no-repeat,
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 50%/6px 8px no-repeat,
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 59%/6px 8px no-repeat,
+    #eef0f3;
+  border-left:1px solid #e2e5ea;
+  border-right:1px solid #e2e5ea;
+}
+body.resizing{cursor:col-resize;user-select:none}
+
+/* Passage */
+.passage-head{text-align:center;margin-bottom:22px}
+.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#9b772d;font-weight:800}
+.passage-title{font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.2;margin:7px 0 8px;color:#111927}
+.source{font-size:12px;color:var(--muted);line-height:1.45}
+.reading-passage{font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.68}
+.reading-passage p{margin:0 0 20px}
+.paragraph{
+  position:relative;
+  padding:8px 10px 8px 44px;
+  border-radius:8px;
+  scroll-margin-top:18px;
+}
+.paragraph:hover{background:#fafbfc}
+.paragraph.evidence{background:#fff8e8;outline:2px solid #e6bd62}
+.para-label{
+  position:absolute;
+  left:8px;top:10px;
+  width:25px;height:25px;
+  display:grid;place-items:center;
+  border:1px solid #b99340;
+  color:#8b6928;
+  font:700 13px Arial,sans-serif;
+  border-radius:50%;
+  background:#fffaf0;
+}
+mark.user-highlight{background:var(--yellow);padding:0 2px;border-radius:2px}
+.evidence-text{background:#ffd96b;padding:1px 2px;border-radius:2px}
+
+/* Questions */
+.question-group{margin-bottom:34px}
+.question-group-title{font-size:19px;font-weight:800;margin-bottom:6px}
+.instructions{color:#3d4652;font-size:15px;line-height:1.5;margin-bottom:18px}
+.heading-bank{
+  border:1px solid var(--line);
+  background:#fafbfc;
+  padding:14px 16px;
+  margin-bottom:18px;
+  border-radius:8px;
+}
+.heading-bank-title{font-weight:800;margin-bottom:8px}
+.heading-bank ol{margin:0;padding-left:26px}
+.heading-bank li{margin:6px 0}
+.question-card{
+  padding:14px 0 18px;
+  border-bottom:1px solid #eceff3;
+  scroll-margin-top:18px;
+}
+.question-card.active-question .q-badge{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,115,201,.12)}
+.q-line{display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.q-badge{
+  flex:0 0 auto;
+  min-width:31px;height:29px;
+  display:grid;place-items:center;
+  border:2px solid #c7ced8;
+  border-radius:5px;
+  font-weight:800;
+  background:#fff;
+}
+.q-text{padding-top:3px}
+.answer-select,.answer-text{
+  margin-top:12px;
+  width:min(100%,430px);
+  border:1px solid #aeb7c4;
+  border-radius:6px;
+  min-height:40px;
+  padding:8px 10px;
+  background:#fff;
+  font-weight:700;
+}
+.answer-select:focus,.answer-text:focus{outline:2px solid rgba(47,115,201,.25);border-color:var(--blue)}
+.option-list{margin-top:11px;display:grid;gap:7px}
+.option{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:10px 11px;
+  border:1px solid transparent;
+  border-radius:7px;
+  transition:.15s;
+}
+.option:hover{background:#f3f7fc;border-color:#cbdcf2}
+.option:has(input:checked){background:#dfeeff;border-color:#83b1e8}
+.option input{margin-top:3px;transform:scale(1.15);accent-color:var(--blue)}
+.question-card.correct .q-badge{border-color:var(--green);color:var(--green)}
+.question-card.incorrect .q-badge{border-color:var(--red);color:var(--red)}
+.option.correct-option{background:var(--green-soft)!important;border-color:#8bcab1!important}
+.option.wrong-option{background:var(--red-soft)!important;border-color:#e1a0a4!important}
+.answer-select.correct,.answer-text.correct{border-color:var(--green);background:var(--green-soft)}
+.answer-select.incorrect,.answer-text.incorrect{border-color:var(--red);background:var(--red-soft)}
+.feedback{
+  display:none;
+  margin-top:12px;
+  padding:11px 12px;
+  border-left:4px solid var(--gold);
+  background:#f7f3e9;
+  font-size:14px;
+  line-height:1.55;
+}
+.feedback.show{display:block}
+.feedback strong{color:#5e4619}
+.evidence-btn{
+  margin-top:8px;
+  border:1px solid #9d7a31;
+  background:#fffaf0;
+  color:#6e531e;
+  border-radius:6px;
+  padding:6px 9px;
+  font-weight:700;
+  font-size:12px;
+}
+
+/* Footer navigation */
+.nav-row{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:var(--footer-h);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 18px;
+  background:#fff;
+  border-top:1px solid var(--line);
+  box-shadow:0 -4px 18px rgba(24,33,45,.08);
+}
+.section-info{min-width:150px}
+.section-info strong{display:block;font-size:14px}
+.section-info span{font-size:12px;color:var(--muted)}
+.question-nav{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.nav-q{
+  width:34px;height:34px;
+  border:1px solid #c9d0da;
+  background:#fff;
+  color:#2b3340;
+  border-radius:4px;
+  font-weight:700;
+}
+.nav-q:hover{border-color:#8592a4}
+.nav-q.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav-q.answered{background:#e7ecf2;border-color:#b8c2cf}
+.nav-q.correct{background:var(--green);color:#fff;border-color:var(--green)}
+.nav-q.incorrect{background:var(--red);color:#fff;border-color:var(--red)}
+.submit-btn{
+  margin-left:auto;
+  min-width:155px;
+  padding:11px 18px;
+  border:none;
+  background:var(--navy);
+  color:#fff;
+  font-weight:800;
+  border-radius:6px;
+  box-shadow:0 6px 14px rgba(11,21,36,.16);
+}
+.submit-btn:hover{background:#162a44}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Selection menu */
+.selection-menu{
+  position:fixed;
+  display:none;
+  z-index:1000;
+  background:var(--navy);
+  color:#fff;
+  padding:6px;
+  border-radius:8px;
+  box-shadow:0 10px 24px rgba(0,0,0,.24);
+}
+.selection-menu button{
+  border:none;
+  color:#fff;
+  background:transparent;
+  padding:7px 10px;
+  border-radius:5px;
+  font-size:13px;
+  font-weight:700;
+}
+.selection-menu button:hover{background:rgba(255,255,255,.12)}
+
+/* Modals */
+.modal-overlay{
+  position:fixed;inset:0;z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  padding:18px;
+  background:rgba(6,13,24,.68);
+  backdrop-filter:blur(5px);
+}
+.modal-overlay.hidden{display:none}
+.modal{
+  width:min(760px,100%);
+  max-height:88vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:14px;
+  border:1px solid rgba(201,162,75,.45);
+  box-shadow:0 28px 80px rgba(0,0,0,.35);
+}
+.modal-head{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 22px;
+  color:#fff;
+  background:linear-gradient(110deg,var(--navy),#1b304d);
+}
+.modal-head .owl-logo{width:50px;height:50px}
+.modal-head h2{margin:0;font-size:22px}
+.modal-head p{margin:4px 0 0;color:#c7d2e0;font-size:13px}
+.modal-body{padding:22px}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.score-box{padding:15px;border:1px solid var(--line);border-radius:9px;background:#fafbfc;text-align:center}
+.score-box span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.score-box strong{font-size:25px;display:block;margin-top:4px}
+.sarcasm{padding:14px 16px;background:#f5efe2;border-left:5px solid var(--gold);font:italic 16px Georgia,serif;line-height:1.55}
+.result-list{margin-top:16px;border-top:1px solid var(--line)}
+.result-row{display:grid;grid-template-columns:50px 1fr 1fr;gap:10px;padding:10px 4px;border-bottom:1px solid #eceff3;font-size:13px}
+.result-row.ok{background:#f4fbf8}
+.result-row.bad{background:#fff7f7}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.modal-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 13px;font-weight:700}
+.modal-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Owl watermark */
+.owl-watermark{
+  position:fixed;
+  left:50%;top:54%;
+  transform:translate(-50%,-50%);
+  width:370px;height:370px;
+  opacity:.022;
+  pointer-events:none;
+  z-index:1;
+}
+.main-container,.nav-row,.header{isolation:isolate}
+.panels-container{position:relative;z-index:2}
+
+/* Responsive */
+@media(max-width:850px){
+  body{overflow:auto}
+  .header{position:sticky;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}
+  .brand,.header-actions{min-width:unset}
+  .brand-sub{display:none}
+  .main-container{position:relative;top:auto;bottom:auto;height:auto}
+  .panels-container{display:block;height:auto;overflow:visible}
+  .resizer{display:none}
+  .passage-panel,.questions-panel{width:100%!important;min-width:0;height:72vh;overflow-y:auto;padding:20px 18px 90px}
+  .questions-panel{border-left:none;border-top:2px solid var(--navy)}
+  .nav-row{position:sticky;height:auto;min-height:78px;flex-wrap:wrap;padding:10px 12px}
+  .question-nav{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+  .submit-btn{min-width:130px}
+  .score-grid{grid-template-columns:1fr}
+  .result-row{grid-template-columns:42px 1fr}
+  .result-row div:last-child{grid-column:2}
+  .owl-watermark{display:none}
+}
+@media(max-width:560px){
+  .header-actions .header-btn:not(.gold){display:none}
+  .brand-title{font-size:13px}
+  .passage-title{font-size:25px}
+  .reading-passage{font-size:16px}
+  .exam-strip .right-note{display:none}
+  .section-info{min-width:120px}
+}
+
+.matching-endings-bank{border:1px solid var(--line);background:#fafbfc;padding:14px 16px;margin:12px 0 20px;border-radius:8px}.matching-endings-bank div{margin:7px 0;line-height:1.45}.word-limit{font-size:13px;color:var(--muted);font-weight:700;margin-top:5px}.short-answer-wrap{margin-top:10px}.teacher-list{margin:0;padding-left:22px}.teacher-list li{margin:8px 0;line-height:1.45}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <div class="owl-logo" aria-label="U.A. owl emblem"><svg viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14z" fill="none" stroke="#c9a24b" stroke-width="3.2" stroke-linejoin="round"/>
+  <circle cx="24" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="40" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="24" cy="34" r="2.4" fill="#c9a24b"/>
+  <circle cx="40" cy="34" r="2.4" fill="#c9a24b"/>
+  <path d="M29 42l3 5 3-5M23 53c6 3 12 3 18 0" fill="none" stroke="#c9a24b" stroke-width="3" stroke-linecap="round"/>
+</svg></div>
+    <div><div class="brand-title">U.A. EDITION · READING LAB</div><div class="brand-sub">Computer-delivered IELTS practice. Meaning is finite; distractors are not.</div></div>
+  </div>
+  <div class="timer-wrap"><span class="timer-label">Time left</span><span class="timer-display" id="timerDisplay">25:00</span></div>
+  <div class="header-actions">
+    <button class="header-btn" id="fontDownBtn" title="Decrease text size">A−</button>
+    <button class="header-btn" id="fontUpBtn" title="Increase text size">A+</button>
+    <button class="header-btn" id="fullscreenBtn">Full screen</button>
+    <button class="header-btn gold" id="teacherBtn">Owl key</button>
+  </div>
+</header>
+<svg class="owl-watermark" viewBox="0 0 64 64" aria-hidden="true"><path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14zM17 27l15 9 15-9M32 36v19" fill="none" stroke="#0b1524" stroke-width="3"/></svg>
+<main class="main-container">
+  <div class="exam-strip"><div><strong>Reading Passage</strong> &nbsp; Answer Questions 1–13.</div><div class="right-note">Select passage text to highlight it. Drag the divider to resize the panels.</div></div>
+  <div class="panels-container" id="panelsContainer">
+    <section class="passage-panel" id="passagePanel">
+      <div class="passage-head"><div class="kicker">Philosophy · Psychology · Human Behaviour</div><h1 class="passage-title">Mortality, Meaning and the Use of Time</h1><div class="source">Adapted into IELTS Academic style from “After 100 Years, We All Will Be Dead”, published by @articles_in_english.</div></div>
+      <article class="reading-passage" id="readingPassage"><div class="paragraph" id="para-A"><span class="para-label">A</span><p>The statement that almost everyone alive today will be gone within a century initially sounds bleak. Examined more carefully, however, it can clarify rather than diminish life. People devote enormous attention to embarrassment, rivalry, status and criticism, even though such concerns rarely possess lasting significance. Awareness of mortality rearranges priorities by forcing a difficult question: if time is limited, what deserves it? Philosophers and ordinary people have offered different answers, yet many agree that life gains meaning not in spite of its limits but partly because of them.</p></div>
+<div class="paragraph" id="para-B"><span class="para-label">B</span><p>Human attention is naturally drawn towards immediate demands. Bills, deadlines and social obligations feel concrete, whereas the distant future remains abstract. History nevertheless demonstrates the impermanence of nearly everything. A century ago, other people occupied today's streets, schools and workplaces. Their ambitions and anxieties felt no less urgent than ours, but most of their names have disappeared from public memory. Impermanence is often treated as a loss because people desire stability. Yet temporary experiences can become valuable precisely because they cannot continue indefinitely.</p></div>
+<div class="paragraph" id="para-C"><span class="para-label">C</span><p>The apparent length of a century is also misleading. Psychologists use the term temporal perception to describe the subjective experience of time, which often appears to accelerate with age. Years that once seemed extensive may later pass with disturbing speed. This observation is intended less as a threat than as practical information. Wealth, ability and opportunity are distributed unequally, but every person receives only a finite lifespan. The crucial difference is therefore not whether time is limited, but how that limitation is used.</p></div>
+<div class="paragraph" id="para-D"><span class="para-label">D</span><p>Death does not erase every consequence of a life. Ideas, books, discoveries and acts of kindness can continue through the people they affect. This relationship between actions and later results may be understood as causality. Human lives generate chains of influence that extend beyond direct observation. A successful entrepreneur once attributed the direction of his life not to a famous business leader but to a teacher who had encouraged him during adolescence. The teacher probably regarded the conversation as ordinary; the student remembered it for decades. The episode shows that influence can be nonlinear: a small intervention may produce an outcome far greater than its apparent size. Lasting legacies often emerge from ordinary moments rather than grand gestures.</p></div>
+<div class="paragraph" id="para-E"><span class="para-label">E</span><p>Mortality can also be psychologically liberating. Much hesitation originates in fear of judgement, failure or embarrassment. People avoid opportunities and remain within unsatisfying routines because change carries social risk. Viewed across several decades, however, many such fears lose their importance. Existentialist thinkers argued that mortality should promote action rather than paralysis. If existence contains no guaranteed, predetermined meaning, individuals carry greater responsibility for the choices through which they construct it. A limited life makes indefinite postponement increasingly difficult to defend.</p></div>
+<div class="paragraph" id="para-F"><span class="para-label">F</span><p>Modern societies frequently confuse activity with purpose. Existing requires biological survival, but living in a fuller sense involves engagement, curiosity, development and connection. Research on well-being repeatedly suggests that fulfilment depends less on endless material accumulation than many people expect. Money and achievement matter, but humans adapt quickly to improved circumstances; new possessions become normal and are replaced by new desires. Relationships, meaningful experiences and a durable sense of purpose tend to resist this process more successfully.</p></div>
+<div class="paragraph" id="para-G"><span class="para-label">G</span><p>A cemetery offers a severe but useful perspective. The names carved into old stones belonged to people whose triumphs and worries once felt permanent. Recognising their disappearance can encourage humility, not as self-contempt but as an accurate understanding of one's small place within a much larger history. It can also correct mistaken ideas about legacy. People who concentrate obsessively on being remembered may create little worth remembering. Meaningful legacies are more often a by-product of meaningful living. Psychologists describe the pursuit of aims extending beyond personal interest as self-transcendence, and such contribution frequently produces deeper fulfilment than self-promotion.</p></div>
+<div class="paragraph" id="para-H"><span class="para-label">H</span><p>If human beings were immortal, delay would carry little cost. There would always be another year in which to repair a relationship, begin important work or pay attention to an ordinary afternoon. Mortality gives these moments urgency because scarcity creates value. The temporary nature of life is therefore not only a tragedy; it is also a source of appreciation, courage and purpose. The author ultimately presents gratitude, rather than fear or denial, as the most rational response to mortality. A century from now, today's population will largely be gone. Today, however, remains available, which is precisely why it matters.</p></div></article>
+    </section>
+    <div class="resizer" id="resizer" title="Drag to resize"></div>
+    <section class="questions-panel" id="questionsPanel">
+      <div class="question-group">
+        <div class="question-group-title">Questions 1–4</div>
+        <div class="instructions">Complete each sentence with the correct ending, <strong>A–H</strong>.</div>
+        <div class="matching-endings-bank"><div><strong>A</strong> transfer responsibility for choices to future generations.</div><div><strong>B</strong> cause long periods to feel progressively shorter.</div><div><strong>C</strong> prove that material achievement contributes nothing to well-being.</div><div><strong>D</strong> give personal choices greater urgency and responsibility.</div><div><strong>E</strong> produce consequences far larger than their apparent importance.</div><div><strong>F</strong> make accurate memories of childhood impossible.</div><div><strong>G</strong> gain value from the fact that they cannot last permanently.</div><div><strong>H</strong> allow teachers to predict which students will become successful.</div></div>
+        <div class="question-card" data-q="1" data-type="select" data-answer="g" data-paragraph="B" data-evidence="temporary experiences can become valuable precisely because they cannot continue indefinitely.">
+      <div class="q-line"><span class="q-badge">1</span><div class="q-text">The writer suggests that temporary experiences can</div></div>
+      <select class="answer-select" data-q="1"><option value="">Choose an ending</option><option value="a">A. transfer responsibility for choices to future generations.</option><option value="b">B. cause long periods to feel progressively shorter.</option><option value="c">C. prove that material achievement contributes nothing to well-being.</option><option value="d">D. give personal choices greater urgency and responsibility.</option><option value="e">E. produce consequences far larger than their apparent importance.</option><option value="f">F. make accurate memories of childhood impossible.</option><option value="g">G. gain value from the fact that they cannot last permanently.</option><option value="h">H. allow teachers to predict which students will become successful.</option></select>
+      <div class="feedback"><strong>Why:</strong> The passage links value to limitation: an experience matters partly because it cannot continue forever.</div>
+    </div><div class="question-card" data-q="2" data-type="select" data-answer="b" data-paragraph="C" data-evidence="temporal perception to describe the subjective experience of time, which often appears to accelerate with age.">
+      <div class="q-line"><span class="q-badge">2</span><div class="q-text">According to the discussion of temporal perception, ageing may</div></div>
+      <select class="answer-select" data-q="2"><option value="">Choose an ending</option><option value="a">A. transfer responsibility for choices to future generations.</option><option value="b">B. cause long periods to feel progressively shorter.</option><option value="c">C. prove that material achievement contributes nothing to well-being.</option><option value="d">D. give personal choices greater urgency and responsibility.</option><option value="e">E. produce consequences far larger than their apparent importance.</option><option value="f">F. make accurate memories of childhood impossible.</option><option value="g">G. gain value from the fact that they cannot last permanently.</option><option value="h">H. allow teachers to predict which students will become successful.</option></select>
+      <div class="feedback"><strong>Why:</strong> The question paraphrases the claim that time seems to accelerate as people grow older.</div>
+    </div><div class="question-card" data-q="3" data-type="select" data-answer="e" data-paragraph="D" data-evidence="The episode shows that influence can be nonlinear: a small intervention may produce an outcome far greater than its apparent size.">
+      <div class="q-line"><span class="q-badge">3</span><div class="q-text">The entrepreneur's story is used to show that a minor action can</div></div>
+      <select class="answer-select" data-q="3"><option value="">Choose an ending</option><option value="a">A. transfer responsibility for choices to future generations.</option><option value="b">B. cause long periods to feel progressively shorter.</option><option value="c">C. prove that material achievement contributes nothing to well-being.</option><option value="d">D. give personal choices greater urgency and responsibility.</option><option value="e">E. produce consequences far larger than their apparent importance.</option><option value="f">F. make accurate memories of childhood impossible.</option><option value="g">G. gain value from the fact that they cannot last permanently.</option><option value="h">H. allow teachers to predict which students will become successful.</option></select>
+      <div class="feedback"><strong>Why:</strong> The teacher’s brief encouragement had an effect that was much larger than the teacher probably expected.</div>
+    </div><div class="question-card" data-q="4" data-type="select" data-answer="d" data-paragraph="E" data-evidence="Existentialist thinkers argued that mortality should promote action rather than paralysis.">
+      <div class="q-line"><span class="q-badge">4</span><div class="q-text">From an existentialist perspective, awareness of death can</div></div>
+      <select class="answer-select" data-q="4"><option value="">Choose an ending</option><option value="a">A. transfer responsibility for choices to future generations.</option><option value="b">B. cause long periods to feel progressively shorter.</option><option value="c">C. prove that material achievement contributes nothing to well-being.</option><option value="d">D. give personal choices greater urgency and responsibility.</option><option value="e">E. produce consequences far larger than their apparent importance.</option><option value="f">F. make accurate memories of childhood impossible.</option><option value="g">G. gain value from the fact that they cannot last permanently.</option><option value="h">H. allow teachers to predict which students will become successful.</option></select>
+      <div class="feedback"><strong>Why:</strong> Mortality makes choices harder to postpone and therefore increases individual responsibility.</div>
+    </div>
+      </div>
+      <div class="question-group"><div class="question-group-title">Questions 5–7</div><div class="instructions">Do the following statements agree with the information in the passage? Choose <strong>TRUE, FALSE</strong> or <strong>NOT GIVEN</strong>.</div><div class="question-card" data-q="5" data-type="radio" data-answer="false" data-paragraph="B" data-evidence="Their ambitions and anxieties felt no less urgent than ours">
+      <div class="q-line"><span class="q-badge">5</span><div class="q-text">Most people who lived a century ago regarded their ambitions as less important than people do today.</div></div>
+      <div class="option-list"><label class="option"><input type="radio" name="q5" value="true">TRUE</label><label class="option"><input type="radio" name="q5" value="false">FALSE</label><label class="option"><input type="radio" name="q5" value="not given">NOT GIVEN</label></div>
+      <div class="feedback"><strong>Why:</strong> The passage says their ambitions felt no less urgent, so the statement reverses the writer’s meaning.</div>
+    </div><div class="question-card" data-q="6" data-type="radio" data-answer="true" data-paragraph="F" data-evidence="humans adapt quickly to improved circumstances; new possessions become normal and are replaced by new desires.">
+      <div class="q-line"><span class="q-badge">6</span><div class="q-text">The emotional benefit of material improvement may weaken once people become accustomed to it.</div></div>
+      <div class="option-list"><label class="option"><input type="radio" name="q6" value="true">TRUE</label><label class="option"><input type="radio" name="q6" value="false">FALSE</label><label class="option"><input type="radio" name="q6" value="not given">NOT GIVEN</label></div>
+      <div class="feedback"><strong>Why:</strong> This is a paraphrase of hedonic adaptation: improved circumstances become normal and lose some of their effect.</div>
+    </div><div class="question-card" data-q="7" data-type="radio" data-answer="not given" data-paragraph="C" data-evidence="temporal perception to describe the subjective experience of time, which often appears to accelerate with age.">
+      <div class="q-line"><span class="q-badge">7</span><div class="q-text">Researchers have established a specific age at which time begins to feel faster.</div></div>
+      <div class="option-list"><label class="option"><input type="radio" name="q7" value="true">TRUE</label><label class="option"><input type="radio" name="q7" value="false">FALSE</label><label class="option"><input type="radio" name="q7" value="not given">NOT GIVEN</label></div>
+      <div class="feedback"><strong>Why:</strong> The passage says the effect often occurs with age but gives no universal starting age.</div>
+    </div></div>
+      <div class="question-group"><div class="question-group-title">Questions 8–10</div><div class="instructions">Complete the summary below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</div><div class="word-limit">Spelling matters. The examiner has no emotional attachment to almost-correct answers.</div><div class="question-card" data-q="8" data-type="text" data-answer="causality" data-paragraph="D" data-evidence="This relationship between actions and later results may be understood as causality.">
+      <div class="q-line"><span class="q-badge">8</span><div class="q-text">The relationship between actions and later consequences is described as <input class="answer-text" data-q="8" type="text" autocomplete="off"></div></div>
+      <div class="feedback"><strong>Why:</strong> The answer is the technical term given directly in Paragraph D.</div>
+    </div><div class="question-card" data-q="9" data-type="text" data-answer="nonlinear" data-paragraph="D" data-evidence="The episode shows that influence can be nonlinear">
+      <div class="q-line"><span class="q-badge">9</span><div class="q-text">The teacher example suggests that human influence may be <input class="answer-text" data-q="9" type="text" autocomplete="off"></div></div>
+      <div class="feedback"><strong>Why:</strong> The passage uses this word for effects that are not proportional to the apparent size of the original action.</div>
+    </div><div class="question-card" data-q="10" data-type="text" data-answer="ordinary moments" data-paragraph="D" data-evidence="Lasting legacies often emerge from ordinary moments rather than grand gestures.">
+      <div class="q-line"><span class="q-badge">10</span><div class="q-text">The passage says that lasting legacies commonly develop from <input class="answer-text" data-q="10" type="text" autocomplete="off"></div></div>
+      <div class="feedback"><strong>Why:</strong> Use the exact two-word phrase from Paragraph D.</div>
+    </div></div>
+      <div class="question-group"><div class="question-group-title">Questions 11–13</div><div class="instructions">Answer the questions below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</div><div class="question-card" data-q="11" data-type="text" data-answer="humility" data-paragraph="G" data-evidence="Recognising their disappearance can encourage humility">
+      <div class="q-line"><span class="q-badge">11</span><div class="q-text">What quality may be encouraged by viewing life from the perspective of an old cemetery?</div></div>
+      <div class="short-answer-wrap"><input class="answer-text" data-q="11" type="text" autocomplete="off" placeholder="Answer"></div>
+      <div class="feedback"><strong>Why:</strong> The paragraph names humility as the result of accurately recognising one’s limited place in history.</div>
+    </div><div class="question-card" data-q="12" data-type="text" data-answer="meaningful living" data-paragraph="G" data-evidence="Meaningful legacies are more often a by-product of meaningful living.">
+      <div class="q-line"><span class="q-badge">12</span><div class="q-text">What do meaningful legacies usually arise as a by-product of?</div></div>
+      <div class="short-answer-wrap"><input class="answer-text" data-q="12" type="text" autocomplete="off" placeholder="Answer"></div>
+      <div class="feedback"><strong>Why:</strong> The exact two-word answer appears in Paragraph G.</div>
+    </div><div class="question-card" data-q="13" data-type="text" data-answer="gratitude" data-paragraph="H" data-evidence="The author ultimately presents gratitude, rather than fear or denial, as the most rational response to mortality.">
+      <div class="q-line"><span class="q-badge">13</span><div class="q-text">What response to mortality does the writer finally regard as the most rational?</div></div>
+      <div class="short-answer-wrap"><input class="answer-text" data-q="13" type="text" autocomplete="off" placeholder="Answer"></div>
+      <div class="feedback"><strong>Why:</strong> The final paragraph explicitly contrasts gratitude with fear and denial.</div>
+    </div></div>
+    </section>
+  </div>
+</main>
+<footer class="nav-row"><div class="section-info"><strong>Reading Passage</strong><span id="attemptedCount">0 of 13 answered</span></div><div class="question-nav" id="questionNav"></div><button class="submit-btn" id="submitBtn">Submit answers</button></footer>
+<div class="selection-menu" id="selectionMenu"><button id="highlightSelectionBtn">Highlight</button><button id="clearHighlightsBtn">Clear all</button></div>
+<div class="modal-overlay hidden" id="resultsModal"><div class="modal"><div class="modal-head"><div class="owl-logo"><svg viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14z" fill="none" stroke="#c9a24b" stroke-width="3.2" stroke-linejoin="round"/>
+  <circle cx="24" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="40" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="24" cy="34" r="2.4" fill="#c9a24b"/>
+  <circle cx="40" cy="34" r="2.4" fill="#c9a24b"/>
+  <path d="M29 42l3 5 3-5M23 53c6 3 12 3 18 0" fill="none" stroke="#c9a24b" stroke-width="3" stroke-linecap="round"/>
+</svg></div><div><h2>Results: Mortality and Meaning</h2><p>The owl has reviewed your priorities. Several distractors were apparently granted an unnecessarily long life.</p></div></div><div class="modal-body"><div class="score-grid"><div class="score-box"><span>Raw score</span><strong id="rawScore">0 / 13</strong></div><div class="score-box"><span>Estimated band</span><strong id="bandScore">—</strong></div><div class="score-box"><span>Time used</span><strong id="timeUsed">00:00</strong></div></div><div class="sarcasm" id="sarcasmText"></div><div class="result-list" id="resultList"></div><div class="modal-actions"><button class="modal-btn" id="resetBtn">Reset test</button><button class="modal-btn primary" id="reviewBtn">Review answers</button></div></div></div></div>
+<div class="modal-overlay hidden" id="teacherModal"><div class="modal" style="max-width:680px"><div class="modal-head"><div><h2>Owl Key</h2><p>Teacher mode. The answers are hidden because apparently integrity requires architecture.</p></div></div><div class="modal-body"><div id="teacherContent"></div><div class="modal-actions"><button class="modal-btn primary" id="closeTeacherBtn">Close</button></div></div></div></div>
+<script>
+(() => {
+  const TOTAL_SECONDS=25*60, TEACHER_PASSWORD='IELTS fukcs', TEST_ID='after-100-years', TEST_TITLE='Mortality, Meaning and the Use of Time';
+  let timeLeft=TOTAL_SECONDS,timerId=null,submitted=false,fontScale=1,activeQuestion=1,lastSelectionRange=null;
+  const byId=id=>document.getElementById(id);
+  const timerDisplay=byId('timerDisplay'),passagePanel=byId('passagePanel'),questionsPanel=byId('questionsPanel'),resizer=byId('resizer'),panelsContainer=byId('panelsContainer'),questionNav=byId('questionNav'),attemptedCount=byId('attemptedCount'),submitBtn=byId('submitBtn'),selectionMenu=byId('selectionMenu'),resultsModal=byId('resultsModal');
+  const cards=[...document.querySelectorAll('.question-card')];
+  function formatTime(sec){const m=String(Math.floor(sec/60)).padStart(2,'0'),s=String(sec%60).padStart(2,'0');return `${m}:${s}`}
+  function startTimer(){clearInterval(timerId);timerDisplay.textContent=formatTime(timeLeft);timerId=setInterval(()=>{timeLeft--;timerDisplay.textContent=formatTime(timeLeft);timerDisplay.classList.toggle('warning',timeLeft<=300&&timeLeft>60);timerDisplay.classList.toggle('danger',timeLeft<=60);if(timeLeft<=0){timeLeft=0;clearInterval(timerId);submitTest(true)}},1000)}
+  function getCard(q){return document.querySelector(`.question-card[data-q="${q}"]`)}
+  function getInput(q){const card=getCard(q);if(!card)return null;const type=card.dataset.type;if(type==='radio')return card.querySelector(`input[name="q${q}"]:checked`);if(type==='select')return card.querySelector('.answer-select');return card.querySelector('.answer-text')}
+  function getAnswer(q){const el=getInput(q);return el?(el.value||'').trim():''}
+  function normalise(v){return String(v).toLowerCase().replace(/[.,;:!?]/g,'').replace(/\s+/g,' ').trim()}
+  function buildNav(){questionNav.innerHTML='';for(let q=1;q<=13;q++){const b=document.createElement('button');b.className='nav-q';b.textContent=q;b.dataset.q=q;b.addEventListener('click',()=>goToQuestion(q));questionNav.appendChild(b)}updateIndicators()}
+  function updateIndicators(){let answered=0;for(let q=1;q<=13;q++){const nav=document.querySelector(`.nav-q[data-q="${q}"]`);nav.classList.remove('answered','active');if(getAnswer(q)){answered++;nav.classList.add('answered')}if(q===activeQuestion)nav.classList.add('active')}attemptedCount.textContent=`${answered} of 13 answered`}
+  function goToQuestion(q){activeQuestion=Number(q);cards.forEach(c=>c.classList.remove('active-question'));const target=getCard(q);target?.classList.add('active-question');target?.scrollIntoView({behavior:'smooth',block:'center'});updateIndicators()}
+  document.querySelectorAll('.answer-select,.answer-text,input[type="radio"]').forEach(el=>{el.addEventListener('change',updateIndicators);el.addEventListener('input',updateIndicators);el.addEventListener('focus',()=>{const q=el.dataset.q||el.closest('.question-card')?.dataset.q||el.name?.replace('q','');if(q){activeQuestion=Number(q);updateIndicators()}})});
+  let resizing=false;resizer.addEventListener('mousedown',()=>{resizing=true;document.body.classList.add('resizing')});document.addEventListener('mousemove',e=>{if(!resizing||innerWidth<=850)return;const rect=panelsContainer.getBoundingClientRect();const left=Math.min(rect.width*.72,Math.max(rect.width*.28,e.clientX-rect.left));passagePanel.style.width=`${left}px`;questionsPanel.style.width=`${rect.width-left-resizer.offsetWidth}px`});document.addEventListener('mouseup',()=>{resizing=false;document.body.classList.remove('resizing')});
+  byId('readingPassage').addEventListener('mouseup',e=>{const sel=getSelection();if(!sel||sel.isCollapsed||!sel.rangeCount){selectionMenu.style.display='none';return}const range=sel.getRangeAt(0);if(!byId('readingPassage').contains(range.commonAncestorContainer))return;lastSelectionRange=range.cloneRange();selectionMenu.style.left=`${Math.min(innerWidth-170,e.clientX+8)}px`;selectionMenu.style.top=`${Math.max(76,e.clientY-42)}px`;selectionMenu.style.display='block'});
+  byId('highlightSelectionBtn').addEventListener('click',()=>{if(!lastSelectionRange)return;try{const mark=document.createElement('mark');mark.className='user-highlight';lastSelectionRange.surroundContents(mark)}catch(e){alert('Select a smaller piece of text inside one paragraph. Browsers become philosophical around complicated selections.')}getSelection()?.removeAllRanges();selectionMenu.style.display='none'});
+  byId('clearHighlightsBtn').addEventListener('click',()=>{document.querySelectorAll('mark.user-highlight').forEach(m=>m.replaceWith(...m.childNodes));selectionMenu.style.display='none'});
+  function estimateBand(score){return ({13:'9.0',12:'8.5',11:'8.0',10:'7.5',9:'7.0',8:'6.5',7:'6.0',6:'5.5',5:'5.0',4:'4.5',3:'4.0',2:'3.5',1:'3.0',0:'2.5'})[score]||'—'}
+  function comment(score){if(score===13)return 'Band 9. You located meaning before mortality located you. Inconveniently impressive.';if(score>=11)return 'Strong work. The distractors died young; your comprehension did not.';if(score>=9)return 'A solid result. A few ideas vanished into impermanence before you caught them.';if(score>=7)return 'Respectable survival. Some answers had purpose; others merely existed.';if(score>=5)return 'You read the passage, but several details appear to have transcended your attention.';if(score>=3)return 'Mortality was understood. The questions, less so. The owl recommends a second life through review mode.';return 'After twenty-five minutes, most correct answers were already dead. A bold thematic commitment.'}
+  function markQuestion(q,ok){const card=getCard(q),nav=document.querySelector(`.nav-q[data-q="${q}"]`),input=getInput(q);nav.classList.remove('answered','active');nav.classList.add(ok?'correct':'incorrect');card.classList.add(ok?'correct':'incorrect');if(card.dataset.type==='radio'){input?.closest('.option')?.classList.add(ok?'correct-option':'wrong-option');card.querySelector(`input[value="${CSS.escape(card.dataset.answer)}"]`)?.closest('.option')?.classList.add('correct-option')}else input?.classList.add(ok?'correct':'incorrect');const fb=card.querySelector('.feedback');fb.classList.add('show');const b=document.createElement('button');b.className='evidence-btn';b.type='button';b.textContent='Show evidence';b.addEventListener('click',()=>showEvidence(q));fb.appendChild(b)}
+  function showEvidence(q){document.querySelectorAll('.paragraph').forEach(p=>p.classList.remove('evidence'));document.querySelectorAll('.evidence-text').forEach(s=>s.replaceWith(...s.childNodes));const card=getCard(q),para=byId(`para-${card.dataset.paragraph}`),evidence=card.dataset.evidence;if(!para)return;para.classList.add('evidence');if(evidence){const w=document.createTreeWalker(para,NodeFilter.SHOW_TEXT);let node;while(node=w.nextNode()){const idx=node.nodeValue.toLowerCase().indexOf(evidence.toLowerCase());if(idx>=0){const r=document.createRange();r.setStart(node,idx);r.setEnd(node,idx+evidence.length);const span=document.createElement('span');span.className='evidence-text';r.surroundContents(span);break}}}para.scrollIntoView({behavior:'smooth',block:'center'})}
+  function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+  function submitTest(auto=false){if(submitted)return;submitted=true;clearInterval(timerId);submitBtn.disabled=true;let score=0,rows=[];for(let q=1;q<=13;q++){const user=getAnswer(q),correct=getCard(q).dataset.answer,ok=normalise(user)===normalise(correct);if(ok)score++;markQuestion(q,ok);rows.push(`<div class="result-row ${ok?'ok':'bad'}"><div><strong>${q}</strong></div><div>Your answer: <strong>${user?escapeHtml(user):'—'}</strong></div><div>Correct: <strong>${escapeHtml(correct.toUpperCase())}</strong></div></div>`)}byId('rawScore').textContent=`${score} / 13`;byId('bandScore').textContent=estimateBand(score);byId('timeUsed').textContent=formatTime(TOTAL_SECONDS-timeLeft);byId('sarcasmText').textContent=comment(score);byId('resultList').innerHTML=rows.join('');resultsModal.classList.remove('hidden');try{localStorage.setItem(`uboomReadingResult:${TEST_ID}`,JSON.stringify({id:TEST_ID,title:TEST_TITLE,score,total:13,band:estimateBand(score),completedAt:new Date().toISOString()}))}catch(e){console.warn('Progress could not be stored.',e)}if(auto)document.querySelector('#resultsModal .modal-head p').textContent='Time expired. The clock has demonstrated impermanence more efficiently than the article.'}
+  function resetTest(){location.reload()}
+  submitBtn.addEventListener('click',()=>submitTest(false));byId('reviewBtn').addEventListener('click',()=>resultsModal.classList.add('hidden'));byId('resetBtn').addEventListener('click',resetTest);
+  byId('fontDownBtn').addEventListener('click',()=>{fontScale=Math.max(.86,fontScale-.06);document.documentElement.style.fontSize=`${fontScale}em`});byId('fontUpBtn').addEventListener('click',()=>{fontScale=Math.min(1.3,fontScale+.06);document.documentElement.style.fontSize=`${fontScale}em`});byId('fullscreenBtn').addEventListener('click',()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen());
+  byId('teacherBtn').addEventListener('click',()=>{const pw=prompt('Enter Owl Key password:');if(pw!==TEACHER_PASSWORD){alert('Wrong password. The owl remains professionally disappointed.');return}byId('teacherContent').innerHTML=`<ol class="teacher-list">${cards.map(c=>`<li><strong>${c.dataset.q}.</strong> ${escapeHtml(c.dataset.answer.toUpperCase())} <span class="muted">(Paragraph ${c.dataset.paragraph})</span></li>`).join('')}</ol>`;byId('teacherModal').classList.remove('hidden')});byId('closeTeacherBtn').addEventListener('click',()=>byId('teacherModal').classList.add('hidden'));
+  buildNav();startTimer();goToQuestion(1);
+})();
+</script>
+</body>
+</html>
