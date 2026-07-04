@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U.A. Edition | The Power of Consistency</title>
+<style>
+:root{
+  --ink:#17202b;
+  --muted:#667085;
+  --line:#d9dee7;
+  --paper:#ffffff;
+  --soft:#f4f6f8;
+  --navy:#0b1524;
+  --navy-2:#14243a;
+  --gold:#c9a24b;
+  --gold-soft:#f6edda;
+  --blue:#2f73c9;
+  --blue-soft:#e8f1fc;
+  --green:#16805a;
+  --green-soft:#e8f6f0;
+  --red:#c23b42;
+  --red-soft:#fceced;
+  --yellow:#fff1a8;
+  --header-h:68px;
+  --footer-h:78px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  overflow:hidden;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+
+/* Header */
+.header{
+  position:fixed;
+  top:0;left:0;right:0;
+  height:var(--header-h);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:0 18px;
+  background:linear-gradient(100deg,var(--navy),var(--navy-2));
+  color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  box-shadow:0 4px 18px rgba(8,18,31,.18);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:250px;
+}
+.owl-logo{
+  width:42px;
+  height:42px;
+  flex:0 0 auto;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(201,162,75,.55);
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+}
+.owl-logo svg{width:30px;height:30px;display:block}
+.brand-title{font-weight:800;letter-spacing:.05em;font-size:15px}
+.brand-sub{font-size:12px;color:#b9c4d2;margin-top:2px}
+.timer-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 14px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);
+  border-radius:999px;
+}
+.timer-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#b9c4d2}
+.timer-display{font-weight:800;min-width:54px;text-align:center;letter-spacing:.04em}
+.timer-display.warning{color:#ffd46c}
+.timer-display.danger{color:#ff8b90}
+.header-actions{display:flex;align-items:center;gap:8px;min-width:250px;justify-content:flex-end}
+.header-btn{
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  background:rgba(255,255,255,.06);
+  border-radius:9px;
+  padding:9px 11px;
+  font-size:13px;
+  font-weight:700;
+}
+.header-btn:hover{background:rgba(255,255,255,.12)}
+.header-btn.gold{border-color:rgba(201,162,75,.65);color:#f4d990}
+
+/* Main split area */
+.main-container{
+  position:fixed;
+  top:var(--header-h);
+  bottom:var(--footer-h);
+  left:0;right:0;
+  background:#fff;
+}
+.exam-strip{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  background:#f0f2f4;
+  border-bottom:1px solid var(--line);
+  color:#333;
+  font-size:14px;
+}
+.exam-strip strong{font-size:15px}
+.exam-strip .right-note{color:var(--muted);font-size:12px}
+.panels-container{
+  display:flex;
+  height:calc(100% - 44px);
+  overflow:hidden;
+}
+.passage-panel,.questions-panel{
+  overflow-y:auto;
+  scrollbar-gutter:stable;
+  min-width:260px;
+  background:#fff;
+}
+.passage-panel{
+  width:52%;
+  padding:26px 28px 110px;
+}
+.questions-panel{
+  width:48%;
+  padding:26px 28px 110px;
+  border-left:1px solid var(--line);
+}
+.resizer{
+  width:9px;
+  flex:0 0 9px;
+  cursor:col-resize;
+  background:
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 41%/6px 8px no-repeat,
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 50%/6px 8px no-repeat,
+    radial-gradient(circle,var(--gold) 1.5px,transparent 1.6px) center 59%/6px 8px no-repeat,
+    #eef0f3;
+  border-left:1px solid #e2e5ea;
+  border-right:1px solid #e2e5ea;
+}
+body.resizing{cursor:col-resize;user-select:none}
+
+/* Passage */
+.passage-head{text-align:center;margin-bottom:22px}
+.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#9b772d;font-weight:800}
+.passage-title{font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.2;margin:7px 0 8px;color:#111927}
+.source{font-size:12px;color:var(--muted);line-height:1.45}
+.reading-passage{font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.68}
+.reading-passage p{margin:0 0 20px}
+.paragraph{
+  position:relative;
+  padding:8px 10px 8px 44px;
+  border-radius:8px;
+  scroll-margin-top:18px;
+}
+.paragraph:hover{background:#fafbfc}
+.paragraph.evidence{background:#fff8e8;outline:2px solid #e6bd62}
+.para-label{
+  position:absolute;
+  left:8px;top:10px;
+  width:25px;height:25px;
+  display:grid;place-items:center;
+  border:1px solid #b99340;
+  color:#8b6928;
+  font:700 13px Arial,sans-serif;
+  border-radius:50%;
+  background:#fffaf0;
+}
+mark.user-highlight{background:var(--yellow);padding:0 2px;border-radius:2px}
+.evidence-text{background:#ffd96b;padding:1px 2px;border-radius:2px}
+
+/* Questions */
+.question-group{margin-bottom:34px}
+.question-group-title{font-size:19px;font-weight:800;margin-bottom:6px}
+.instructions{color:#3d4652;font-size:15px;line-height:1.5;margin-bottom:18px}
+.heading-bank{
+  border:1px solid var(--line);
+  background:#fafbfc;
+  padding:14px 16px;
+  margin-bottom:18px;
+  border-radius:8px;
+}
+.heading-bank-title{font-weight:800;margin-bottom:8px}
+.heading-bank ol{margin:0;padding-left:26px}
+.heading-bank li{margin:6px 0}
+.question-card{
+  padding:14px 0 18px;
+  border-bottom:1px solid #eceff3;
+  scroll-margin-top:18px;
+}
+.question-card.active-question .q-badge{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,115,201,.12)}
+.q-line{display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.q-badge{
+  flex:0 0 auto;
+  min-width:31px;height:29px;
+  display:grid;place-items:center;
+  border:2px solid #c7ced8;
+  border-radius:5px;
+  font-weight:800;
+  background:#fff;
+}
+.q-text{padding-top:3px}
+.answer-select,.answer-text{
+  margin-top:12px;
+  width:min(100%,430px);
+  border:1px solid #aeb7c4;
+  border-radius:6px;
+  min-height:40px;
+  padding:8px 10px;
+  background:#fff;
+  font-weight:700;
+}
+.answer-select:focus,.answer-text:focus{outline:2px solid rgba(47,115,201,.25);border-color:var(--blue)}
+.option-list{margin-top:11px;display:grid;gap:7px}
+.option{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:10px 11px;
+  border:1px solid transparent;
+  border-radius:7px;
+  transition:.15s;
+}
+.option:hover{background:#f3f7fc;border-color:#cbdcf2}
+.option:has(input:checked){background:#dfeeff;border-color:#83b1e8}
+.option input{margin-top:3px;transform:scale(1.15);accent-color:var(--blue)}
+.question-card.correct .q-badge{border-color:var(--green);color:var(--green)}
+.question-card.incorrect .q-badge{border-color:var(--red);color:var(--red)}
+.option.correct-option{background:var(--green-soft)!important;border-color:#8bcab1!important}
+.option.wrong-option{background:var(--red-soft)!important;border-color:#e1a0a4!important}
+.answer-select.correct,.answer-text.correct{border-color:var(--green);background:var(--green-soft)}
+.answer-select.incorrect,.answer-text.incorrect{border-color:var(--red);background:var(--red-soft)}
+.feedback{
+  display:none;
+  margin-top:12px;
+  padding:11px 12px;
+  border-left:4px solid var(--gold);
+  background:#f7f3e9;
+  font-size:14px;
+  line-height:1.55;
+}
+.feedback.show{display:block}
+.feedback strong{color:#5e4619}
+.evidence-btn{
+  margin-top:8px;
+  border:1px solid #9d7a31;
+  background:#fffaf0;
+  color:#6e531e;
+  border-radius:6px;
+  padding:6px 9px;
+  font-weight:700;
+  font-size:12px;
+}
+
+/* Footer navigation */
+.nav-row{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:var(--footer-h);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 18px;
+  background:#fff;
+  border-top:1px solid var(--line);
+  box-shadow:0 -4px 18px rgba(24,33,45,.08);
+}
+.section-info{min-width:150px}
+.section-info strong{display:block;font-size:14px}
+.section-info span{font-size:12px;color:var(--muted)}
+.question-nav{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.nav-q{
+  width:34px;height:34px;
+  border:1px solid #c9d0da;
+  background:#fff;
+  color:#2b3340;
+  border-radius:4px;
+  font-weight:700;
+}
+.nav-q:hover{border-color:#8592a4}
+.nav-q.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav-q.answered{background:#e7ecf2;border-color:#b8c2cf}
+.nav-q.correct{background:var(--green);color:#fff;border-color:var(--green)}
+.nav-q.incorrect{background:var(--red);color:#fff;border-color:var(--red)}
+.submit-btn{
+  margin-left:auto;
+  min-width:155px;
+  padding:11px 18px;
+  border:none;
+  background:var(--navy);
+  color:#fff;
+  font-weight:800;
+  border-radius:6px;
+  box-shadow:0 6px 14px rgba(11,21,36,.16);
+}
+.submit-btn:hover{background:#162a44}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Selection menu */
+.selection-menu{
+  position:fixed;
+  display:none;
+  z-index:1000;
+  background:var(--navy);
+  color:#fff;
+  padding:6px;
+  border-radius:8px;
+  box-shadow:0 10px 24px rgba(0,0,0,.24);
+}
+.selection-menu button{
+  border:none;
+  color:#fff;
+  background:transparent;
+  padding:7px 10px;
+  border-radius:5px;
+  font-size:13px;
+  font-weight:700;
+}
+.selection-menu button:hover{background:rgba(255,255,255,.12)}
+
+/* Modals */
+.modal-overlay{
+  position:fixed;inset:0;z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  padding:18px;
+  background:rgba(6,13,24,.68);
+  backdrop-filter:blur(5px);
+}
+.modal-overlay.hidden{display:none}
+.modal{
+  width:min(760px,100%);
+  max-height:88vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:14px;
+  border:1px solid rgba(201,162,75,.45);
+  box-shadow:0 28px 80px rgba(0,0,0,.35);
+}
+.modal-head{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 22px;
+  color:#fff;
+  background:linear-gradient(110deg,var(--navy),#1b304d);
+}
+.modal-head .owl-logo{width:50px;height:50px}
+.modal-head h2{margin:0;font-size:22px}
+.modal-head p{margin:4px 0 0;color:#c7d2e0;font-size:13px}
+.modal-body{padding:22px}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.score-box{padding:15px;border:1px solid var(--line);border-radius:9px;background:#fafbfc;text-align:center}
+.score-box span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.score-box strong{font-size:25px;display:block;margin-top:4px}
+.sarcasm{padding:14px 16px;background:#f5efe2;border-left:5px solid var(--gold);font:italic 16px Georgia,serif;line-height:1.55}
+.result-list{margin-top:16px;border-top:1px solid var(--line)}
+.result-row{display:grid;grid-template-columns:50px 1fr 1fr;gap:10px;padding:10px 4px;border-bottom:1px solid #eceff3;font-size:13px}
+.result-row.ok{background:#f4fbf8}
+.result-row.bad{background:#fff7f7}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.modal-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 13px;font-weight:700}
+.modal-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Owl watermark */
+.owl-watermark{
+  position:fixed;
+  left:50%;top:54%;
+  transform:translate(-50%,-50%);
+  width:370px;height:370px;
+  opacity:.022;
+  pointer-events:none;
+  z-index:1;
+}
+.main-container,.nav-row,.header{isolation:isolate}
+.panels-container{position:relative;z-index:2}
+
+/* Responsive */
+@media(max-width:850px){
+  body{overflow:auto}
+  .header{position:sticky;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}
+  .brand,.header-actions{min-width:unset}
+  .brand-sub{display:none}
+  .main-container{position:relative;top:auto;bottom:auto;height:auto}
+  .panels-container{display:block;height:auto;overflow:visible}
+  .resizer{display:none}
+  .passage-panel,.questions-panel{width:100%!important;min-width:0;height:72vh;overflow-y:auto;padding:20px 18px 90px}
+  .questions-panel{border-left:none;border-top:2px solid var(--navy)}
+  .nav-row{position:sticky;height:auto;min-height:78px;flex-wrap:wrap;padding:10px 12px}
+  .question-nav{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+  .submit-btn{min-width:130px}
+  .score-grid{grid-template-columns:1fr}
+  .result-row{grid-template-columns:42px 1fr}
+  .result-row div:last-child{grid-column:2}
+  .owl-watermark{display:none}
+}
+@media(max-width:560px){
+  .header-actions .header-btn:not(.gold){display:none}
+  .brand-title{font-size:13px}
+  .passage-title{font-size:25px}
+  .reading-passage{font-size:16px}
+  .exam-strip .right-note{display:none}
+  .section-info{min-width:120px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">
+    <div class="owl-logo" aria-label="U.A. owl emblem">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14z" fill="none" stroke="#c9a24b" stroke-width="3.2" stroke-linejoin="round"/>
+        <circle cx="24" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+        <circle cx="40" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+        <circle cx="24" cy="34" r="2.4" fill="#c9a24b"/>
+        <circle cx="40" cy="34" r="2.4" fill="#c9a24b"/>
+        <path d="M29 42l3 5 3-5M23 53c6 3 12 3 18 0" fill="none" stroke="#c9a24b" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-title">U.A. EDITION · READING LAB</div>
+      <div class="brand-sub">Computer-delivered IELTS practice, minus the comforting lies.</div>
+    </div>
+  </div>
+
+  <div class="timer-wrap">
+    <span class="timer-label">Time left</span>
+    <span class="timer-display" id="timerDisplay">25:00</span>
+  </div>
+
+  <div class="header-actions">
+    <button class="header-btn" id="fontDownBtn" title="Decrease text size">A−</button>
+    <button class="header-btn" id="fontUpBtn" title="Increase text size">A+</button>
+    <button class="header-btn" id="fullscreenBtn">Full screen</button>
+    <button class="header-btn gold" id="teacherBtn">Owl key</button>
+  </div>
+</header>
+
+<svg class="owl-watermark" viewBox="0 0 64 64" aria-hidden="true">
+  <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14zM17 27l15 9 15-9M32 36v19" fill="none" stroke="#0b1524" stroke-width="3"/>
+</svg>
+
+<main class="main-container">
+  <div class="exam-strip">
+    <div><strong>Reading Passage</strong> &nbsp; Answer Questions 1–13.</div>
+    <div class="right-note">Select passage text to highlight it. Drag the divider to resize the panels.</div>
+  </div>
+
+  <div class="panels-container" id="panelsContainer">
+    <section class="passage-panel" id="passagePanel">
+      <div class="passage-head">
+        <div class="kicker">Psychology · Habits · Long-term Achievement</div>
+        <h1 class="passage-title">The Power of Consistency</h1>
+        <div class="source">Adapted into IELTS Academic style from an article published by @articles_in_english.</div>
+      </div>
+
+      <article class="reading-passage" id="readingPassage">
+        <div class="paragraph" id="para-A"><span class="para-label">A</span><p>Modern discussions of success are crowded with competing instructions. Books and online advisers recommend early mornings, meditation, networking, strict routines and numerous other techniques. The sheer quantity of advice can produce confusion rather than action: people continue searching for an ideal method without committing to any method for long. A simpler explanation is that achievement depends less on discovering a perfect strategy than on repeating useful behaviour consistently. Public attention usually focuses on dramatic results, but those results are commonly built during long periods of ordinary work that remain largely unseen.</p></div>
+
+        <div class="paragraph" id="para-B"><span class="para-label">B</span><p>Motivation is often treated as the starting point for action, although it is an unstable foundation. Psychologists describe motivational variability as the natural rise and fall of enthusiasm over time. A person may feel eager to study, exercise or work on one day and completely resistant on the next. If action depends on emotion, progress becomes equally unpredictable. Habits solve part of this problem by reducing the number of decisions required each day. Instead of repeatedly asking whether an activity feels attractive, an individual follows an established routine. Behaviour becomes increasingly automatic, which is why moderate effort performed regularly can be more effective than occasional periods of extreme intensity.</p></div>
+
+        <div class="paragraph" id="para-C"><span class="para-label">C</span><p>The effect of consistency is difficult to recognise at first because small actions appear insignificant in isolation. Ten pages of reading, a modest weekly saving or thirty minutes of practice seem unlikely to transform a life. Their influence becomes clearer through compounding, the gradual accumulation of benefits over time. Just as money can grow through compound interest, knowledge and skill develop through repeated practice. A few pages eventually become a completed book; regular exercise changes physical health; individual language lessons accumulate into fluency. Consistency does not make each action extraordinary. It allows ordinary actions to produce extraordinary results when they are repeated for long enough.</p></div>
+
+        <div class="paragraph" id="para-D"><span class="para-label">D</span><p>This principle also explains the difference between goals and systems. Goals identify a desired destination, whereas behavioural systems establish the actions that move a person towards it. Two students may both want excellent examination results, but the student who studies for ninety minutes every evening possesses a more dependable mechanism for progress. The same distinction affected a young writer who initially waited for inspiration. His output varied sharply from week to week until he adopted a rule of writing five hundred words every day. After one year, he had produced more than 180,000 words and several manuscripts. His original ambition had not changed; the system had converted it from a wish into repeated action.</p></div>
+
+        <div class="paragraph" id="para-E"><span class="para-label">E</span><p>Talent is another quality that is frequently overestimated because observers see the final performance but not the preparation behind it. Natural ability can provide an advantage, yet it rarely reaches its potential without deliberate practice. This form of practice is not simple repetition. It involves focused effort, feedback, reflection and adjustment, all directed towards gradual improvement. Athletes, musicians, scientists and other experts refine weaknesses rather than merely repeating what they can already do comfortably. Over time, these small corrections accumulate. What appears to be effortless talent may therefore represent years of structured work that was invisible to the eventual audience.</p></div>
+
+        <div class="paragraph" id="para-F"><span class="para-label">F</span><p>Repeated behaviour can also alter identity. A person who reads daily begins to regard themselves as a reader; someone who exercises regularly may come to see themselves as a healthy person. Psychologists describe this process as identity formation, the development of self-perception through repeated experience. The relationship then becomes circular. Actions influence identity, and identity influences future actions. Once productive behaviour becomes part of how a person defines themselves, continuing it requires less internal negotiation. Long-term achievement may therefore depend not only on what people do, but also on the kind of person their repeated actions teach them to believe they are.</p></div>
+
+        <div class="paragraph" id="para-G"><span class="para-label">G</span><p>Consistency becomes most valuable when circumstances are difficult. Setbacks, fatigue, disappointment and failure affect almost everyone, so successful individuals are not distinguished by lives without obstacles. The important difference is their response. Psychological resilience is the capacity to recover and continue functioning after adversity. A person guided entirely by temporary emotion may stop when progress becomes uncomfortable, whereas a person supported by habit can continue making smaller advances. Each individual action may still appear minor, but the difference between stopping and continuing becomes substantial when it compounds across months or years.</p></div>
+
+        <div class="paragraph" id="para-H"><span class="para-label">H</span><p>The difficulty is that consistency usually offers delayed rather than immediate rewards. The first workout, page or investment produces little visible change, and meaningful progress may not appear until sustained effort has continued for a considerable period. This demands deferred gratification: the willingness to exchange present comfort for a future benefit. Talent, luck and opportunity can influence results, but consistency is the mechanism that repeatedly turns possibility into achievement. Success is therefore less mysterious than it often appears. It is rarely created by what people do occasionally; it is more often built from ordinary actions they are prepared to repeat when motivation, comfort and immediate reward are absent.</p></div>
+      </article>
+    </section>
+
+    <div class="resizer" id="resizer" title="Drag to resize"></div>
+
+    <section class="questions-panel" id="questionsPanel">
+      <div class="question-group">
+        <div class="question-group-title">Questions 1–4</div>
+        <div class="instructions">Choose the correct heading for Paragraphs A–D from the list of headings below.</div>
+        <div class="heading-bank">
+          <div class="heading-bank-title">List of Headings</div>
+          <ol type="i">
+            <li>Identity built through repeated behaviour</li>
+            <li>Why enthusiasm cannot be trusted</li>
+            <li>A simple principle hidden beneath excessive advice</li>
+            <li>The cumulative power of modest actions</li>
+            <li>Systems that convert ambitions into progress</li>
+            <li>Practice that allows ability to develop</li>
+            <li>Continuing when circumstances become difficult</li>
+          </ol>
+        </div>
+
+        <div class="question-card" data-q="1" data-answer="iii" data-paragraph="A" data-evidence="A simpler explanation is that achievement depends less on discovering a perfect strategy than on repeating useful behaviour consistently.">
+          <div class="q-line"><span class="q-badge">1</span><div class="q-text">Paragraph A</div></div>
+          <select class="answer-select" aria-label="Question 1">
+            <option value="">Select a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option>
+          </select>
+          <div class="feedback"><strong>Why:</strong> Paragraph A argues that the large amount of success advice can hide a much simpler principle: useful action repeated consistently.</div>
+        </div>
+
+        <div class="question-card" data-q="2" data-answer="ii" data-paragraph="B" data-evidence="Psychologists describe motivational variability as the natural rise and fall of enthusiasm over time.">
+          <div class="q-line"><span class="q-badge">2</span><div class="q-text">Paragraph B</div></div>
+          <select class="answer-select" aria-label="Question 2">
+            <option value="">Select a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option>
+          </select>
+          <div class="feedback"><strong>Why:</strong> The paragraph explains that motivation changes naturally, while routines provide a more reliable basis for action.</div>
+        </div>
+
+        <div class="question-card" data-q="3" data-answer="iv" data-paragraph="C" data-evidence="Their influence becomes clearer through compounding, the gradual accumulation of benefits over time.">
+          <div class="q-line"><span class="q-badge">3</span><div class="q-text">Paragraph C</div></div>
+          <select class="answer-select" aria-label="Question 3">
+            <option value="">Select a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option>
+          </select>
+          <div class="feedback"><strong>Why:</strong> Paragraph C focuses on compounding, through which small repeated actions create much larger long-term effects.</div>
+        </div>
+
+        <div class="question-card" data-q="4" data-answer="v" data-paragraph="D" data-evidence="Goals identify a desired destination, whereas behavioural systems establish the actions that move a person towards it.">
+          <div class="q-line"><span class="q-badge">4</span><div class="q-text">Paragraph D</div></div>
+          <select class="answer-select" aria-label="Question 4">
+            <option value="">Select a heading</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option>
+          </select>
+          <div class="feedback"><strong>Why:</strong> This paragraph contrasts general ambitions with systems that translate those ambitions into regular behaviour.</div>
+        </div>
+      </div>
+
+      <div class="question-group">
+        <div class="question-group-title">Questions 5–8</div>
+        <div class="instructions">Do the following statements agree with the information given in the passage? Choose <strong>TRUE</strong>, <strong>FALSE</strong> or <strong>NOT GIVEN</strong>.</div>
+
+        <div class="question-card" data-q="5" data-answer="false" data-paragraph="B" data-evidence="Psychologists describe motivational variability as the natural rise and fall of enthusiasm over time.">
+          <div class="q-line"><span class="q-badge">5</span><div class="q-text">Successful people eventually reach a stage at which their motivation remains permanently stable.</div></div>
+          <div class="option-list">
+            <label class="option"><input type="radio" name="q5" value="true">TRUE</label>
+            <label class="option"><input type="radio" name="q5" value="false">FALSE</label>
+            <label class="option"><input type="radio" name="q5" value="not given">NOT GIVEN</label>
+          </div>
+          <div class="feedback"><strong>Why:</strong> Motivation is described as naturally variable. Successful people use habits because enthusiasm does not become permanently stable.</div>
+        </div>
+
+        <div class="question-card" data-q="6" data-answer="true" data-paragraph="B" data-evidence="Habits solve part of this problem by reducing the number of decisions required each day.">
+          <div class="q-line"><span class="q-badge">6</span><div class="q-text">Established habits can reduce the number of decisions a person must make each day.</div></div>
+          <div class="option-list">
+            <label class="option"><input type="radio" name="q6" value="true">TRUE</label>
+            <label class="option"><input type="radio" name="q6" value="false">FALSE</label>
+            <label class="option"><input type="radio" name="q6" value="not given">NOT GIVEN</label>
+          </div>
+          <div class="feedback"><strong>Why:</strong> The passage states this directly in Paragraph B.</div>
+        </div>
+
+        <div class="question-card" data-q="7" data-answer="not given" data-paragraph="D" data-evidence="After one year, he had produced more than 180,000 words and several manuscripts.">
+          <div class="q-line"><span class="q-badge">7</span><div class="q-text">The writer who produced 500 words each day published exactly two books during that year.</div></div>
+          <div class="option-list">
+            <label class="option"><input type="radio" name="q7" value="true">TRUE</label>
+            <label class="option"><input type="radio" name="q7" value="false">FALSE</label>
+            <label class="option"><input type="radio" name="q7" value="not given">NOT GIVEN</label>
+          </div>
+          <div class="feedback"><strong>Why:</strong> The passage mentions several manuscripts, but it gives no number of published books. The question has quietly manufactured a publishing contract.</div>
+        </div>
+
+        <div class="question-card" data-q="8" data-answer="true" data-paragraph="E" data-evidence="It involves focused effort, feedback, reflection and adjustment, all directed towards gradual improvement.">
+          <div class="q-line"><span class="q-badge">8</span><div class="q-text">Deliberate practice includes feedback and changes based on reflection.</div></div>
+          <div class="option-list">
+            <label class="option"><input type="radio" name="q8" value="true">TRUE</label>
+            <label class="option"><input type="radio" name="q8" value="false">FALSE</label>
+            <label class="option"><input type="radio" name="q8" value="not given">NOT GIVEN</label>
+          </div>
+          <div class="feedback"><strong>Why:</strong> Paragraph E explicitly includes feedback, reflection and adjustment as features of deliberate practice.</div>
+        </div>
+      </div>
+
+      <div class="question-group">
+        <div class="question-group-title">Questions 9–11</div>
+        <div class="instructions">Complete the summary below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</div>
+        <p style="line-height:2.3;background:#fafbfc;border:1px solid var(--line);padding:15px;border-radius:8px;">
+          Repeated behaviour can gradually influence a person's <strong>9</strong> <input class="answer-text" style="width:145px;display:inline-block;margin:0 4px;" data-inline="true" aria-label="Question 9">. When difficulties occur, psychological <strong>10</strong> <input class="answer-text" style="width:145px;display:inline-block;margin:0 4px;" data-inline="true" aria-label="Question 10"> helps an individual recover and continue. Maintaining effort while waiting for future rewards also requires deferred <strong>11</strong> <input class="answer-text" style="width:145px;display:inline-block;margin:0 4px;" data-inline="true" aria-label="Question 11">.
+        </p>
+        <div class="question-card" style="display:none" data-q="9" data-answer="identity" data-paragraph="F" data-evidence="Repeated behaviour can also alter identity."><div class="feedback"><strong>Why:</strong> Paragraph F explains that repeated behaviour changes a person's identity or self-perception.</div></div>
+        <div class="question-card" style="display:none" data-q="10" data-answer="resilience" data-paragraph="G" data-evidence="Psychological resilience is the capacity to recover and continue functioning after adversity."><div class="feedback"><strong>Why:</strong> “Resilience” is the capacity to recover and continue after difficulty.</div></div>
+        <div class="question-card" style="display:none" data-q="11" data-answer="gratification" data-paragraph="H" data-evidence="This demands deferred gratification: the willingness to exchange present comfort for a future benefit."><div class="feedback"><strong>Why:</strong> The exact expression in Paragraph H is “deferred gratification”.</div></div>
+      </div>
+
+      <div class="question-group">
+        <div class="question-group-title">Questions 12–13</div>
+        <div class="instructions">Choose the correct letter, <strong>A, B, C or D</strong>.</div>
+
+        <div class="question-card" data-q="12" data-answer="c" data-paragraph="D" data-evidence="Goals identify a desired destination, whereas behavioural systems establish the actions that move a person towards it.">
+          <div class="q-line"><span class="q-badge">12</span><div class="q-text">According to Paragraph D, what is the principal difference between a goal and a system?</div></div>
+          <div class="option-list">
+            <label class="option"><input type="radio" name="q12" value="a"><strong>A</strong> A goal requires more talent than a system.</label>
+            <label class="option"><input type="radio" name="q12" value="b"><strong>B</strong> A system is useful only after a goal has already been achieved.</label>
+            <label class="option"><input type="radio" name="q12" value="c"><strong>C</strong> A goal indicates the destination, while a system organises the actions needed to reach it.</label>
+            <label class="option"><input type="radio" name="q12" value="d"><strong>D</strong> A system is based on inspiration, while a goal is based on routine.</label>
+          </div>
+          <div class="feedback"><strong>Why:</strong> C accurately paraphrases the paragraph. The other options reverse or invent relationships that the passage never makes.</div>
+        </div>
+
+        <div class="question-card" data-q="13" data-answer="d" data-paragraph="H" data-evidence="It is rarely created by what people do occasionally; it is more often built from ordinary actions they are prepared to repeat when motivation, comfort and immediate reward are absent.">
+          <div class="q-line"><span class="q-badge">13</span><div class="q-text">Which statement best expresses the writer's overall conclusion?</div></div>
+          <div class="option-list">
+            <label class="option"><input type="radio" name="q13" value="a"><strong>A</strong> Success mainly depends on discovering a rare natural talent.</label>
+            <label class="option"><input type="radio" name="q13" value="b"><strong>B</strong> People should use as many different success strategies as possible.</label>
+            <label class="option"><input type="radio" name="q13" value="c"><strong>C</strong> Immediate rewards are the most reliable way to maintain productive behaviour.</label>
+            <label class="option"><input type="radio" name="q13" value="d"><strong>D</strong> Repeated ordinary actions can turn potential into long-term achievement.</label>
+          </div>
+          <div class="feedback"><strong>Why:</strong> D summarises the central argument. The passage values repeated action over talent, excess strategy and immediate reward.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="nav-row">
+  <div class="section-info">
+    <strong>Reading Passage</strong>
+    <span id="attemptedCount">0 of 13 answered</span>
+  </div>
+  <div class="question-nav" id="questionNav"></div>
+  <button class="submit-btn" id="submitBtn">Submit answers</button>
+</footer>
+
+<div class="selection-menu" id="selectionMenu">
+  <button id="highlightSelectionBtn">Highlight</button>
+  <button id="clearHighlightsBtn">Clear all</button>
+</div>
+
+<div class="modal-overlay hidden" id="resultsModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="owl-logo">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M13 13l12 7c4-2 10-2 14 0l12-7-4 14c3 5 4 11 2 17-3 9-10 15-17 17-7-2-14-8-17-17-2-6-1-12 2-17l-4-14z" fill="none" stroke="#c9a24b" stroke-width="3.2" stroke-linejoin="round"/>
+          <circle cx="24" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/><circle cx="40" cy="34" r="7" fill="none" stroke="#fff" stroke-width="3"/>
+          <circle cx="24" cy="34" r="2.4" fill="#c9a24b"/><circle cx="40" cy="34" r="2.4" fill="#c9a24b"/>
+        </svg>
+      </div>
+      <div><h2>Results: Consistency</h2><p>The owl has reviewed your habits. One test cannot build a life, but apparently it can expose your reading.</p></div>
+    </div>
+    <div class="modal-body">
+      <div class="score-grid">
+        <div class="score-box"><span>Raw score</span><strong id="rawScore">0 / 13</strong></div>
+        <div class="score-box"><span>Estimated band</span><strong id="bandScore">—</strong></div>
+        <div class="score-box"><span>Time used</span><strong id="timeUsed">00:00</strong></div>
+      </div>
+      <div class="sarcasm" id="sarcasmText"></div>
+      <div class="result-list" id="resultList"></div>
+      <div class="modal-actions">
+        <button class="modal-btn" id="resetBtn">Reset test</button>
+        <button class="modal-btn primary" id="reviewBtn">Review answers</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="teacherModal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-head"><div><h2>Owl Key</h2><p>Teacher mode. Students should not be here, obviously.</p></div></div>
+    <div class="modal-body">
+      <div id="teacherContent"></div>
+      <div class="modal-actions"><button class="modal-btn primary" id="closeTeacherBtn">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const TOTAL_SECONDS = 25 * 60;
+  const TEACHER_PASSWORD = 'IELTS fukcs';
+  let timeLeft = TOTAL_SECONDS;
+  let timerId = null;
+  let submitted = false;
+  let fontScale = 1;
+  let activeQuestion = 1;
+  let lastSelectionRange = null;
+
+  const timerDisplay = document.getElementById('timerDisplay');
+  const passagePanel = document.getElementById('passagePanel');
+  const questionsPanel = document.getElementById('questionsPanel');
+  const resizer = document.getElementById('resizer');
+  const panelsContainer = document.getElementById('panelsContainer');
+  const questionNav = document.getElementById('questionNav');
+  const attemptedCount = document.getElementById('attemptedCount');
+  const submitBtn = document.getElementById('submitBtn');
+  const selectionMenu = document.getElementById('selectionMenu');
+  const resultsModal = document.getElementById('resultsModal');
+  const teacherModal = document.getElementById('teacherModal');
+
+  const visibleCards = [...document.querySelectorAll('.question-card[data-q]')].filter(card => card.style.display !== 'none');
+  const hiddenSummaryCards = [...document.querySelectorAll('.question-card[data-q]')].filter(card => card.style.display === 'none');
+  const allCards = [...document.querySelectorAll('.question-card[data-q]')];
+
+  const inlineInputs = [...document.querySelectorAll('.answer-text[data-inline="true"]')];
+  inlineInputs.forEach((input, i) => {
+    input.dataset.q = String(9 + i);
+  });
+
+  function formatTime(seconds){
+    const m = Math.floor(seconds / 60).toString().padStart(2,'0');
+    const s = Math.max(0, seconds % 60).toString().padStart(2,'0');
+    return `${m}:${s}`;
+  }
+
+  function startTimer(){
+    clearInterval(timerId);
+    timerDisplay.textContent = formatTime(timeLeft);
+    timerId = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = formatTime(timeLeft);
+      timerDisplay.classList.toggle('warning', timeLeft <= 300 && timeLeft > 60);
+      timerDisplay.classList.toggle('danger', timeLeft <= 60);
+      if(timeLeft <= 0){
+        timeLeft = 0;
+        clearInterval(timerId);
+        submitTest(true);
+      }
+    },1000);
+  }
+
+  function getInputFor(q){
+    if(q <= 4) return document.querySelector(`.question-card[data-q="${q}"] .answer-select`);
+    if(q >= 5 && q <= 8) return document.querySelector(`input[name="q${q}"]:checked`);
+    if(q >= 9 && q <= 11) return document.querySelector(`.answer-text[data-q="${q}"]`);
+    return document.querySelector(`input[name="q${q}"]:checked`);
+  }
+
+  function getAnswer(q){
+    const input = getInputFor(q);
+    if(!input) return '';
+    return (input.value || '').trim();
+  }
+
+  function normalise(value){
+    return String(value).toLowerCase().replace(/\s+/g,' ').trim();
+  }
+
+  function getCard(q){
+    return document.querySelector(`.question-card[data-q="${q}"]`);
+  }
+
+  function getCorrect(q){
+    return getCard(q)?.dataset.answer || '';
+  }
+
+  function updateIndicators(){
+    let answered = 0;
+    for(let q=1;q<=13;q++){
+      const value = getAnswer(q);
+      const nav = document.querySelector(`.nav-q[data-q="${q}"]`);
+      nav.classList.remove('answered','active');
+      if(value){answered++;nav.classList.add('answered')}
+      if(q === activeQuestion) nav.classList.add('active');
+    }
+    attemptedCount.textContent = `${answered} of 13 answered`;
+  }
+
+  function buildNav(){
+    questionNav.innerHTML = '';
+    for(let q=1;q<=13;q++){
+      const btn = document.createElement('button');
+      btn.className = 'nav-q';
+      btn.textContent = q;
+      btn.dataset.q = q;
+      btn.addEventListener('click',() => goToQuestion(q));
+      questionNav.appendChild(btn);
+    }
+    updateIndicators();
+  }
+
+  function goToQuestion(q){
+    activeQuestion = Number(q);
+    visibleCards.forEach(card => card.classList.remove('active-question'));
+    let target = getCard(q);
+    if(q >= 9 && q <= 11){
+      target = inlineInputs[q-9];
+      target?.focus({preventScroll:true});
+    } else {
+      target?.classList.add('active-question');
+    }
+    target?.scrollIntoView({behavior:'smooth',block:'center'});
+    updateIndicators();
+  }
+
+  document.querySelectorAll('.answer-select,input[type="radio"],.answer-text').forEach(el => {
+    el.addEventListener('change',updateIndicators);
+    el.addEventListener('input',updateIndicators);
+    el.addEventListener('focus',() => {
+      const q = el.dataset.q || el.closest('.question-card')?.dataset.q || el.name?.replace('q','');
+      if(q){activeQuestion = Number(q);updateIndicators()}
+    });
+  });
+
+  // Resizable split panels
+  let resizing = false;
+  resizer.addEventListener('mousedown',() => {resizing=true;document.body.classList.add('resizing')});
+  document.addEventListener('mousemove',e => {
+    if(!resizing || window.innerWidth <= 850) return;
+    const rect = panelsContainer.getBoundingClientRect();
+    const leftWidth = Math.min(rect.width * .72, Math.max(rect.width * .28, e.clientX - rect.left));
+    passagePanel.style.width = `${leftWidth}px`;
+    questionsPanel.style.width = `${rect.width - leftWidth - resizer.offsetWidth}px`;
+  });
+  document.addEventListener('mouseup',() => {resizing=false;document.body.classList.remove('resizing')});
+
+  // Selection highlighting
+  document.getElementById('readingPassage').addEventListener('mouseup',e => {
+    const sel = window.getSelection();
+    if(!sel || sel.isCollapsed || !sel.rangeCount){selectionMenu.style.display='none';return}
+    const range = sel.getRangeAt(0);
+    if(!document.getElementById('readingPassage').contains(range.commonAncestorContainer)) return;
+    lastSelectionRange = range.cloneRange();
+    selectionMenu.style.left = `${Math.min(window.innerWidth-170,e.clientX+8)}px`;
+    selectionMenu.style.top = `${Math.max(76,e.clientY-42)}px`;
+    selectionMenu.style.display = 'block';
+  });
+  document.addEventListener('mousedown',e => {
+    if(!selectionMenu.contains(e.target) && !document.getElementById('readingPassage').contains(e.target)) selectionMenu.style.display='none';
+  });
+  document.getElementById('highlightSelectionBtn').addEventListener('click',() => {
+    if(!lastSelectionRange) return;
+    try{
+      const mark = document.createElement('mark');
+      mark.className='user-highlight';
+      lastSelectionRange.surroundContents(mark);
+    }catch(err){alert('Select a smaller piece of text inside one paragraph. Browsers become theatrical around complex selections.')}
+    window.getSelection()?.removeAllRanges();
+    selectionMenu.style.display='none';
+  });
+  document.getElementById('clearHighlightsBtn').addEventListener('click',() => {
+    document.querySelectorAll('mark.user-highlight').forEach(mark => mark.replaceWith(...mark.childNodes));
+    selectionMenu.style.display='none';
+  });
+
+  function estimateBand(score){
+    const table={13:'9.0',12:'8.5',11:'8.0',10:'7.5',9:'7.0',8:'6.5',7:'6.0',6:'5.5',5:'5.0',4:'4.5',3:'4.0',2:'3.5',1:'3.0',0:'2.5'};
+    return table[score] || '—';
+  }
+
+  function comment(score){
+    if(score===13) return 'Band 9. Suspiciously consistent. The owl has found no obvious evidence of guessing or divine intervention.';
+    if(score>=11) return 'Strong result. Your habits appear functional, which is more than can be said for most motivational advice.';
+    if(score>=9) return 'A respectable performance. A few answers abandoned the routine, but the system mostly held.';
+    if(score>=7) return 'You made progress. Not elegant progress, but consistency has survived worse beginnings.';
+    if(score>=5) return 'Some ideas compounded. Others appear to have been invested in the wrong answer.';
+    if(score>=3) return 'This was less behavioural persistence and more prolonged negotiation with the passage.';
+    return 'Motivation disappeared, the system collapsed, and the owl has opened review mode. Begin again.';
+  }
+
+  function markQuestion(q,correct){
+    const card = getCard(q);
+    const nav = document.querySelector(`.nav-q[data-q="${q}"]`);
+    nav.classList.remove('answered','active');
+    nav.classList.add(correct?'correct':'incorrect');
+    if(card) card.classList.add(correct?'correct':'incorrect');
+
+    const input = getInputFor(q);
+    if(q<=4 || (q>=9 && q<=11)){
+      input?.classList.add(correct?'correct':'incorrect');
+    }else{
+      const selected = document.querySelector(`input[name="q${q}"]:checked`);
+      selected?.closest('.option')?.classList.add(correct?'correct-option':'wrong-option');
+      document.querySelector(`input[name="q${q}"][value="${CSS.escape(getCorrect(q))}"]`)?.closest('.option')?.classList.add('correct-option');
+    }
+
+    const feedback = card?.querySelector('.feedback');
+    if(feedback){
+      feedback.classList.add('show');
+      const btn = document.createElement('button');
+      btn.className='evidence-btn';
+      btn.type='button';
+      btn.textContent='Show evidence';
+      btn.addEventListener('click',() => showEvidence(q));
+      feedback.appendChild(btn);
+    }
+  }
+
+  function showEvidence(q){
+    document.querySelectorAll('.paragraph').forEach(p => p.classList.remove('evidence'));
+    document.querySelectorAll('.evidence-text').forEach(span => span.replaceWith(...span.childNodes));
+    const card = getCard(q);
+    const para = document.getElementById(`para-${card.dataset.paragraph}`);
+    if(!para) return;
+    para.classList.add('evidence');
+    const evidence = card.dataset.evidence;
+    if(evidence){
+      const walker = document.createTreeWalker(para,NodeFilter.SHOW_TEXT);
+      let node;
+      while(node=walker.nextNode()){
+        const idx = node.nodeValue.toLowerCase().indexOf(evidence.toLowerCase());
+        if(idx>=0){
+          const range=document.createRange();
+          range.setStart(node,idx);range.setEnd(node,idx+evidence.length);
+          const span=document.createElement('span');span.className='evidence-text';
+          range.surroundContents(span);break;
+        }
+      }
+    }
+    para.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+
+  function submitTest(auto=false){
+    if(submitted) return;
+    submitted=true;
+    clearInterval(timerId);
+    submitBtn.disabled=true;
+    let score=0;
+    const resultRows=[];
+    for(let q=1;q<=13;q++){
+      const user=getAnswer(q);
+      const correctAnswer=getCorrect(q);
+      const ok=normalise(user)===normalise(correctAnswer);
+      if(ok) score++;
+      markQuestion(q,ok);
+      resultRows.push(`<div class="result-row ${ok?'ok':'bad'}"><div><strong>${q}</strong></div><div>Your answer: <strong>${user?escapeHtml(user):'—'}</strong></div><div>Correct: <strong>${escapeHtml(correctAnswer.toUpperCase())}</strong></div></div>`);
+    }
+    document.getElementById('rawScore').textContent=`${score} / 13`;
+    document.getElementById('bandScore').textContent=estimateBand(score);
+    document.getElementById('timeUsed').textContent=formatTime(TOTAL_SECONDS-timeLeft);
+    document.getElementById('sarcasmText').textContent=comment(score);
+    document.getElementById('resultList').innerHTML=resultRows.join('');
+    resultsModal.classList.remove('hidden');
+
+    try {
+      localStorage.setItem('uboomReadingResult:consistency-success',JSON.stringify({
+        id:'consistency-success',
+        title:'The Power of Consistency',
+        score,
+        total:13,
+        band:estimateBand(score),
+        completedAt:new Date().toISOString()
+      }));
+    } catch (storageError) {
+      console.warn('Progress could not be stored in this browser context.', storageError);
+    }
+    if(auto) document.querySelector('#resultsModal .modal-head p').textContent='Time expired. The clock submitted your work because clocks are famously unsympathetic.';
+  }
+
+  function escapeHtml(text){
+    return String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  function resetTest(){
+    if(!confirm('Reset this test and erase every answer? The owl will remember nothing, which is more mercy than IELTS usually offers.')) return;
+    location.reload();
+  }
+
+  function openTeacherMode(){
+    const pw=prompt('Enter the Owl Key password:');
+    if(pw!==TEACHER_PASSWORD){alert('Incorrect password. The owl remains professionally unimpressed.');return}
+    const lines=[];
+    for(let q=1;q<=13;q++) lines.push(`<p><strong>${q}.</strong> ${escapeHtml(getCorrect(q).toUpperCase())} <span style="color:#667085">(Paragraph ${getCard(q).dataset.paragraph})</span></p>`);
+    document.getElementById('teacherContent').innerHTML=`<div style="padding:12px 14px;background:#f6edda;border-left:4px solid #c9a24b;margin-bottom:14px;">Answer key and paragraph locations.</div>${lines.join('')}`;
+    teacherModal.classList.remove('hidden');
+  }
+
+  submitBtn.addEventListener('click',() => submitTest(false));
+  document.getElementById('reviewBtn').addEventListener('click',() => resultsModal.classList.add('hidden'));
+  document.getElementById('resetBtn').addEventListener('click',resetTest);
+  document.getElementById('teacherBtn').addEventListener('click',openTeacherMode);
+  document.getElementById('closeTeacherBtn').addEventListener('click',() => teacherModal.classList.add('hidden'));
+  document.getElementById('fullscreenBtn').addEventListener('click',() => document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen());
+  document.getElementById('fontDownBtn').addEventListener('click',() => {
+    fontScale=Math.max(.85,fontScale-.05);
+    document.querySelector('.reading-passage').style.fontSize=`${17*fontScale}px`;
+    questionsPanel.style.fontSize=`${16*fontScale}px`;
+  });
+  document.getElementById('fontUpBtn').addEventListener('click',() => {
+    fontScale=Math.min(1.35,fontScale+.05);
+    document.querySelector('.reading-passage').style.fontSize=`${17*fontScale}px`;
+    questionsPanel.style.fontSize=`${16*fontScale}px`;
+  });
+
+  buildNav();
+  startTimer();
+})();
+</script>
+</body>
+</html>

@@ -3,306 +3,345 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Uboom IELTS Reading Lab — computer-delivered IELTS reading practice." />
-  <title>Uboom IELTS Reading Lab</title>
+  <meta name="description" content="Uboom IELTS Reading CDI test library by U.A. Edition" />
+  <title>Uboom IELTS Reading Library | U.A. Edition</title>
   <style>
     :root{
-      --bg:#f4f5f7;
-      --surface:#ffffff;
-      --surface-2:#f8f9fb;
-      --text:#15171a;
-      --muted:#6a707a;
-      --line:#e3e6eb;
-      --accent:#1d63e9;
-      --accent-soft:#eaf1ff;
-      --success:#16794c;
-      --shadow:0 14px 38px rgba(22, 29, 37, .08);
+      --navy:#0b1830;
+      --navy-2:#122546;
+      --gold:#d6ad52;
+      --gold-soft:#f3e7c4;
+      --bg:#f4f6f9;
+      --card:#ffffff;
+      --text:#172033;
+      --muted:#667085;
+      --line:#e4e8ef;
+      --shadow:0 16px 40px rgba(18,37,70,.10);
       --radius:24px;
     }
+
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
       margin:0;
-      background:var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;
       color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
-      line-height:1.5;
+      background:
+        radial-gradient(circle at top right, rgba(214,173,82,.12), transparent 28%),
+        linear-gradient(180deg,#f7f8fb 0%,#eef2f6 100%);
+      min-height:100vh;
     }
-    a{text-decoration:none;color:inherit}
-    button,input{font:inherit}
-    .shell{max-width:1240px;margin:0 auto;padding:20px}
-    .nav{
-      position:sticky;top:12px;z-index:20;
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      padding:13px 16px;border:1px solid rgba(255,255,255,.9);
-      border-radius:20px;background:rgba(255,255,255,.82);backdrop-filter:blur(18px);
-      box-shadow:0 8px 24px rgba(22,29,37,.06);
-    }
-    .brand{display:flex;align-items:center;gap:11px;font-weight:750;letter-spacing:-.02em}
-    .logo{
-      width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#111827,#2d3748);
-      display:grid;place-items:center;color:#fff;font-size:.86rem;font-weight:800;box-shadow:0 7px 18px rgba(17,24,39,.18)
-    }
-    .nav-note{font-size:.9rem;color:var(--muted)}
+
+    .shell{max-width:1240px;margin:0 auto;padding:24px}
+
     .hero{
-      margin-top:18px;padding:44px;
-      border-radius:32px;background:linear-gradient(145deg,#111827 0%,#1f2937 55%,#27364d 100%);
-      color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden;
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(135deg,var(--navy),var(--navy-2));
+      color:#fff;
+      border-radius:32px;
+      padding:42px;
+      box-shadow:0 26px 60px rgba(11,24,48,.22);
     }
-    .hero:after{
-      content:"";position:absolute;width:340px;height:340px;border-radius:50%;right:-110px;top:-145px;
-      background:radial-gradient(circle,rgba(104,153,255,.35),rgba(104,153,255,0) 68%);
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -80px -120px auto;
+      width:320px;
+      height:320px;
+      border-radius:50%;
+      border:1px solid rgba(214,173,82,.28);
+      box-shadow:0 0 0 42px rgba(214,173,82,.06),0 0 0 84px rgba(214,173,82,.03);
     }
-    .eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#aebed8;font-weight:750}
-    .hero h1{font-size:clamp(2rem,5vw,4rem);line-height:1.02;letter-spacing:-.055em;margin:12px 0 16px;max-width:760px}
-    .hero p{max-width:690px;color:#ced6e3;font-size:1.06rem;margin:0}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:8px;
-      min-height:44px;padding:0 16px;border-radius:14px;border:1px solid var(--line);
-      background:#fff;color:var(--text);font-weight:700;cursor:pointer;transition:.16s ease;
+
+    .hero-grid{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;position:relative;z-index:1}
+    .brand-row{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+
+    .owl{
+      width:62px;
+      height:62px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(214,173,82,.42);
+      flex-shrink:0;
     }
-    .btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.1)}
-    .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-    .btn.hero-secondary{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff}
-    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
-    .stat{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 5px 18px rgba(22,29,37,.04)}
-    .stat-label{font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-    .stat-value{font-size:1.55rem;font-weight:800;letter-spacing:-.03em;margin-top:4px}
-    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:30px 0 16px}
-    .toolbar h2{margin:0;font-size:1.55rem;letter-spacing:-.035em}
-    .filters{display:flex;gap:8px;flex-wrap:wrap}
-    .filter{
-      border:1px solid var(--line);background:var(--surface);padding:9px 13px;border-radius:999px;
-      color:var(--muted);font-weight:650;cursor:pointer
+
+    .owl svg{width:42px;height:42px}
+    .eyebrow{font-size:.82rem;text-transform:uppercase;letter-spacing:.18em;color:#e8cf94;font-weight:800}
+    h1{margin:5px 0 12px;font-size:clamp(2rem,5vw,4rem);line-height:1.02;letter-spacing:-.045em}
+    .hero p{margin:0;max-width:720px;color:#c9d3e3;font-size:1.05rem;line-height:1.65}
+
+    .hero-stat{
+      min-width:160px;
+      padding:20px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.07);
+      border-radius:22px;
+      backdrop-filter:blur(12px);
+      text-align:center;
     }
-    .filter.active{background:var(--text);color:#fff;border-color:var(--text)}
-    .search{
-      width:min(340px,100%);padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);outline:none
+    .hero-stat strong{display:block;font-size:2.6rem;color:#f5ddb0}
+    .hero-stat span{color:#c8d1df;font-size:.9rem}
+
+    .toolbar{
+      margin:24px 0 18px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
     }
-    .search:focus{border-color:#9bb9f5;box-shadow:0 0 0 4px var(--accent-soft)}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+
+    .search-wrap{position:relative;flex:1;min-width:260px;max-width:560px}
+    .search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;color:#98a2b3}
+    .search-wrap input{
+      width:100%;
+      padding:15px 18px 15px 48px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      font:inherit;
+      outline:none;
+      box-shadow:0 8px 20px rgba(16,24,40,.04);
+    }
+    .search-wrap input:focus{border-color:#8aa6d8;box-shadow:0 0 0 4px rgba(46,95,166,.10)}
+    .status{color:var(--muted);font-size:.94rem}
+
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+
     .card{
-      background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px;
-      box-shadow:0 7px 22px rgba(22,29,37,.04);display:flex;flex-direction:column;min-height:310px;
-      transition:.18s ease;
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(228,232,239,.95);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+      display:flex;
+      flex-direction:column;
+      min-height:300px;
     }
-    .card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
-    .card.disabled{opacity:.72;box-shadow:none}
-    .card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-    .number{font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-    .status{font-size:.78rem;padding:7px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);font-weight:700}
-    .status.completed{background:#eaf7f0;color:var(--success);border-color:#d1ebdd}
-    .card h3{font-size:1.45rem;line-height:1.18;letter-spacing:-.035em;margin:16px 0 10px}
-    .card p{color:var(--muted);margin:0 0 17px}
-    .meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-    .tag{font-size:.8rem;padding:7px 10px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);color:#525962}
-    .result-box{display:none;background:var(--accent-soft);border:1px solid #d7e4ff;border-radius:15px;padding:12px 13px;margin-bottom:16px}
-    .result-box.show{display:flex;justify-content:space-between;gap:12px;align-items:center}
-    .result-box strong{font-size:1.05rem}
-    .result-box span{font-size:.84rem;color:var(--muted)}
-    .card-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto}
-    .difficulty{font-size:.86rem;color:var(--muted)}
-    .section-note{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
-    .section-note h3{margin:0 0 6px;letter-spacing:-.025em}
-    .section-note p{margin:0;color:var(--muted)}
-    footer{padding:30px 4px 12px;color:var(--muted);font-size:.88rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .empty{display:none;background:var(--surface);border:1px dashed var(--line);border-radius:24px;padding:35px;text-align:center;color:var(--muted)}
+    .card:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(18,37,70,.14);border-color:#d8c28a}
+
+    .card-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+    .number{
+      width:44px;height:44px;border-radius:15px;display:grid;place-items:center;
+      background:var(--gold-soft);color:#7b5a14;font-weight:900;flex-shrink:0
+    }
+    .badge{padding:7px 11px;border-radius:999px;background:#eef3fb;color:#315f9f;font-size:.78rem;font-weight:800;white-space:nowrap}
+    .card h2{margin:20px 0 9px;font-size:1.45rem;line-height:1.2;letter-spacing:-.02em}
+    .card p{margin:0;color:var(--muted);line-height:1.58}
+
+    .meta{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px}
+    .meta span{font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#fafbfc;color:#475467}
+
+    .actions{margin-top:auto;display:grid;grid-template-columns:1fr auto;gap:10px}
+    .btn{
+      border:none;text-decoration:none;cursor:pointer;font:inherit;font-weight:800;
+      border-radius:14px;padding:13px 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      transition:transform .12s ease,background .15s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--navy);color:#fff}
+    .btn-primary:hover{background:#13294d}
+    .btn-copy{background:#f5f6f8;color:#344054;border:1px solid var(--line);min-width:48px}
+    .direct-link{margin-top:12px;font-size:.8rem;color:#98a2b3;word-break:break-all}
+    .direct-link a{color:#667085;text-decoration:none}
+    .direct-link a:hover{text-decoration:underline}
+
+    .empty{display:none;text-align:center;padding:60px 20px;color:var(--muted)}
+
+    footer{padding:34px 4px 12px;color:#7b8494;font-size:.88rem;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    footer strong{color:#344054}
+
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;
+      background:#111827;color:#fff;border-radius:14px;padding:13px 16px;
+      box-shadow:0 16px 30px rgba(0,0,0,.22);
+      opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s ease;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+
     @media(max-width:800px){
-      .hero{padding:32px 24px}.stats,.grid{grid-template-columns:1fr}.nav-note{display:none}.section-note{grid-template-columns:1fr}.toolbar{align-items:stretch}.search{width:100%}
+      .shell{padding:14px}
+      .hero{padding:28px 22px;border-radius:26px}
+      .hero-grid{grid-template-columns:1fr}
+      .hero-stat{display:none}
+      .grid{grid-template-columns:1fr}
+      .card{min-height:auto}
     }
-    @media(max-width:520px){
-      .shell{padding:12px}.nav{top:6px}.hero{border-radius:26px}.hero-actions .btn{width:100%}.card-footer{align-items:stretch;flex-direction:column}.card-footer .btn{width:100%}
+
+    @media(max-width:480px){
+      .brand-row{align-items:flex-start}
+      .owl{width:54px;height:54px;border-radius:17px}
+      .actions{grid-template-columns:1fr 52px}
+      .card{padding:20px;border-radius:20px}
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <nav class="nav">
-      <div class="brand"><div class="logo">UB</div><span>Uboom IELTS Reading Lab</span></div>
-      <div class="nav-note">U.A. Edition • Computer-delivered practice</div>
-    </nav>
-
-    <header class="hero">
-      <div class="eyebrow">IELTS Academic Reading</div>
-      <h1>Practise the real skill, not just the answer key.</h1>
-      <p>Choose a computer-delivered reading test, work under exam conditions, and review every mistake with evidence from the passage.</p>
-      <div class="hero-actions">
-        <a class="btn primary" href="tests/ai-and-society.html">Start Featured Test</a>
-        <a class="btn hero-secondary" href="#tests">Browse Tests</a>
-      </div>
-    </header>
-
-    <section class="stats" aria-label="Progress summary">
-      <div class="stat"><div class="stat-label">Available Tests</div><div id="availableCount" class="stat-value">1</div></div>
-      <div class="stat"><div class="stat-label">Tests Completed</div><div id="completedCount" class="stat-value">0</div></div>
-      <div class="stat"><div class="stat-label">Best Estimated Band</div><div id="bestBand" class="stat-value">—</div></div>
-    </section>
-
-    <section id="tests">
-      <div class="toolbar">
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-grid">
         <div>
-          <h2>Reading test library</h2>
-          <div style="color:var(--muted);font-size:.92rem;margin-top:3px">New tests can be added without rebuilding the whole page.</div>
+          <div class="brand-row">
+            <div class="owl" aria-hidden="true">
+              <svg viewBox="0 0 64 64" fill="none">
+                <path d="M14 21 9 10l14 7M50 21l5-11-14 7" stroke="#D6AD52" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 31c0-13 8-21 20-21s20 8 20 21c0 16-9 24-20 24S12 47 12 31Z" stroke="#F2E2B8" stroke-width="4"/>
+                <circle cx="24" cy="31" r="7" stroke="#D6AD52" stroke-width="4"/>
+                <circle cx="40" cy="31" r="7" stroke="#D6AD52" stroke-width="4"/>
+                <path d="m29 40 3 4 3-4" stroke="#F2E2B8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="eyebrow">U.A. Edition • Uboom.uz</div>
+              <h1>IELTS Reading Library</h1>
+            </div>
+          </div>
+          <p>Choose a CDI-style reading test, work under timed conditions, submit your answers, and review the evidence. Four tests are available. Humanity has finally organised its HTML files.</p>
         </div>
-        <input id="searchInput" class="search" type="search" placeholder="Search tests or topics" aria-label="Search tests" />
+        <div class="hero-stat"><strong>4</strong><span>Available tests</span></div>
       </div>
-      <div class="filters" style="margin-bottom:16px">
-        <button class="filter active" data-filter="all">All</button>
-        <button class="filter" data-filter="passage-1">Passage 1</button>
-        <button class="filter" data-filter="passage-2">Passage 2</button>
-        <button class="filter" data-filter="passage-3">Passage 3</button>
-      </div>
-
-      <div id="testGrid" class="grid"></div>
-      <div id="emptyState" class="empty">No tests match that search. The library is small, not psychic.</div>
     </section>
 
-    <section class="section-note">
-      <div>
-        <h3>Built for classroom and independent practice</h3>
-        <p>Students can work on phones, tablets, laptops and desktops. Results are stored only in the current browser unless a full student-account system is added later.</p>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+        <input id="searchInput" type="search" placeholder="Search reading tests…" autocomplete="off" />
       </div>
-      <a class="btn" href="tests/ai-and-society.html">Open Test 1</a>
-    </section>
+      <div id="statusText" class="status">Showing 4 tests</div>
+    </div>
+
+    <section id="testGrid" class="grid"></section>
+    <div id="emptyState" class="empty">No tests match that search. The passage did not disappear; your filter did.</div>
 
     <footer>
-      <span>© Uboom IELTS Reading Lab • U.A. Edition</span>
-      <span>Static HTML platform • No login required</span>
+      <span><strong>Uboom IELTS Reading</strong> • U.A. Edition</span>
+      <span>Files loaded from the <code>/IELTS/</code> folder.</span>
     </footer>
-  </div>
+  </main>
+
+  <div id="toast" class="toast">Link copied</div>
 
   <script>
     const tests = [
       {
-        id:'ai-and-society',
-        number:'Test 01',
-        title:'The Social Consequences of Artificial Intelligence',
-        description:'An IELTS Academic Passage 3 test exploring the benefits, risks and ethical governance of artificial intelligence.',
-        passage:'passage-3',
-        passageLabel:'Passage 3',
-        questions:13,
-        duration:'30 min',
-        difficulty:'Mixed difficulty',
-        types:'Headings • T/F/NG • MCQ • Completion',
-        url:'tests/ai-and-society.html',
-        available:true
+        number: '01',
+        title: 'The History of the Airplane',
+        description: 'From early experiments and the Wright brothers to modern aviation and the science of flight.',
+        file: 'airplane-history.html',
+        level: 'Passage 2–3',
+        duration: '25 min',
+        questions: '13 questions',
+        types: 'Mixed tasks'
       },
       {
-        id:'attention-economy',
-        number:'Test 02',
-        title:'The Attention Economy',
-        description:'A future academic reading practice test on digital distraction, advertising and human attention.',
-        passage:'passage-2', passageLabel:'Passage 2', questions:13, duration:'25 min', difficulty:'Intermediate', types:'Coming soon', available:false
+        number: '02',
+        title: 'Can People Survive in Antarctica?',
+        description: 'An academic reading test about survival, scientific research, wildlife, isolation and climate change.',
+        file: 'Antarctica.html',
+        level: 'Passage 2–3',
+        duration: '25 min',
+        questions: '13 questions',
+        types: 'Mixed tasks'
       },
       {
-        id:'urban-farming',
-        number:'Test 03',
-        title:'Urban Farming and the Future of Food',
-        description:'A future test examining vertical farms, urban sustainability and modern food production.',
-        passage:'passage-1', passageLabel:'Passage 1', questions:13, duration:'20 min', difficulty:'Accessible', types:'Coming soon', available:false
+        number: '03',
+        title: 'The Habit of Consistency',
+        description: 'A reading test on motivation, behavioural systems, deliberate practice, resilience and long-term success.',
+        file: 'consistency-success.html',
+        level: 'Passage 2',
+        duration: '25 min',
+        questions: '13 questions',
+        types: 'Mixed tasks'
       },
       {
-        id:'language-change',
-        number:'Test 04',
-        title:'How Languages Change',
-        description:'A future academic passage on language evolution, social identity and communication.',
-        passage:'passage-3', passageLabel:'Passage 3', questions:14, duration:'30 min', difficulty:'Advanced', types:'Coming soon', available:false
+        number: '04',
+        title: 'Reading Newspapers',
+        description: 'The benefits and risks of newspapers, including civic awareness, bias, overload and media literacy.',
+        file: 'newspaper-reading.html',
+        level: 'Passage 2–3',
+        duration: '25 min',
+        questions: '13 questions',
+        types: 'Varied tasks'
       }
     ];
 
-    let activeFilter = 'all';
-    let searchTerm = '';
+    const grid = document.getElementById('testGrid');
+    const searchInput = document.getElementById('searchInput');
+    const statusText = document.getElementById('statusText');
+    const emptyState = document.getElementById('emptyState');
+    const toast = document.getElementById('toast');
 
-    function getSavedResult(testId){
-      try{
-        const raw = localStorage.getItem(`uboomReadingResult:${testId}`);
-        return raw ? JSON.parse(raw) : null;
-      }catch(error){return null;}
+    function relativeUrl(file){
+      return `IELTS/${file}`;
     }
 
-    function renderTests(){
-      const grid = document.getElementById('testGrid');
-      const visible = tests.filter(test => {
-        const filterMatch = activeFilter === 'all' || test.passage === activeFilter;
-        const haystack = `${test.title} ${test.description} ${test.types} ${test.passageLabel}`.toLowerCase();
-        const searchMatch = haystack.includes(searchTerm.toLowerCase());
-        return filterMatch && searchMatch;
-      });
+    function absoluteUrl(file){
+      return new URL(relativeUrl(file), window.location.href).href;
+    }
 
-      grid.innerHTML = visible.map(test => {
-        const result = getSavedResult(test.id);
-        const statusClass = result ? 'status completed' : 'status';
-        const statusText = result ? 'Completed' : (test.available ? 'Available' : 'Coming soon');
-        const action = test.available
-          ? `<a class="btn primary" href="${test.url}">${result ? 'Try Again' : 'Start Test'}</a>`
-          : `<button class="btn" disabled>Not Available Yet</button>`;
-        const resultBlock = result ? `
-          <div class="result-box show">
-            <div><strong>${result.score}/${result.total}</strong><br><span>Latest score</span></div>
-            <div style="text-align:right"><strong>Band ${result.band}</strong><br><span>${formatDate(result.completedAt)}</span></div>
-          </div>` : '';
-
+    function render(list){
+      grid.innerHTML = list.map(test => {
+        const href = relativeUrl(test.file);
         return `
-          <article class="card ${test.available ? '' : 'disabled'}" data-passage="${test.passage}">
+          <article class="card">
             <div class="card-top">
               <div class="number">${test.number}</div>
-              <div class="${statusClass}">${statusText}</div>
+              <div class="badge">CDI Reading</div>
             </div>
-            <h3>${test.title}</h3>
+            <h2>${test.title}</h2>
             <p>${test.description}</p>
             <div class="meta">
-              <span class="tag">${test.passageLabel}</span>
-              <span class="tag">${test.questions} questions</span>
-              <span class="tag">${test.duration}</span>
-              <span class="tag">${test.types}</span>
+              <span>${test.level}</span>
+              <span>${test.duration}</span>
+              <span>${test.questions}</span>
+              <span>${test.types}</span>
             </div>
-            ${resultBlock}
-            <div class="card-footer">
-              <div class="difficulty">${test.difficulty}</div>
-              ${action}
+            <div class="actions">
+              <a class="btn btn-primary" href="${href}">Start Test <span aria-hidden="true">→</span></a>
+              <button class="btn btn-copy" type="button" data-copy="${test.file}" title="Copy direct link" aria-label="Copy direct link">⧉</button>
             </div>
+            <div class="direct-link"><a href="${href}">${href}</a></div>
           </article>`;
       }).join('');
 
-      document.getElementById('emptyState').style.display = visible.length ? 'none' : 'block';
-    }
+      grid.style.display = list.length ? 'grid' : 'none';
+      emptyState.style.display = list.length ? 'none' : 'block';
+      statusText.textContent = `Showing ${list.length} test${list.length === 1 ? '' : 's'}`;
 
-    function formatDate(value){
-      if(!value) return 'Completed';
-      try{return new Date(value).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'});}catch(error){return 'Completed';}
-    }
-
-    function updateStats(){
-      const available = tests.filter(t => t.available).length;
-      const results = tests.map(t => getSavedResult(t.id)).filter(Boolean);
-      const best = results.length ? Math.max(...results.map(r => Number(r.band) || 0)).toFixed(1) : '—';
-      document.getElementById('availableCount').textContent = available;
-      document.getElementById('completedCount').textContent = results.length;
-      document.getElementById('bestBand').textContent = best === '—' ? '—' : `Band ${best}`;
-    }
-
-    document.querySelectorAll('.filter').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.filter').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        activeFilter = button.dataset.filter;
-        renderTests();
+      document.querySelectorAll('[data-copy]').forEach(button => {
+        button.addEventListener('click', async () => {
+          const url = absoluteUrl(button.dataset.copy);
+          try {
+            await navigator.clipboard.writeText(url);
+            showToast('Direct test link copied');
+          } catch {
+            window.prompt('Copy this link:', url);
+          }
+        });
       });
+    }
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      const filtered = tests.filter(test =>
+        `${test.title} ${test.description} ${test.level} ${test.types}`.toLowerCase().includes(query)
+      );
+      render(filtered);
     });
 
-    document.getElementById('searchInput').addEventListener('input', event => {
-      searchTerm = event.target.value.trim();
-      renderTests();
-    });
-
-    window.addEventListener('pageshow', () => {
-      updateStats();
-      renderTests();
-    });
-
-    updateStats();
-    renderTests();
+    render(tests);
   </script>
 </body>
 </html>
