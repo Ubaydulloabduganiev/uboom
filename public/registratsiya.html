@@ -173,17 +173,17 @@ select option{background:#09111d}
 
   <div class="bottom"><a href="/" data-i18n="home">Asosiy sayt</a><span>•</span><span>© HanBridge Academy</span></div>
 </main>
-
 <script>
 // --- TELEGRAM BOT SOZLAMALARI ---
 const BOT_TOKEN = '8613780820:AAGOCaWjW2TFTOF1hRNRPU8Drr0klbl9Ec4'; 
-// Ikkita ID ni massiv (array) ichiga yozamiz:
+// SHU YERGA @getmyid_bot ORQALI OLINGAN ANIQLIKDAGI ID LARNI YOZING:
 const CHAT_IDS = ['8529502652', '8727767463']; 
 
 const t={
   uz:{pill:"Tez ro‘yxatdan o‘tish",title:"Kursga <span>yozilish</span>",sub:"Formani to‘ldiring. Administrator siz bilan bog‘lanib, kurs, guruh va vaqtni aniqlaydi.",name:"Ism",namePh:"Ismingiz",phone:"Telefon raqam",course:"Kurs",choose:"Kursni tanlang",consult:"Bilmayman, maslahat kerak",level:"Daraja",unknown:"Bilmayman",time:"Qulay vaqt",any:"Farqi yo‘q",morning:"Ertalab",afternoon:"Tushdan keyin",evening:"Kechki payt",commentPh:"Qo‘shimcha savol yoki maqsadingiz",submit:"Yuborish",note:"Ariza HanBridge Academy administratorlariga Telegram orqali yuboriladi.",home:"Asosiy sayt",sending:"Yuborilmoqda...",success:"Ariza yuborildi. Administrator tez orada siz bilan bog‘lanadi.",error:"Xatolik yuz berdi. Qayta urinib ko‘ring."},
   ru:{pill:"Быстрая регистрация",title:"Запись на <span>курс</span>",sub:"Заполните форму. Администратор свяжется с вами и уточнит курс, группу и время.",name:"Имя",namePh:"Ваше имя",phone:"Телефон",course:"Курс",choose:"Выберите курс",consult:"Не знаю, нужна консультация",level:"Уровень",unknown:"Не знаю",time:"Удобное время",any:"Не важно",morning:"Утро",afternoon:"После обеда",evening:"Вечер",commentPh:"Дополнительный вопрос или цель",submit:"Отправить",note:"Заявка будет отправлена администраторам HanBridge Academy в Telegram.",home:"Главный сайт",sending:"Отправляется...",success:"Заявка отправлена. Администратор скоро свяжется с вами.",error:"Произошла ошибка. Попробуйте снова."}
 };
+
 function setLang(lang){
   document.documentElement.lang=lang;
   document.querySelectorAll('[data-i18n]').forEach(e=>{const v=t[lang][e.dataset.i18n];if(v!==undefined)e.innerText=v});
@@ -197,13 +197,14 @@ setLang(localStorage.getItem('hanbridgeRegLang')||'uz');
 function obj(form){return Object.fromEntries(new FormData(form).entries())}
 function statusMsg(text,type){const s=document.getElementById('status');s.textContent=text;s.className='status show'+(type==='error'?' error':'')}
 
-document.getElementById('regForm').addEventListener('submit',async e=>{
+document.getElementById('regForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const form=e.currentTarget, lang=document.documentElement.lang||'uz', btn=document.getElementById('submitBtn');
+  const form = e.currentTarget, lang = document.documentElement.lang||'uz', btn = document.getElementById('submitBtn');
   const data = obj(form);
-  const old=btn.textContent; btn.disabled=true; btn.textContent=t[lang].sending;
+  const old = btn.textContent; 
+  btn.disabled = true; 
+  btn.textContent = t[lang].sending;
   
-  // Telegram uchun xabar matni
   const message = `
 🔔 <b>Yangi ariza: HanBridge Academy</b>
 
@@ -215,35 +216,47 @@ document.getElementById('regForm').addEventListener('submit',async e=>{
 🕒 <b>Qulay vaqt:</b> ${data.preferredTime}
 📝 <b>Izoh:</b> ${data.comment || 'Yo‘q'}
 
-🌐 <i>Til: ${lang.toUpperCase()} | Manba: Instagram Lead</i>
+🌐 <i>Til: ${lang.toUpperCase()} | Manba: Sayt formasi</i>
   `.trim();
 
-  try{
-    if(!BOT_TOKEN || BOT_TOKEN.includes('BU_YERGA_TOKEN_YOZING')) throw new Error('Token xato');
-    
-    // Har bir Chat ID uchun xabarni yuborish
+  try {
+    let hasError = false;
+
+    // Har bir chat ID uchun alohida yuborish va xatoni ushlash
     for (const chatId of CHAT_IDS) {
-      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          chat_id: chatId,
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId.trim(),
           text: message,
           parse_mode: 'HTML'
         })
       });
-      if(!res.ok) throw new Error('Telegram API error');
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error(`Telegram xatosi ID (${chatId}) uchun:`, errorData);
+        hasError = true;
+      }
     }
-    
+
+    if (hasError) {
+      throw new Error('Xabar ba\'zi ID larga yuborilmadi. Console-ni tekshiring.');
+    }
+
     form.reset(); 
     statusMsg(t[lang].success);
-  }catch(err){
+    
+    // URL dagi ortiqcha ma'lumotlarni tozalash
+    window.history.replaceState(null, '', window.location.pathname);
+
+  } catch(err) {
     console.error(err); 
-    statusMsg(t[lang].error,'error');
-  }
-  finally{
-    btn.disabled=false;
-    btn.textContent=old;
+    statusMsg(t[lang].error, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
   }
 });
 </script></body>
