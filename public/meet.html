@@ -126,14 +126,23 @@ function setTileMedia(id, mic, cam){
 }
 
 async function getMedia(){
+  localStream = new MediaStream(); // never null
   try{
-    localStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      localStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    } else {
+      console.warn("getUserMedia unavailable (insecure origin or unsupported browser). Joining without camera/mic.");
+    }
   }catch(e){
-    try{ localStream = await navigator.mediaDevices.getUserMedia({audio:true}); }
-    catch(e2){ localStream = new MediaStream(); }
+    console.warn("Media permission denied or unavailable:", e && e.message);
+    try{
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+        localStream = await navigator.mediaDevices.getUserMedia({audio:true});
+      }
+    }catch(e2){}
   }
   const v = meTile.querySelector("video");
-  v.srcObject = localStream;
+  try{ v.srcObject = localStream; }catch(e){}
 }
 
 function createPeer(targetId, isInitiator){
@@ -232,12 +241,17 @@ socket.on("chat-message", data=>{
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 document.getElementById("joinBtn").onclick = async ()=>{
+  const btn = document.getElementById("joinBtn");
+  btn.disabled = true; btn.textContent = "Joining...";
   myName = document.getElementById("nameInput").value.trim() || "Guest";
-  await getMedia();
+  try{
+    await getMedia();
+  }catch(e){ console.warn("getMedia failed:", e); }
   socket.emit("join-room",{roomId,userName:myName});
   document.getElementById("joinOverlay").style.display = "none";
   document.getElementById("controls").style.display = "flex";
   statusEl.textContent = "You're in the room. Share the invite link.";
+  btn.disabled = false; btn.textContent = "Enter room";
 };
 
 document.getElementById("copyBtn").onclick = async ()=>{
