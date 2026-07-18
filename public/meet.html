@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Uboom — Video Room</title>
+<style>
+  :root{
+    --bg:#06121f; --bg2:#0b1d30; --card:#0f2740; --line:#1b3a5c;
+    --blue:#2FB7B0; --blue2:#123; --gold:#E7C76F; --navy:#1F5C87;
+    --text:#eaf2fb; --muted:#8aa6c2; --red:#ff5c6c; --green:#34d399;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#123 0%,var(--bg) 60%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+  header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(6,18,31,.85);backdrop-filter:blur(10px);z-index:5}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.02em}
+  .brand .logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--blue),var(--navy))}
+  .room-pill{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;color:var(--muted)}
+  .room-pill b{color:var(--text)}
+  .copy{background:var(--blue);border:0;color:#04201e;font-weight:800;border-radius:8px;padding:6px 10px;cursor:pointer}
+  main{padding:20px;max-width:1500px;margin:auto}
+  #grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:18px}
+  .tile{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+  .tile video{width:100%;height:100%;object-fit:cover;background:#04101c}
+  .tile .avatar{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--navy));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#04121f}
+  .tile .name{position:absolute;left:10px;bottom:10px;background:rgba(4,16,28,.7);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center}
+  .tile .badge{font-size:11px}
+  .controls{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:10px;background:rgba(15,39,64,.92);border:1px solid var(--line);padding:10px 14px;border-radius:999px;backdrop-filter:blur(10px);z-index:6}
+  .controls button{border:0;border-radius:14px;width:52px;height:52px;font-size:20px;cursor:pointer;background:var(--bg2);color:var(--text);display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+  .controls button:hover{background:#14395c}
+  .controls button.off{background:var(--red);color:#fff}
+  .controls button.leave{background:var(--red);color:#fff;width:auto;padding:0 18px;font-weight:800}
+  .controls button.primary{background:var(--blue);color:#04201e;width:auto;padding:0 16px;font-weight:800}
+  .chat{position:fixed;right:18px;top:80px;bottom:90px;width:320px;background:var(--bg2);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;z-index:6}
+  .chat h3{margin:0;padding:14px 16px;border-bottom:1px solid var(--line);font-size:14px}
+  .chat .msgs{flex:1;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+  .chat .msg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 11px;font-size:13px}
+  .chat .msg b{color:var(--gold);font-size:12px}
+  .chat .msg small{color:var(--muted);display:block;font-size:10px;margin-top:2px}
+  .chat form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+  .chat input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:9px 11px;font:inherit}
+  .chat button{background:var(--blue);border:0;color:#04201e;font-weight:800;border-radius:10px;padding:0 14px;cursor:pointer}
+  .status{padding:10px 16px;color:var(--muted);font-size:13px;text-align:center}
+  .join-overlay{position:fixed;inset:0;background:rgba(4,12,20,.92);display:flex;align-items:center;justify-content:center;z-index:20}
+  .join-card{background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:28px;width:min(420px,92vw);text-align:center}
+  .join-card h2{margin:0 0 6px}
+  .join-card p{color:var(--muted);margin:0 0 18px}
+  .join-card input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px;font:inherit;margin-bottom:12px;text-align:center}
+  .join-card button{width:100%;background:var(--blue);border:0;color:#04201e;font-weight:900;border-radius:12px;padding:13px;cursor:pointer;font-size:15px}
+  @media(max-width:720px){.chat{display:none}.controls{width:96%;justify-content:center}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo"></div><span>Uboom</span></div>
+  <div class="room-pill">Room: <b id="roomLabel">…</b> <button class="copy" id="copyBtn">Copy invite</button></div>
+</header>
+
+<div class="join-overlay" id="joinOverlay">
+  <div class="join-card">
+    <h2>Join the room</h2>
+    <p>Pick a display name. No account, no download.</p>
+    <input id="nameInput" placeholder="Your name" maxlength="40" />
+    <button id="joinBtn">Enter room</button>
+  </div>
+</div>
+
+<main>
+  <div id="grid"></div>
+  <div class="status" id="status">Connecting…</div>
+</main>
+
+<div class="controls" id="controls" style="display:none">
+  <button id="micBtn" title="Mic">🎙️</button>
+  <button id="camBtn" title="Camera">📹</button>
+  <button id="screenBtn" class="primary" title="Share screen">🖥️</button>
+  <button id="chatBtn" title="Chat">💬</button>
+  <button id="leaveBtn" class="leave" title="Leave">Leave</button>
+</div>
+
+<div class="chat" id="chat" style="display:none">
+  <h3>Meeting chat</h3>
+  <div class="msgs" id="msgs"></div>
+  <form id="chatForm"><input id="chatInput" placeholder="Message…" maxlength="1000" /><button type="submit">Send</button></form>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+let roomId = params.get("room");
+if(!roomId){
+  roomId = Math.random().toString(36).slice(2,8) + "-" + Math.random().toString(36).slice(2,6);
+  history.replaceState(null,"","/meet?room="+encodeURIComponent(roomId));
+}
+document.getElementById("roomLabel").textContent = roomId;
+
+const socket = io();
+let myName = "";
+let localStream = null;
+let screenStream = null;
+let micOn = true, camOn = true;
+const peers = new Map(); // socketId -> {pc, videoEl}
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+
+const meTile = makeTile(socket.id, "You", true, true);
+meTile.querySelector("video").muted = true;
+grid.appendChild(meTile);
+
+function makeTile(id, name, mic, cam){
+  const tile = document.createElement("div");
+  tile.className = "tile";
+  tile.id = "tile-"+id;
+  tile.innerHTML = `<div class="avatar">${(name||"G").slice(0,1).toUpperCase()}</div>
+    <video autoplay playsinline></video>
+    <div class="name"><span class="badge">${mic?"🎙️":"🔇"}</span>${name||"Guest"}</div>`;
+  if(id !== socket.id){
+    tile.querySelector("video").srcObject = null;
+  }
+  return tile;
+}
+
+function setTileMedia(id, mic, cam){
+  const tile = document.getElementById("tile-"+id);
+  if(tile) tile.querySelector(".badge").textContent = mic ? "🎙️" : "🔇";
+}
+
+async function getMedia(){
+  try{
+    localStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+  }catch(e){
+    try{ localStream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+    catch(e2){ localStream = new MediaStream(); }
+  }
+  const v = meTile.querySelector("video");
+  v.srcObject = localStream;
+}
+
+function createPeer(targetId, isInitiator){
+  const pc = new RTCPeerConnection({
+    iceServers:[{urls:"stun:stun.l.google.com:19302"}]
+  });
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+  pc.onicecandidate = e => {
+    if(e.candidate) socket.emit("ice-candidate",{targetSocketId:targetId,candidate:e.candidate});
+  };
+  pc.ontrack = e => {
+    let tile = document.getElementById("tile-"+targetId);
+    if(!tile){ tile = makeTile(targetId,"Guest",true,true); grid.appendChild(tile); }
+    const v = tile.querySelector("video");
+    if(v.srcObject !== e.streams[0]) v.srcObject = e.streams[0];
+  };
+
+  if(isInitiator){
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit("offer",{targetSocketId:targetId,offer:pc.localDescription});
+  }
+  peers.set(targetId,{pc});
+  return pc;
+}
+
+socket.on("connect", ()=> statusEl.textContent = "Connected. Enter your name to join.");
+
+socket.on("existing-users", users=>{
+  users.forEach(u=>{
+    if(!peers.has(u.socketId)){
+      createPeer(u.socketId, true); // we initiate to existing peers
+    }
+    if(!document.getElementById("tile-"+u.socketId)){
+      const t = makeTile(u.socketId,u.userName,u.micOn,u.cameraOn);
+      grid.appendChild(t);
+    }
+  });
+});
+
+socket.on("user-joined", data=>{
+  if(!document.getElementById("tile-"+data.socketId)){
+    const t = makeTile(data.socketId,data.userName,data.micOn,data.cameraOn);
+    grid.appendChild(t);
+  }
+  // Newcomer initiates the offer to us (we wait for it)
+});
+
+socket.on("offer", async data=>{
+  let entry = peers.get(data.fromSocketId);
+  if(!entry){
+    const pc = await createPeer(data.fromSocketId, false);
+    entry = peers.get(data.fromSocketId);
+  }
+  const pc = entry.pc;
+  await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  socket.emit("answer",{targetSocketId:data.fromSocketId,answer:pc.localDescription});
+});
+
+socket.on("answer", async data=>{
+  const entry = peers.get(data.fromSocketId);
+  if(entry && entry.pc.remoteDescription === null){
+    await entry.pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+  }
+});
+
+socket.on("ice-candidate", async data=>{
+  const entry = peers.get(data.fromSocketId);
+  if(entry){
+    try{ await entry.pc.addIceCandidate(new RTCIceCandidate(data.candidate)); }catch(e){}
+  }
+});
+
+socket.on("user-left", data=>{
+  const entry = peers.get(data.socketId);
+  if(entry){ entry.pc.close(); peers.delete(data.socketId); }
+  const tile = document.getElementById("tile-"+data.socketId);
+  if(tile) tile.remove();
+});
+
+socket.on("media-state", data=> setTileMedia(data.socketId, data.micOn, data.cameraOn));
+socket.on("participants-updated", ()=>{});
+
+socket.on("chat-message", data=>{
+  const d = document.createElement("div");
+  d.className = "msg";
+  const t = data.time ? new Date(data.time).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : "";
+  d.innerHTML = `<b>${escapeHtml(data.userName)}</b> ${escapeHtml(data.text)}<small>${t}</small>`;
+  document.getElementById("msgs").appendChild(d);
+  document.getElementById("msgs").scrollTop = document.getElementById("msgs").scrollHeight;
+});
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+document.getElementById("joinBtn").onclick = async ()=>{
+  myName = document.getElementById("nameInput").value.trim() || "Guest";
+  await getMedia();
+  socket.emit("join-room",{roomId,userName:myName});
+  document.getElementById("joinOverlay").style.display = "none";
+  document.getElementById("controls").style.display = "flex";
+  statusEl.textContent = "You're in the room. Share the invite link.";
+};
+
+document.getElementById("copyBtn").onclick = async ()=>{
+  try{ await navigator.clipboard.writeText(location.href); document.getElementById("copyBtn").textContent="Copied!"; setTimeout(()=>document.getElementById("copyBtn").textContent="Copy invite",1500);}catch(e){}
+};
+
+document.getElementById("micBtn").onclick = ()=>{
+  micOn = !micOn;
+  localStream.getAudioTracks().forEach(t=>t.enabled=micOn);
+  document.getElementById("micBtn").classList.toggle("off",!micOn);
+  document.getElementById("micBtn").textContent = micOn?"🎙️":"🔇";
+  socket.emit("media-state",{micOn,cameraOn});
+  setTileMedia(socket.id,micOn,camOn);
+};
+
+document.getElementById("camBtn").onclick = ()=>{
+  camOn = !camOn;
+  localStream.getVideoTracks().forEach(t=>t.enabled=camOn);
+  document.getElementById("camBtn").classList.toggle("off",!camOn);
+  document.getElementById("camBtn").textContent = camOn?"📹":"🚫";
+  socket.emit("media-state",{micOn,cameraOn});
+};
+
+document.getElementById("screenBtn").onclick = async ()=>{
+  if(screenStream){ // stop sharing
+    screenStream.getTracks().forEach(t=>t.stop());
+    screenStream=null;
+    localStream.getVideoTracks().forEach(t=>t.enabled=camOn);
+    document.getElementById("screenBtn").classList.remove("off");
+    // restore camera into all peers
+    peers.forEach((entry,id)=>{
+      const sender = entry.pc.getSenders().find(s=>s.track && s.track.kind==="video");
+      if(sender) sender.replaceTrack(localStream.getVideoTracks()[0]||null);
+    });
+    return;
+  }
+  try{
+    screenStream = await navigator.mediaDevices.getDisplayMedia({video:true});
+    const track = screenStream.getVideoTracks()[0];
+    peers.forEach((entry)=>{
+      const sender = entry.pc.getSenders().find(s=>s.track && s.track.kind==="video");
+      if(sender) sender.replaceTrack(track);
+    });
+    track.onended = ()=> document.getElementById("screenBtn").click();
+    document.getElementById("screenBtn").classList.add("off");
+  }catch(e){}
+};
+
+document.getElementById("chatBtn").onclick = ()=>{
+  const c = document.getElementById("chat");
+  c.style.display = c.style.display==="none"?"flex":"none";
+};
+
+document.getElementById("chatForm").onsubmit = e=>{
+  e.preventDefault();
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if(!text) return;
+  socket.emit("chat-message",{roomId,text});
+  input.value="";
+};
+
+document.getElementById("leaveBtn").onclick = ()=>{
+  peers.forEach(p=>p.pc.close());
+  if(localStream) localStream.getTracks().forEach(t=>t.stop());
+  if(screenStream) screenStream.getTracks().forEach(t=>t.stop());
+  socket.disconnect();
+  location.href = "/";
+};
+
+document.getElementById("nameInput").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("joinBtn").click(); });
+</script>
+</body>
+</html>
